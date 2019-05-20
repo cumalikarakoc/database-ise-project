@@ -7,7 +7,7 @@
 |			Jeroen Rikken,				|
 |			Rico Salemon				|
 |	Versie:		1.0					|
-|	Gemaakt op:	5/7/2019 13:42				|
+|	Gemaakt op:	17-5-2019 10:48:23			|
 \*-------------------------------------------------------------*/
 
 drop index if exists ANIMAL_OF_SPECIES_FK;
@@ -62,7 +62,7 @@ drop index if exists BREEDING_MATE_FK;
 
 drop index if exists BREEDING_PK;
 
-drop table if exists BREEDING cascade;
+drop table if exists MATING cascade;
 
 drop index if exists DELIVERY_ORDER_FK;
 
@@ -303,14 +303,14 @@ create table ANIMAL (
 /* Index: ANIMAL_PK                                             */
 /*==============================================================*/
 create unique index ANIMAL_PK on ANIMAL (
-   ANIMAL_ID
+ANIMAL_ID
 );
 
 /*==============================================================*/
 /* Index: ANIMAL_OF_SPECIES_FK                                  */
 /*==============================================================*/
 create  index ANIMAL_OF_SPECIES_FK on ANIMAL (
-   ENGLISH_NAME
+ENGLISH_NAME
 );
 
 /*==============================================================*/
@@ -318,7 +318,7 @@ create  index ANIMAL_OF_SPECIES_FK on ANIMAL (
 /*==============================================================*/
 create table ANIMAL_ENCLOSURE (
    ANIMAL_ID            ID                   not null,
-   AREA_NAME            NAME_DOMAIN                 not null,
+   AREA_NAME            NAME_DOMAIN          not null,
    ENCLOSURE_NUM        SEQ_NUM              not null,
    SINCE                DATE                 not null,
    END_DATE             DATE                 null,
@@ -352,7 +352,7 @@ ENCLOSURE_NUM
 /* Table: ANIMAL_IS_DIAGNOSED                                   */
 /*==============================================================*/
 create table ANIMAL_IS_DIAGNOSED (
-   DIAGNOSIS_NAME       NAME_DOMAIN                 not null,
+   DIAGNOSIS_NAME       NAME_DOMAIN          not null,
    ANIMAL_ID            ID                   not null,
    VISIT_DATE           DATE                 not null,
    constraint PK_ANIMAL_IS_DIAGNOSED primary key (ANIMAL_ID, DIAGNOSIS_NAME, VISIT_DATE)
@@ -516,7 +516,7 @@ ORDER_ID
 /* Table: DIAGNOSIS                                             */
 /*==============================================================*/
 create table DIAGNOSIS (
-   DIAGNOSIS_NAME       NAME_DOMAIN                 not null,
+   DIAGNOSIS_NAME       NAME_DOMAIN         not null,
    constraint PK_DIAGNOSIS primary key (DIAGNOSIS_NAME)
 );
 
@@ -556,7 +556,7 @@ ORDER_ID
 /* Table: ENCLOSURE                                             */
 /*==============================================================*/
 create table ENCLOSURE (
-   AREA_NAME            NAME_DOMAIN                 not null,
+   AREA_NAME            NAME_DOMAIN          not null,
    ENCLOSURE_NUM        SEQ_NUM              not null,
    constraint PK_ENCLOSURE primary key (AREA_NAME, ENCLOSURE_NUM)
 );
