@@ -10,7 +10,7 @@
 |	Gemaakt op:	5/7/2019 13:42				|
 \*-------------------------------------------------------------*/
 
-/* Constraint 2 VetVisitDate
+/* Constraint 2 WaitingForPaymentHasDelivery
 Colom ORDER(State) An order with state that is not ‘placed’, must have a delivery note.
 =================================================
 = State		= Delivery note	= Yes/No	=
@@ -28,7 +28,7 @@ To do this a trigger wil be created on the delivery table.
 */
 
 -- Trigger function for trigger on table order.
-Create or replace function TRP_VET_VISIT_DATE_ORDER()
+Create or replace function TRP_WAITING_FOR_PAYMENT_HAS_DELIVERY_ORDER()
 Returns trigger as
 $$
 Begin
@@ -40,28 +40,28 @@ end;
 $$
 Language 'plpgsql';
 
-Create trigger TR_VET_VISIT_DATE_ORDER
+Create trigger TR_WAITING_FOR_PAYMENT_HAS_DELIVERY
 after insert or update
 on "ORDER"
 for each row
 when (new.state <> 'placed')
-execute procedure TRP_VET_VISIT_DATE_ORDER();
+execute procedure TRP_WAITING_FOR_PAYMENT_HAS_DELIVERY_ORDER();
 
 -- Trigger function for trigger on table delivery.
-Create or replace function TRP_VET_VISIT_DATE_DELIVERY()
+Create or replace function TRP_WAITING_FOR_PAYMENT_HAS_DELIVERY()
 Returns trigger as
 $$
 Begin
 	If exists (select 1 from "ORDER" where state <> 'placed' and Order_id = old.Order_id) then
 	Raise exception 'There is no delivery note for order % while it is %.', old.Order_id, (select state from "ORDER" where Order_id = old.Order_id);
 	end if;
-	return new;
+	return old;
 end;
 $$
 Language 'plpgsql';
 
-Create trigger TR_VET_VISIT_DATE_DELIVERY
+Create trigger TR_WAITING_FOR_PAYMENT_HAS_DELIVERY
 after update or delete
 on delivery
 for each row
-execute procedure TRP_VET_VISIT_DATE_DELIVERY();
+execute procedure TRP_WAITING_FOR_PAYMENT_HAS_DELIVERY();
