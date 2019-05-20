@@ -7,210 +7,214 @@
 |			Jeroen Rikken,				|
 |			Rico Salemon				|
 |	Versie:		1.0					|
-|	Gemaakt op:	17-5-2019 10:48:23			|
+|	Gemaakt op:	5/7/2019 13:42				|
 \*-------------------------------------------------------------*/
 
-drop index ANIMAL_OF_SPECIES_FK;
+drop index if exists ANIMAL_OF_SPECIES_FK;
 
-drop index ANIMAL_PK;
+drop index if exists ANIMAL_PK;
 
-drop table ANIMAL;
+drop table if exists ANIMAL CASCADE;
 
-drop index ENCLOSURE_HAS_ANIMAL_FK;
+drop index if exists ENCLOSURE_HAS_ANIMAL_FK;
 
-drop index ANIMAL_IN_ENCLOSURE_FK;
+drop index if exists ANIMAL_IN_ENCLOSURE_FK;
 
-drop index ANIMAL_ENCLOSURE_PK;
+drop index if exists ANIMAL_ENCLOSURE_PK;
 
-drop table ANIMAL_ENCLOSURE;
+drop table if exists ANIMAL_ENCLOSURE;
 
-drop index ANIMAL_IS_DIAGNOSED2_FK;
+drop index if exists ANIMAL_IS_DIAGNOSED2_FK;
 
-drop index ANIMAL_IS_DIAGNOSED_FK;
+drop index if exists ANIMAL_IS_DIAGNOSED_FK;
 
-drop index ANIMAL_IS_DIAGNOSED_PK;
+drop index if exists ANIMAL_IS_DIAGNOSED_PK;
 
-drop table ANIMAL_IS_DIAGNOSED;
+drop table if exists ANIMAL_IS_DIAGNOSED;
 
-drop table ANIMAL_PARENT;
+drop table if exists ANIMAL_PARENT;
 
-drop index PRESCRIPTION_OF_VET_VISIT_FK;
+drop index if exists PRESCRIPTION_OF_VET_VISIT_FK;
 
-drop index VET_VISITED_ANIMAL_FK;
+drop index if exists VET_VISITED_ANIMAL_FK;
 
-drop index ANIMAL_CHECK_UP_FK;
+drop index if exists ANIMAL_CHECK_UP_FK;
 
-drop index ANIMAL_VISITS_VET_PK;
+drop index if exists ANIMAL_VISITS_VET_PK;
 
-drop table ANIMAL_VISITS_VET;
+drop table if exists ANIMAL_VISITS_VET;
 
-drop index HEADKEEPER_OF_AREA2_FK;
+drop index if exists HEADKEEPER_OF_AREA2_FK;
 
-drop index AREA_PK;
+drop index if exists AREA_PK;
 
-drop table AREA;
+drop table if exists AREA CASCADE ;
 
-drop index AREA_HAS_KEEPER_FK;
+drop index if exists AREA_HAS_KEEPER_FK;
 
-drop index KEEPER_IN_AREA_FK;
+drop index if exists KEEPER_IN_AREA_FK;
 
-drop index AREA_KEEPER_PK;
+drop index if exists AREA_KEEPER_PK;
 
-drop table AREA_KEEPER;
+drop table if exists AREA_KEEPER;
 
-drop index DELIVERY_ORDER_FK;
+drop index if exists BREEDING_MATE_FK;
 
-drop index DELIVERY_PK;
+drop index if exists BREEDING_PK;
 
-drop table DELIVERY;
+drop table if exists BREEDING cascade;
 
-drop index DIAGNOSIS_PK;
+drop index if exists DELIVERY_ORDER_FK;
 
-drop table DIAGNOSIS;
+drop index if exists DELIVERY_PK;
 
-drop index ORDER_DISCREPANCY_FK;
+drop table if exists DELIVERY;
 
-drop index DISCREPANCY_PK;
+drop index if exists DIAGNOSIS_PK;
 
-drop table DISCREPANCY;
+drop table if exists DIAGNOSIS;
 
-drop index ENCLOSURE_IN_AREA_FK;
+drop index if exists ORDER_DISCREPANCY_FK;
 
-drop index ENCLOSURE_PK;
+drop index if exists DISCREPANCY_PK;
 
-drop table ENCLOSURE;
+drop table if exists DISCREPANCY;
 
-drop index ANIMAL_EXCHANGE_FK;
+drop index if exists ENCLOSURE_IN_AREA_FK;
 
-drop index EXCHANGE_PK;
+drop index if exists ENCLOSURE_PK;
 
-drop table EXCHANGE;
+drop table if exists ENCLOSURE;
 
-drop index FOOD_TO_BE_FED_FK;
+drop index if exists ANIMAL_EXCHANGE_FK;
 
-drop index FEEDING_FOR_ANIMAL_FK;
+drop index if exists EXCHANGE_PK;
 
-drop index FEEDING_PK;
+drop table if exists EXCHANGE cascade;
 
-drop table FEEDING;
+drop index if exists FOOD_TO_BE_FED_FK;
 
-drop index FOOD_TYPE_PK;
+drop index if exists FEEDING_FOR_ANIMAL_FK;
 
-drop table FOOD_KIND;
+drop index if exists FEEDING_PK;
 
-drop index INVOICE_PK;
+drop table if exists FEEDING;
 
-drop table INVOICE;
+drop index if exists FOOD_TYPE_PK;
 
-drop index KEEPER_PK;
+drop table if exists FOOD_KIND cascade;
 
-drop table KEEPER;
+drop index if exists INVOICE_PK;
 
-drop index FOOD_IN_LINE_ITEM_FK;
+drop table if exists INVOICE;
 
-drop index ITEM_IN_ORDER_FK;
+drop index if exists KEEPER_PK;
 
-drop index LINE_ITEM_PK;
+drop table if exists KEEPER;
 
-drop table LINE_ITEM;
+drop index if exists FOOD_IN_LINE_ITEM_FK;
 
-drop index BREEDING_MATE_FK;
+drop index if exists ITEM_IN_ORDER_FK;
 
-drop index BREEDING_PK;
+drop index if exists LINE_ITEM_PK;
 
-drop table MATING;
+drop table if exists LINE_ITEM;
 
-drop index OFFSPRING_PK;
+drop index if exists LOANED_FROM_PK;
 
-drop table OFFSPRING;
+drop table if exists LOANED_FROM;
 
-drop index ORDER_SUPPLIER_FK;
+drop index if exists LOANED_TO_PK;
 
-drop index ORDER_PK;
+drop table if exists LOANED_TO;
 
-drop table "ORDER";
+drop index if exists OFFSPRING_PK;
 
-drop index PRESCRIPTION_PK;
+drop table if exists OFFSPRING;
 
-drop table PRESCRIPTION;
+drop index if exists ORDER_SUPPLIER_FK;
 
-drop index ANIMAL_REINTRODUCTION_FK;
+drop index if exists ORDER_PK;
 
-drop index REINTRODUCTION_PK;
+drop table if exists "ORDER";
 
-drop table REINTRODUCTION;
+drop index if exists PRESCRIPTION_PK;
 
-drop index SPECIES_PK;
+drop table if exists PRESCRIPTION;
 
-drop table SPECIES;
+drop index if exists ANIMAL_REINTRODUCTION_FK;
 
-drop index SPECIES_WITH_GENDER_FK;
+drop index if exists REINTRODUCTION_PK;
 
-drop index SPECIES_GENDER_PK;
+drop table if exists REINTRODUCTION;
 
-drop table SPECIES_GENDER;
+drop index if exists SPECIES_PK;
 
-drop index ANIMAL_SPOTTED_FK;
+drop table if exists SPECIES cascade;
 
-drop index SPOTTED_PK;
+drop index if exists SPECIES_WITH_GENDER_FK;
 
-drop table SPOTTED;
+drop index if exists SPECIES_GENDER_PK;
 
-drop index FOOD_IN_STOCK_FK;
+drop table if exists SPECIES_GENDER;
 
-drop index ANIMAL_FOODSTOCK_FK;
+drop index if exists ANIMAL_SPOTTED_FK;
 
-drop index STOCK_PK;
+drop index if exists SPOTTED_PK;
 
-drop table STOCK;
+drop table if exists SPOTTED;
 
-drop index SUPPLIER_PK;
+drop index if exists FOOD_IN_STOCK_FK;
 
-drop table SUPPLIER;
+drop index if exists ANIMAL_FOODSTOCK_FK;
 
-drop index SUPPLIES_FOOD_TYPE2_FK;
+drop index if exists STOCK_PK;
 
-drop index SUPPLIES_FOOD_TYPE_FK;
+drop table if exists STOCK;
 
-drop index SUPPLIES_FOOD_TYPE_PK;
+drop index if exists SUPPLIER_PK;
 
-drop table SUPPLIES_FOOD_TYPE;
+drop table if exists SUPPLIER cascade;
 
-drop index VET_PK;
+drop index if exists SUPPLIES_FOOD_TYPE2_FK;
 
-drop table VET;
+drop index if exists SUPPLIES_FOOD_TYPE_FK;
 
-drop domain ADDRESS;
+drop index if exists SUPPLIES_FOOD_TYPE_PK;
 
-drop domain AGE;
+drop table if exists SUPPLIES_FOOD_TYPE;
 
-drop domain AMOUNT;
+drop index if exists VET_PK;
 
-drop domain DATE;
+drop table if exists VET;
 
-drop domain FOOD_TYPE_DOMAIN;
+drop domain if exists ADDRESS cascade;
 
-drop domain GENDER;
+drop domain if exists AGE;
 
-drop domain ID;
+drop domain if exists AMOUNT;
 
-drop domain LOAN_TYPE;
+drop domain if exists FOOD_TYPE_DOMAIN cascade;
 
-drop domain MONEY;
+drop domain if exists GENDER;
 
-drop domain NAME;
+drop domain if exists ID cascade;
 
-drop domain PHONE;
+drop domain if exists LOAN_TYPE cascade;
 
-drop domain PLACE;
+drop domain if exists NAME_DOMAIN;
 
-drop domain SEQ_NUM;
+drop domain if exists PHONE;
 
-drop domain STATE;
+drop domain if exists PLACE;
 
-drop domain TEXT;
+drop domain if exists SEQ_NUM;
 
-drop domain WEIGHT;
+drop domain if exists STATE;
+
+drop domain if exists TEXT_DOMAIN;
+
+drop domain if exists WEIGHT;
 
 /*==============================================================*/
 /* Domain: ADDRESS                                              */
@@ -226,11 +230,6 @@ create domain AGE as DECIMAL(3,2);
 /* Domain: AMOUNT                                               */
 /*==============================================================*/
 create domain AMOUNT as INT4;
-
-/*==============================================================*/
-/* Domain: DATE                                                 */
-/*==============================================================*/
-create domain DATE as DATE;
 
 /*==============================================================*/
 /* Domain: FOOD_TYPE_DOMAIN                                     */
@@ -253,14 +252,9 @@ create domain ID as VARCHAR(10);
 create domain LOAN_TYPE as VARCHAR(16);
 
 /*==============================================================*/
-/* Domain: MONEY                                                */
+/* Domain: NAME_DOMAIN                                                 */
 /*==============================================================*/
-create domain MONEY as MONEY;
-
-/*==============================================================*/
-/* Domain: NAME                                                 */
-/*==============================================================*/
-create domain NAME as VARCHAR(128);
+create domain NAME_DOMAIN as VARCHAR(128);
 
 /*==============================================================*/
 /* Domain: PHONE                                                */
@@ -283,9 +277,9 @@ create domain SEQ_NUM as INT4;
 create domain STATE as VARCHAR(32);
 
 /*==============================================================*/
-/* Domain: TEXT                                                 */
+/* Domain: TEXT_DOMAIN                                                 */
 /*==============================================================*/
-create domain TEXT as VARCHAR(1024);
+create domain TEXT_DOMAIN as VARCHAR(1024);
 
 /*==============================================================*/
 /* Domain: WEIGHT                                               */
@@ -301,7 +295,7 @@ create table ANIMAL (
    ANIMAL_NAME          VARCHAR(1024)        null,
    BIRTH_PLACE          PLACE                null,
    BIRTH_DATE           DATE                 null,
-   ENGLISH_NAME         NAME                 not null,
+   ENGLISH_NAME         NAME_DOMAIN          not null,
    constraint PK_ANIMAL primary key (ANIMAL_ID)
 );
 
@@ -309,14 +303,14 @@ create table ANIMAL (
 /* Index: ANIMAL_PK                                             */
 /*==============================================================*/
 create unique index ANIMAL_PK on ANIMAL (
-ANIMAL_ID
+   ANIMAL_ID
 );
 
 /*==============================================================*/
 /* Index: ANIMAL_OF_SPECIES_FK                                  */
 /*==============================================================*/
 create  index ANIMAL_OF_SPECIES_FK on ANIMAL (
-ENGLISH_NAME
+   ENGLISH_NAME
 );
 
 /*==============================================================*/
@@ -324,9 +318,9 @@ ENGLISH_NAME
 /*==============================================================*/
 create table ANIMAL_ENCLOSURE (
    ANIMAL_ID            ID                   not null,
-   SINCE                DATE                 not null,
-   AREA_NAME            NAME                 not null,
+   AREA_NAME            NAME_DOMAIN                 not null,
    ENCLOSURE_NUM        SEQ_NUM              not null,
+   SINCE                DATE                 not null,
    END_DATE             DATE                 null,
    constraint PK_ANIMAL_ENCLOSURE primary key (ANIMAL_ID, SINCE)
 );
@@ -358,7 +352,7 @@ ENCLOSURE_NUM
 /* Table: ANIMAL_IS_DIAGNOSED                                   */
 /*==============================================================*/
 create table ANIMAL_IS_DIAGNOSED (
-   DIAGNOSIS_NAME       NAME                 not null,
+   DIAGNOSIS_NAME       NAME_DOMAIN                 not null,
    ANIMAL_ID            ID                   not null,
    VISIT_DATE           DATE                 not null,
    constraint PK_ANIMAL_IS_DIAGNOSED primary key (ANIMAL_ID, DIAGNOSIS_NAME, VISIT_DATE)
@@ -403,8 +397,8 @@ create table ANIMAL_PARENT (
 create table ANIMAL_VISITS_VET (
    ANIMAL_ID            ID                   not null,
    VISIT_DATE           DATE                 not null,
-   PRESCRIPTION         TEXT                 null,
-   VET_NAME             NAME                 not null,
+   PRESCRIPTION         TEXT_DOMAIN          null,
+   VET_NAME             NAME_DOMAIN          not null,
    NEXT_VISIT           DATE                 null,
    constraint PK_ANIMAL_VISITS_VET primary key (ANIMAL_ID, VISIT_DATE)
 );
@@ -442,8 +436,8 @@ PRESCRIPTION
 /* Table: AREA                                                  */
 /*==============================================================*/
 create table AREA (
-   AREA_NAME            NAME                 not null,
-   HEADKEEPER           NAME                 not null,
+   AREA_NAME            NAME_DOMAIN                 not null,
+   HEADKEEPER           NAME_DOMAIN                 not null,
    constraint PK_AREA primary key (AREA_NAME)
 );
 
@@ -465,9 +459,9 @@ HEADKEEPER
 /* Table: AREA_KEEPER                                           */
 /*==============================================================*/
 create table AREA_KEEPER (
-   KEEPER_NAME          NAME                 not null,
-   WORK_DATE            DATE                 not null,
-   AREA_NAME            NAME                 not null,
+   KEEPER_NAME          NAME_DOMAIN                 not null,
+   AREA_NAME            NAME_DOMAIN                 not null,
+   WORK_DATE            DATE                        not null,
    constraint PK_AREA_KEEPER primary key (KEEPER_NAME, WORK_DATE)
 );
 
@@ -499,8 +493,8 @@ AREA_NAME
 create table DELIVERY (
    DELIVERY_ID          serial               not null,
    ORDER_ID             ID                   not null,
-   MESSAGE              TEXT                 not null,
-   AMEND                TEXT                 null,
+   MESSAGE              TEXT_DOMAIN          not null,
+   AMEND                TEXT_DOMAIN          null,
    constraint PK_DELIVERY primary key (DELIVERY_ID)
 );
 
@@ -522,7 +516,7 @@ ORDER_ID
 /* Table: DIAGNOSIS                                             */
 /*==============================================================*/
 create table DIAGNOSIS (
-   DIAGNOSIS_NAME       NAME                 not null,
+   DIAGNOSIS_NAME       NAME_DOMAIN                 not null,
    constraint PK_DIAGNOSIS primary key (DIAGNOSIS_NAME)
 );
 
@@ -538,9 +532,9 @@ DIAGNOSIS_NAME
 /*==============================================================*/
 create table DISCREPANCY (
    DISCREPANCY_ID       serial	             not null,
-   ORDER_ID             ID                   not null,
-   MESSAGE           	TEXT                 not null,
-   PLACE_DATE           DATE                 not null,
+   ORDER_ID             ID                  not null,
+   MESSAGE_DI           TEXT_DOMAIN         not null,
+   PLACE_DATE           DATE                not null,
    constraint PK_DISCREPANCY primary key (DISCREPANCY_ID)
 );
 
@@ -562,7 +556,7 @@ ORDER_ID
 /* Table: ENCLOSURE                                             */
 /*==============================================================*/
 create table ENCLOSURE (
-   AREA_NAME            NAME                 not null,
+   AREA_NAME            NAME_DOMAIN                 not null,
    ENCLOSURE_NUM        SEQ_NUM              not null,
    constraint PK_ENCLOSURE primary key (AREA_NAME, ENCLOSURE_NUM)
 );
@@ -589,7 +583,7 @@ create table EXCHANGE (
    ANIMAL_ID            ID                   not null,
    EXCHANGE_DATE        DATE                 not null,
    RETURN_DATE          DATE                 null,
-   COMMENT              TEXT                 null,
+   COMMENT              TEXT_DOMAIN          null,
    LOAN_TYPE            LOAN_TYPE            not null,
    PLACE                VARCHAR(128)         not null,
    constraint PK_EXCHANGE primary key (ANIMAL_ID, EXCHANGE_DATE)
@@ -678,7 +672,7 @@ INVOICE_ID
 /* Table: KEEPER                                                */
 /*==============================================================*/
 create table KEEPER (
-   KEEPER_NAME          NAME                 not null,
+   KEEPER_NAME          NAME_DOMAIN                 not null,
    constraint PK_KEEPER primary key (KEEPER_NAME)
 );
 
@@ -773,7 +767,7 @@ ANIMAL_ID
 /*==============================================================*/
 create table "ORDER" (
    ORDER_ID             ID                   not null,
-   SUPPLIER_NAME        NAME                 not null,
+   SUPPLIER_NAME        NAME_DOMAIN          not null,
    STATE                STATE                not null,
    ORDER_DATE           DATE                 not null,
    INVOICE_ID           ID                   null,
@@ -798,7 +792,7 @@ SUPPLIER_NAME
 /* Table: PRESCRIPTION                                          */
 /*==============================================================*/
 create table PRESCRIPTION (
-   PRESCRIPTION         TEXT                 not null,
+   PRESCRIPTION         TEXT_DOMAIN          not null,
    constraint PK_PRESCRIPTION primary key (PRESCRIPTION)
 );
 
@@ -816,7 +810,7 @@ create table REINTRODUCTION (
    ANIMAL_ID            ID                   not null,
    REINTRODUCTION_DATE  DATE                 not null,
    LOCATION             PLACE                not null,
-   COMMENT              TEXT                 null,
+   COMMENT              TEXT_DOMAIN          null,
    constraint PK_REINTRODUCTION primary key (ANIMAL_ID, REINTRODUCTION_DATE)
 );
 
@@ -839,11 +833,11 @@ ANIMAL_ID
 /* Table: SPECIES                                               */
 /*==============================================================*/
 create table SPECIES (
-   ENGLISH_NAME         NAME                 not null,
-   DESCRIPTION          TEXT                 not null,
-   FAMILY               NAME                 null,
-   SPECIES              NAME                 null,
-   SUBSPECIES           NAME                 null,
+   ENGLISH_NAME         NAME_DOMAIN                 not null,
+   DESCRIPTION          TEXT_DOMAIN                 not null,
+   FAMILY               NAME_DOMAIN                 null,
+   SPECIES              NAME_DOMAIN                 null,
+   SUBSPECIES           NAME_DOMAIN                 null,
    constraint PK_SPECIES primary key (ENGLISH_NAME)
 );
 
@@ -858,7 +852,7 @@ ENGLISH_NAME
 /* Table: SPECIES_GENDER                                        */
 /*==============================================================*/
 create table SPECIES_GENDER (
-   ENGLISH_NAME         NAME                 not null,
+   ENGLISH_NAME         NAME_DOMAIN          not null,
    GENDER               GENDER               not null,
    AVERAGE_WEIGHT       WEIGHT               not null,
    MATURITY_AGE         AGE                  not null,
@@ -908,7 +902,7 @@ ANIMAL_ID
 /* Table: STOCK                                                 */
 /*==============================================================*/
 create table STOCK (
-   AREA_NAME            NAME                 not null,
+   AREA_NAME            NAME_DOMAIN          not null,
    FOOD_TYPE_FT         FOOD_TYPE_DOMAIN     not null,
    AMOUNT               WEIGHT               not null,
    constraint PK_STOCK primary key (AREA_NAME, FOOD_TYPE_FT)
@@ -940,7 +934,7 @@ FOOD_TYPE_FT
 /* Table: SUPPLIER                                              */
 /*==============================================================*/
 create table SUPPLIER (
-   SUPPLIER_NAME        NAME                 not null,
+   SUPPLIER_NAME        NAME_DOMAIN          not null,
    PHONE_NUMER          PHONE                not null,
    ADDRESS              ADDRESS              not null,
    constraint PK_SUPPLIER primary key (SUPPLIER_NAME)
@@ -958,7 +952,7 @@ SUPPLIER_NAME
 /*==============================================================*/
 create table SUPPLIES_FOOD_TYPE (
    FOOD_TYPE_FT         FOOD_TYPE_DOMAIN     not null,
-   SUPPLIER_NAME        NAME                 not null,
+   SUPPLIER_NAME        NAME_DOMAIN          not null,
    constraint PK_SUPPLIES_FOOD_TYPE primary key (FOOD_TYPE_FT, SUPPLIER_NAME)
 );
 
@@ -988,7 +982,7 @@ SUPPLIER_NAME
 /* Table: VET                                                   */
 /*==============================================================*/
 create table VET (
-   VET_NAME             NAME                 not null,
+   VET_NAME             NAME_DOMAIN           not null,
    constraint PK_VET primary key (VET_NAME)
 );
 
