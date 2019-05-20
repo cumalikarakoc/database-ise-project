@@ -194,8 +194,6 @@ drop domain if exists AGE;
 
 drop domain if exists AMOUNT;
 
-drop domain if exists DATE_DOMAIN cascade;
-
 drop domain if exists FOOD_TYPE_DOMAIN cascade;
 
 drop domain if exists GENDER;
@@ -203,8 +201,6 @@ drop domain if exists GENDER;
 drop domain if exists ID cascade;
 
 drop domain if exists LOAN_TYPE cascade;
-
-drop domain if exists MONEY_DOMAIN;
 
 drop domain if exists NAME_DOMAIN;
 
@@ -236,11 +232,6 @@ create domain AGE as DECIMAL(3,2);
 create domain AMOUNT as INT4;
 
 /*==============================================================*/
-/* Domain: DATE_DOMAIN                                                 */
-/*==============================================================*/
-create domain DATE_DOMAIN as DATE;
-
-/*==============================================================*/
 /* Domain: FOOD_TYPE_DOMAIN                                     */
 /*==============================================================*/
 create domain FOOD_TYPE_DOMAIN as VARCHAR(100);
@@ -259,11 +250,6 @@ create domain ID as VARCHAR(10);
 /* Domain: LOAN_TYPE                                            */
 /*==============================================================*/
 create domain LOAN_TYPE as VARCHAR(16);
-
-/*==============================================================*/
-/* Domain: MONEY_DOMAIN                                                */
-/*==============================================================*/
-create domain MONEY_DOMAIN as MONEY;
 
 /*==============================================================*/
 /* Domain: NAME_DOMAIN                                                 */
@@ -308,7 +294,7 @@ create table ANIMAL (
    GENDER_S             GENDER               not null,
    ANIMAL_NAME          VARCHAR(1024)        null,
    BIRTH_PLACE          PLACE                null,
-   BIRTH_DATE           DATE_DOMAIN                 null,
+   BIRTH_DATE           DATE                 null,
    ENGLISH_NAME         NAME_DOMAIN                 not null,
    constraint PK_ANIMAL primary key (ANIMAL_ID)
 );
@@ -334,8 +320,8 @@ create table ANIMAL_ENCLOSURE (
    ANIMAL_ID            ID                   not null,
    AREA_NAME            NAME_DOMAIN                 not null,
    ENCLOSURE_NUM        SEQ_NUM              not null,
-   SINCE                DATE_DOMAIN                 not null,
-   END_DATE             DATE_DOMAIN                 null,
+   SINCE                DATE                 not null,
+   END_DATE             DATE                 null,
    constraint PK_ANIMAL_ENCLOSURE primary key (AREA_NAME, ANIMAL_ID, ENCLOSURE_NUM, SINCE)
 );
 
@@ -370,7 +356,7 @@ ENCLOSURE_NUM
 create table ANIMAL_IS_DIAGNOSED (
    DIAGNOSIS_NAME       NAME_DOMAIN                 not null,
    ANIMAL_ID            ID                   not null,
-   VISIT_DATE           DATE_DOMAIN                 not null,
+   VISIT_DATE           DATE                 not null,
    constraint PK_ANIMAL_IS_DIAGNOSED primary key (ANIMAL_ID, DIAGNOSIS_NAME, VISIT_DATE)
 );
 
@@ -412,10 +398,10 @@ create table ANIMAL_PARENT (
 /*==============================================================*/
 create table ANIMAL_VISITS_VET (
    ANIMAL_ID            ID                   not null,
-   VISIT_DATE           DATE_DOMAIN                 not null,
+   VISIT_DATE           DATE                 not null,
    PRESCRIPTION         TEXT_DOMAIN                 null,
    VET_NAME             NAME_DOMAIN                 not null,
-   NEXT_VISIT           DATE_DOMAIN                 null,
+   NEXT_VISIT           DATE                 null,
    constraint PK_ANIMAL_VISITS_VET primary key (ANIMAL_ID, VISIT_DATE)
 );
 
@@ -477,7 +463,7 @@ HEADKEEPER
 create table AREA_KEEPER (
    KEEPER_NAME          NAME_DOMAIN                 not null,
    AREA_NAME            NAME_DOMAIN                 not null,
-   WORK_DATE            DATE_DOMAIN                 not null,
+   WORK_DATE            DATE                 not null,
    constraint PK_AREA_KEEPER primary key (KEEPER_NAME, AREA_NAME, WORK_DATE)
 );
 
@@ -509,7 +495,7 @@ AREA_NAME
 /*==============================================================*/
 create table BREEDING (
    ANIMAL_ID            VARCHAR(10)          not null,
-   BREEDING_DATE        DATE_DOMAIN          not null,
+   BREEDING_DATE        DATE          not null,
    BREEDING_PLACE       PLACE                not null,
    MATE_ID              VARCHAR(10)          null,
    constraint PK_BREEDING primary key (ANIMAL_ID, BREEDING_DATE)
@@ -577,7 +563,7 @@ create table DISCREPANCY (
    DISCREPANCY_ID       VARCHAR(10)          not null,
    ORDER_ID             ID                   not null,
    MESSAGE_DI           TEXT_DOMAIN                 not null,
-   PLACE_DATE           DATE_DOMAIN                 not null,
+   PLACE_DATE           DATE                 not null,
    constraint PK_DISCREPANCY primary key (DISCREPANCY_ID)
 );
 
@@ -624,9 +610,9 @@ AREA_NAME
 /*==============================================================*/
 create table EXCHANGE (
    ANIMAL_ID            ID                   not null,
-   EXCHANGE_DATE        DATE_DOMAIN                 not null,
-   RETURN_DATE          DATE_DOMAIN                 null,
-   COMMENT              TEXT_DOMAIN                 null,
+   EXCHANGE_DATE        DATE                 not null,
+   RETURN_DATE          DATE                 null,
+   COMMENT              TEXT_DOMAIN          null,
    LOAN_TYPE            LOAN_TYPE            not null,
    constraint PK_EXCHANGE primary key (ANIMAL_ID, EXCHANGE_DATE)
 );
@@ -652,7 +638,7 @@ ANIMAL_ID
 create table FEEDING (
    ANIMAL_ID            ID                   not null,
    FOOD_TYPE_FT         FOOD_TYPE_DOMAIN     not null,
-   SINCE_F              DATE_DOMAIN                 not null,
+   SINCE_F              DATE                 not null,
    AMOUNT               WEIGHT               not null,
    constraint PK_FEEDING primary key (ANIMAL_ID, FOOD_TYPE_FT, SINCE_F)
 );
@@ -732,7 +718,7 @@ KEEPER_NAME
 create table LINE_ITEM (
    ORDER_ID             ID                   not null,
    FOOD_TYPE_FT         FOOD_TYPE_DOMAIN     not null,
-   PRICE                MONEY_DOMAIN                not null,
+   PRICE                MONEY                not null,
    WEIGHT               WEIGHT               not null,
    constraint PK_LINE_ITEM primary key (ORDER_ID, FOOD_TYPE_FT)
 );
@@ -764,7 +750,7 @@ FOOD_TYPE_FT
 /*==============================================================*/
 create table LOANED_FROM (
    ANIMAL_ID            ID                   not null,
-   EXCHANGE_DATE        DATE_DOMAIN                 not null,
+   EXCHANGE_DATE        DATE                 not null,
    PLACE                PLACE                not null,
    constraint PK_LOANED_FROM primary key (ANIMAL_ID, EXCHANGE_DATE)
 );
@@ -782,7 +768,7 @@ EXCHANGE_DATE
 /*==============================================================*/
 create table LOANED_TO (
    ANIMAL_ID            ID                   not null,
-   EXCHANGE_DATE        DATE_DOMAIN                 not null,
+   EXCHANGE_DATE        DATE                 not null,
    PLACE                PLACE                not null,
    constraint PK_LOANED_TO primary key (ANIMAL_ID, EXCHANGE_DATE)
 );
@@ -799,7 +785,7 @@ EXCHANGE_DATE
 /* Table: OFFSPRING                                             */
 /*==============================================================*/
 create table OFFSPRING (
-   BREEDING_DATE        DATE_DOMAIN                 not null,
+   BREEDING_DATE        DATE                 not null,
    OFFSPRING_NAME       NAME_DOMAIN                 not null,
    ANIMAL_ID            ID                   not null,
    OFFSPRING_ID         VARCHAR(10)          null,
@@ -822,7 +808,7 @@ create table "ORDER" (
    ORDER_ID             ID                   not null,
    SUPPLIER_NAME        NAME_DOMAIN                 not null,
    STATE                STATE                not null,
-   ORDER_DATE           DATE_DOMAIN                 not null,
+   ORDER_DATE           DATE                 not null,
    constraint PK_ORDER primary key (ORDER_ID)
 );
 
@@ -860,7 +846,7 @@ PRESCRIPTION
 /*==============================================================*/
 create table REINTRODUCTION (
    ANIMAL_ID            ID                   not null,
-   REINTRODUCTION_DATE  DATE_DOMAIN                 not null,
+   REINTRODUCTION_DATE  DATE                 not null,
    LOCATION             PLACE                not null,
    COMMENT              TEXT_DOMAIN                 null,
    constraint PK_REINTRODUCTION primary key (ANIMAL_ID, REINTRODUCTION_DATE)
@@ -931,7 +917,7 @@ ENGLISH_NAME
 /*==============================================================*/
 create table SPOTTED (
    ANIMAL_ID            ID                   not null,
-   SPOT_DATE            DATE_DOMAIN                 not null,
+   SPOT_DATE            DATE                 not null,
    constraint PK_SPOTTED primary key (ANIMAL_ID, SPOT_DATE)
 );
 
