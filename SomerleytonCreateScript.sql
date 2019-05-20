@@ -206,7 +206,7 @@ drop domain if exists NAME_DOMAIN;
 
 drop domain if exists PHONE;
 
-drop domain if exists PLACE;
+drop domain if exists PLACE_DOMAIN;
 
 drop domain if exists SEQ_NUM;
 
@@ -262,9 +262,9 @@ create domain NAME_DOMAIN as VARCHAR(128);
 create domain PHONE as VARCHAR(16);
 
 /*==============================================================*/
-/* Domain: PLACE                                                */
+/* Domain: PLACE_DOMAIN                                                */
 /*==============================================================*/
-create domain PLACE as VARCHAR(128);
+create domain PLACE_DOMAIN as VARCHAR(128);
 
 /*==============================================================*/
 /* Domain: SEQ_NUM                                              */
@@ -293,7 +293,7 @@ create table ANIMAL (
    ANIMAL_ID            ID                   not null,
    GENDER_S             GENDER               not null,
    ANIMAL_NAME          VARCHAR(1024)        null,
-   BIRTH_PLACE          PLACE                null,
+   BIRTH_PLACE          PLACE_DOMAIN         null,
    BIRTH_DATE           DATE                 null,
    ENGLISH_NAME         NAME_DOMAIN          not null,
    constraint PK_ANIMAL primary key (ANIMAL_ID)
@@ -585,7 +585,7 @@ create table EXCHANGE (
    RETURN_DATE          DATE                 null,
    COMMENT              TEXT_DOMAIN          null,
    LOAN_TYPE            LOAN_TYPE            not null,
-   PLACE                VARCHAR(128)         not null,
+   PLACE                PLACE_DOMAIN         not null,
    constraint PK_EXCHANGE primary key (ANIMAL_ID, EXCHANGE_DATE)
 );
 
@@ -720,10 +720,10 @@ FOOD_TYPE_FT
 /* Table: MATING                                                */
 /*==============================================================*/
 create table MATING (
-   ANIMAL_ID            ID	             not null,
+   ANIMAL_ID            ID	                  not null,
    MATING_DATE          DATE                 not null,
-   MATING_PLACE         PLACE                not null,
-   MATE_ID              ID          	     null,
+   MATING_PLACE         PLACE_DOMAIN         not null,
+   MATE_ID              ID          	        null,
    constraint PK_MATING primary key (ANIMAL_ID, MATING_DATE)
 );
 
@@ -747,7 +747,7 @@ ANIMAL_ID
 /*==============================================================*/
 create table OFFSPRING (
    MATING_DATE          DATE                 not null,
-   OFFSPRING_NAME       NAME                 not null,
+   OFFSPRING_NAME       NAME_DOMAIN          not null,
    ANIMAL_ID            ID                   not null,
    OFFSPRING_ID         ID                   null,
    constraint PK_OFFSPRING primary key (MATING_DATE, OFFSPRING_NAME, ANIMAL_ID)
@@ -809,7 +809,7 @@ PRESCRIPTION
 create table REINTRODUCTION (
    ANIMAL_ID            ID                   not null,
    REINTRODUCTION_DATE  DATE                 not null,
-   LOCATION             PLACE                not null,
+   LOCATION             PLACE_DOMAIN         not null,
    COMMENT              TEXT_DOMAIN          null,
    constraint PK_REINTRODUCTION primary key (ANIMAL_ID, REINTRODUCTION_DATE)
 );
