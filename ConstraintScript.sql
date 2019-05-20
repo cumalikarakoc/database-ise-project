@@ -14,6 +14,5 @@
 ALTER TABLE "ORDER" DROP CONSTRAINT IF EXISTS CHCK_PAID_HAS_INVOICE;
 
 ALTER TABLE "ORDER" ADD CONSTRAINT CHCK_PAID_HAS_INVOICE
-CHECK(state = 'paid' OR invoice_id IS NULL);
-
+CHECK((state = 'paid' AND invoice_id IS NOT NULL) OR (state != 'paid' AND invoice_id IS NULL));
 /*=============*/
