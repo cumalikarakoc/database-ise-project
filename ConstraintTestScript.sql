@@ -45,6 +45,7 @@ UPDATE "ORDER" SET invoice_id = '1';
 ROLLBACK;
 
 /* Tests should not pass if state is not paid and an invoice is attached to the order. */
+--insert
 BEGIN TRANSACTION;
 INSERT INTO invoice VALUES('1');
 INSERT INTO supplier VALUES('jumbo', '123213', 'ijssellaan');
