@@ -59,4 +59,69 @@ INSERT INTO supplier VALUES('jumbo', '123213', 'ijssellaan');
 INSERT INTO "ORDER" VALUES(1, 'jumbo', 'placed', '2019-12-12', 1);
 UPDATE "ORDER" SET state = 'awaiting payment', invoice_id = '1';
 ROLLBACK;
+
+/*===== Constraint 7 LoanType =====*/
+/* Tests should pass when loan type 'to' is inserted or updated */
+-- insert
+begin transaction;
+-- drop fk constraints
+alter table exchange drop constraint fk_animal_exchange;
+-- insert
+insert into exchange values
+(1,'10-10-18','12-12-18',null,'to','kuala lumper');
+rollback;
+ 
+-- update
+begin transaction;
+-- drop fk constraints
+alter table exchange drop constraint fk_animal_exchange;
+-- insert
+insert into exchange values
+(1,'10-10-18','12-12-18',null,'from','kuala lumper');
+update exchange
+set loan_type = 'to';
+rollback; 
+
+/* Tests should pass when loan type 'from' is inserted or updated */
+-- insert
+begin transaction;
+-- drop fk constraints
+alter table exchange drop constraint fk_animal_exchange;
+-- insert
+insert into exchange values
+(1,'10-10-18','12-12-18',null,'from','kuala lumper');
+rollback;
+ 
+-- update
+begin transaction;
+-- drop fk constraints
+alter table exchange drop constraint fk_animal_exchange;
+-- insert
+insert into exchange values
+(1,'10-10-18','12-12-18',null,'to','kuala lumper');
+update exchange
+set loan_type = 'from';
+rollback; 
+
+/* Tests should fail when loan type is not 'to' or 'from' inserted or updated */
+-- insert
+begin transaction;
+-- drop fk constraints
+alter table exchange drop constraint fk_animal_exchange;
+-- insert
+insert into exchange values
+(1,'10-10-18','12-12-18',null,'tow','kuala lumper');
+rollback;
+ 
+-- update
+begin transaction;
+-- drop fk constraints
+alter table exchange drop constraint fk_animal_exchange;
+-- insert
+insert into exchange values
+(1,'10-10-18','12-12-18',null,'from','kuala lumper');
+update exchange
+set loan_type = 'tow';
+rollback; 
+
 /* ============= */
