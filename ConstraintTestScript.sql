@@ -10,6 +10,7 @@
 |	Gemaakt op:	5/7/2019 13:42				|
 \*-------------------------------------------------------------*/
 /*===== CONSTRAINT 10 ===== */
+/*Test should raise an error if spot_date is before the date when the animal is reintroduced in wild.*/
 BEGIN TRANSACTION;
 -- drop fk constraints
 ALTER TABLE reintroduction DROP CONSTRAINT fk_animal_reintroduction;
