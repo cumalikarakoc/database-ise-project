@@ -9,3 +9,13 @@
 |	Versie:		1.0					|
 |	Gemaakt op:	5/7/2019 13:42				|
 \*-------------------------------------------------------------*/
+/*===== CONSTRAINT 10 ===== */
+BEGIN TRANSACTION;
+-- drop fk constraints
+ALTER TABLE reintroduction DROP CONSTRAINT fk_animal_reintroduction;
+ALTER TABLE spotted DROP CONSTRAINT fk_animal_spotted;
+
+INSERT INTO reintroduction VALUES('an-1', '2018-12-12', 'location', null);
+INSERT INTO spotted VALUES('an-1', '2018-10-11');
+ROLLBACK;
+/*=============*/
