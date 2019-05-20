@@ -10,7 +10,6 @@
 |	Gemaakt op:	17-5-2019 10:48:23			|
 \*-------------------------------------------------------------*/
 
-
 drop index ANIMAL_OF_SPECIES_FK;
 
 drop index ANIMAL_PK;
@@ -498,7 +497,7 @@ AREA_NAME
 /* Table: DELIVERY                                              */
 /*==============================================================*/
 create table DELIVERY (
-   DELIVERY_ID          ID                   not null,
+   DELIVERY_ID          serial               not null,
    ORDER_ID             ID                   not null,
    MESSAGE              TEXT                 not null,
    AMEND                TEXT                 null,
@@ -538,9 +537,9 @@ DIAGNOSIS_NAME
 /* Table: DISCREPANCY                                           */
 /*==============================================================*/
 create table DISCREPANCY (
-   DISCREPANCY_ID       VARCHAR(10)          not null,
+   DISCREPANCY_ID       serial	             not null,
    ORDER_ID             ID                   not null,
-   MESSAGE_DI           TEXT                 not null,
+   MESSAGE           	TEXT                 not null,
    PLACE_DATE           DATE                 not null,
    constraint PK_DISCREPANCY primary key (DISCREPANCY_ID)
 );
@@ -727,10 +726,10 @@ FOOD_TYPE_FT
 /* Table: MATING                                                */
 /*==============================================================*/
 create table MATING (
-   ANIMAL_ID            VARCHAR(10)          not null,
+   ANIMAL_ID            ID	             not null,
    MATING_DATE          DATE                 not null,
    MATING_PLACE         PLACE                not null,
-   MATE_ID              VARCHAR(10)          null,
+   MATE_ID              ID          	     null,
    constraint PK_MATING primary key (ANIMAL_ID, MATING_DATE)
 );
 
@@ -756,7 +755,7 @@ create table OFFSPRING (
    MATING_DATE          DATE                 not null,
    OFFSPRING_NAME       NAME                 not null,
    ANIMAL_ID            ID                   not null,
-   OFFSPRING_ID         VARCHAR(10)          null,
+   OFFSPRING_ID         ID                   null,
    constraint PK_OFFSPRING primary key (MATING_DATE, OFFSPRING_NAME, ANIMAL_ID)
 );
 
@@ -777,7 +776,7 @@ create table "ORDER" (
    SUPPLIER_NAME        NAME                 not null,
    STATE                STATE                not null,
    ORDER_DATE           DATE                 not null,
-   INVOICE_ID           CHAR(10)             null,
+   INVOICE_ID           ID                   null,
    constraint PK_ORDER primary key (ORDER_ID)
 );
 
