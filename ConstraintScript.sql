@@ -10,7 +10,7 @@
 |	Gemaakt op:	5/7/2019 13:42				|
 \*-------------------------------------------------------------*/
 
-/* Constraint 2 WaitingForPaymentHasDelivery
+/* Constraint 2 OtherThanPlacedHasDelivery
 Colom ORDER(State) An order with state that is not ‘placed’, must have a delivery note.
 =================================================
 = State		= Delivery note	= Yes/No	=
@@ -28,7 +28,7 @@ To do this a trigger wil be created on the delivery table.
 */
 
 -- Trigger function for trigger on table order.
-Create or replace function TRP_WAITING_FOR_PAYMENT_HAS_DELIVERY_ORDER()
+Create or replace function TRP_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER()
 Returns trigger as
 $$
 Begin
@@ -40,15 +40,15 @@ end;
 $$
 Language 'plpgsql';
 
-Create trigger TR_WAITING_FOR_PAYMENT_HAS_DELIVERY
+Create trigger TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER
 after insert or update
 on "ORDER"
 for each row
 when (new.state <> 'placed')
-execute procedure TRP_WAITING_FOR_PAYMENT_HAS_DELIVERY_ORDER();
+execute procedure TRP_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER();
 
 -- Trigger function for trigger on table delivery.
-Create or replace function TRP_WAITING_FOR_PAYMENT_HAS_DELIVERY()
+Create or replace function TRP_OTHER_THAN_PLACED_HAS_DELIVERY_DELIVERY()
 Returns trigger as
 $$
 Begin
@@ -60,8 +60,8 @@ end;
 $$
 Language 'plpgsql';
 
-Create trigger TR_WAITING_FOR_PAYMENT_HAS_DELIVERY
+Create trigger TR_OTHER_THAN_PLACED_HAS_DELIVERY_DELIVERY
 after update or delete
 on delivery
 for each row
-execute procedure TRP_WAITING_FOR_PAYMENT_HAS_DELIVERY();
+execute procedure TRP_OTHER_THAN_PLACED_HAS_DELIVERY_DELIVERY();

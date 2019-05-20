@@ -10,7 +10,7 @@
 |	Gemaakt op:	5/7/2019 13:42				|
 \*-------------------------------------------------------------*/
 
-/*===== CONSTRAINT 2 VetVisitDate =====*/
+/*===== CONSTRAINT 2 OtherThanPlacedHasDelivery =====*/
 /* test should pass upon inserting an order with state placed or updating an order state to placed
 because there is a delivery note*/
 -- insert
