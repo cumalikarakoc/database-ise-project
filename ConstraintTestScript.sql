@@ -14,7 +14,7 @@
 /* test should pass upon inserting an order with state placed or updating an order state to placed
 because there is a delivery note*/
 -- insert
-start transaction;
+begin transaction;
 insert into supplier values
 ('Jumbo','123456789','Ruitenberglaan 27 Arnhem');
 insert into "ORDER" values
@@ -24,7 +24,7 @@ insert into delivery values
 rollback;
 
 --update
-start transaction;
+begin transaction;
 insert into supplier values
 ('Jumbo','123456789','Ruitenberglaan 27 Arnhem');
 insert into "ORDER" values
@@ -42,7 +42,7 @@ because there is a delivery note*/
 -- insert cannot be done cause the delivery note foreign key is not nullable
 
 --update
-start transaction;
+begin transaction;
 insert into supplier values
 ('Jumbo','123456789','Ruitenberglaan 27 Arnhem');
 insert into "ORDER" values
@@ -56,7 +56,7 @@ rollback;
 /* test should fail upon inserting an order with state other than placed or updating an order state to something other than placed
 Because the is no delivery note*/
 -- insert
-start transaction;
+begin transaction;
 insert into supplier values
 ('Jumbo','123456789','Ruitenberglaan 27 Arnhem');
 insert into "ORDER" values
@@ -64,7 +64,7 @@ insert into "ORDER" values
 rollback;
 
 --update
-start transaction;
+begin transaction;
 insert into supplier values
 ('Jumbo','123456789','Ruitenberglaan 27 Arnhem');
 insert into "ORDER" values
@@ -76,7 +76,7 @@ rollback;
 /* test should pass upon deleting a delivery or updating a delivery
 because the order it corresponds to is placed*/
 -- delete
-start transaction;
+begin transaction;
 insert into supplier values
 ('Jumbo','123456789','Ruitenberglaan 27 Arnhem');
 insert into "ORDER" values
@@ -87,7 +87,7 @@ delete from delivery;
 rollback;
 
 --update
-start transaction;
+begin transaction;
 insert into supplier values
 ('Jumbo','123456789','Ruitenberglaan 27 Arnhem');
 insert into "ORDER" values
@@ -102,7 +102,7 @@ rollback;
 /* test should fail upon deleting a delivery or updating a delivery
 because the order it correpsonds to is something other than Placed*/
 -- delete
-start transaction;
+begin transaction;
 insert into supplier values
 ('Jumbo','123456789','Ruitenberglaan 27 Arnhem');
 insert into "ORDER" values
@@ -115,7 +115,7 @@ delete from delivery;
 rollback;
 
 --update
-start transaction;
+begin transaction;
 insert into supplier values
 ('Jumbo','123456789','Ruitenberglaan 27 Arnhem');
 insert into "ORDER" values
@@ -129,8 +129,6 @@ where Order_id = '1';
 update delivery
 set Order_id = 2;
 rollback;
-
-/*============*/
 
 /*===== CONSTRAINT 3 PaidHasInvoice =====*/
 /* Tests should pass upon inserting a paid order or updating an order state to paid.*/

@@ -28,19 +28,19 @@ To do this a trigger wil be created on the delivery table.
 */
 
 -- Trigger function for trigger on table order.
-Create or replace function TRP_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER()
-Returns trigger as
+create or replace function TRP_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER()
+returns trigger as
 $$
-Begin
-	If not exists (select 1 from delivery where Order_id = new.Order_id) then
-	Raise exception 'There is no delivery note for order % while it is %.', new.Order_id, new.State;
+begin
+	if not exists (select 1 from delivery where Order_id = new.Order_id) then
+	raise exception 'There is no delivery note for order % while it is %.', new.Order_id, new.State;
 	end if;
 	return new;
 end;
 $$
-Language 'plpgsql';
+language 'plpgsql';
 
-Create trigger TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER
+create trigger TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER
 after insert or update
 on "ORDER"
 for each row
@@ -48,19 +48,19 @@ when (new.state <> 'Placed')
 execute procedure TRP_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER();
 
 -- Trigger function for trigger on table delivery.
-Create or replace function TRP_OTHER_THAN_PLACED_HAS_DELIVERY_DELIVERY()
-Returns trigger as
+create or replace function TRP_OTHER_THAN_PLACED_HAS_DELIVERY_DELIVERY()
+returns trigger as
 $$
-Begin
-	If exists (select 1 from "ORDER" where state <> 'Placed' and Order_id = old.Order_id) then
-	Raise exception 'There is no delivery note for order % while it is %.', old.Order_id, (select state from "ORDER" where Order_id = old.Order_id);
+begin
+	if exists (select 1 from "ORDER" where state <> 'Placed' and Order_id = old.Order_id) then
+	raise exception 'There is no delivery note for order % while it is %.', old.Order_id, (select state from "ORDER" where Order_id = old.Order_id);
 	end if;
 	return old;
 end;
 $$
-Language 'plpgsql';
+language 'plpgsql';
 
-Create trigger TR_OTHER_THAN_PLACED_HAS_DELIVERY_DELIVERY
+create trigger TR_OTHER_THAN_PLACED_HAS_DELIVERY_DELIVERY
 after update or delete
 on delivery
 for each row
