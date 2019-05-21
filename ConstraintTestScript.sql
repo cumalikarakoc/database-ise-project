@@ -164,7 +164,7 @@ BEGIN TRANSACTION;
 drop trigger if exists TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER on "ORDER";
 INSERT INTO invoice VALUES('1');
 INSERT INTO supplier VALUES('jumbo', '123213', 'ijssellaan');
-INSERT INTO "ORDER" VALUES(1, 'jumbo', 'Paid', '2019-12-12', null);
+INSERT INTO "ORDER" VALUES(1, 'jumbo', 'Placed', '2019-12-12', null);
 UPDATE "ORDER" SET invoice_id = '1';
 ROLLBACK;
 
@@ -185,6 +185,157 @@ INSERT INTO supplier VALUES('jumbo', '123213', 'ijssellaan');
 INSERT INTO "ORDER" VALUES(1, 'jumbo', 'Placed', '2019-12-12', 1);
 UPDATE "ORDER" SET state = 'Awaiting payment', invoice_id = '1';
 ROLLBACK;
+
+
+/*===== Constraint 5 AnimalGender =====*/
+/* Test should pass when inserting or updating animal gender to 'male' */
+-- insert
+begin transaction;
+insert into species values
+('Monkey','Things with long arms',null,null,null);
+insert into animal values
+(1,'male','Abu' ,'Engeland', '12-12-18', 'Monkey'),
+(2,'male','Koko','Engeland', '10-10-18', 'Monkey');
+rollback;
+
+-- update
+begin transaction;
+insert into species values
+('Monkey','Things with long arms',null,null,null);
+insert into animal values
+(1,'female','Abu' ,'Engeland', '12-12-18', 'Monkey'),
+(2,'female','Koko','Engeland', '10-10-18', 'Monkey');
+update animal
+set gender_s = 'male';
+rollback;
+
+/* Test should pass when inserting or updating animal gender to 'female' */
+-- insert
+-- insert
+begin transaction;
+insert into species values
+('Monkey','Things with long arms',null,null,null);
+insert into animal values
+(1,'female','Abu' ,'Engeland', '12-12-18', 'Monkey'),
+(2,'female','Koko','Engeland', '10-10-18', 'Monkey');
+rollback;
+
+-- update
+begin transaction;
+insert into species values
+('Monkey','Things with long arms',null,null,null);
+insert into animal values
+(1,'male','Abu' ,'Engeland', '12-12-18', 'Monkey'),
+(2,'male','Koko','Engeland', '10-10-18', 'Monkey');
+update animal
+set gender_s = 'female';
+rollback;
+
+/* Test should pass when inserting or updating animal gender to 'other' */
+-- insert
+begin transaction;
+insert into species values
+('Monkey','Things with long arms',null,null,null);
+insert into animal values
+(1,'other','Abu' ,'Engeland', '12-12-18', 'Monkey'),
+(2,'other','Koko','Engeland', '10-10-18', 'Monkey');
+rollback;
+
+-- update
+begin transaction;
+insert into species values
+('Monkey','Things with long arms',null,null,null);
+insert into animal values
+(1,'male','Abu' ,'Engeland', '12-12-18', 'Monkey'),
+(2,'male','Koko','Engeland', '10-10-18', 'Monkey');
+update animal
+set gender_s = 'other';
+rollback;
+
+/* Test should fail when inserting or updating animal gender to something other than 'male', 'female', 'other' */
+-- insert
+begin transaction;
+insert into species values
+('Monkey','Things with long arms',null,null,null);
+insert into animal values
+(1,'male','Abu' ,'Engeland', '12-12-18', 'Monkey'),
+(2,'something','Koko','Engeland', '10-10-18', 'Monkey');
+rollback;
+
+-- update
+begin transaction;
+insert into species values
+('Monkey','Things with long arms',null,null,null);
+insert into animal values
+(1,'male','Abu' ,'Engeland', '12-12-18', 'Monkey'),
+(2,'male','Koko','Engeland', '10-10-18', 'Monkey');
+update animal
+set gender_s = 'something';
+rollback;
+
+/*===== Constraint 7 LoanType =====*/
+/* Tests should pass when loan type 'to' is inserted or updated */
+-- insert
+begin transaction;
+-- drop fk constraints
+alter table exchange drop constraint fk_animal_exchange;
+-- insert
+insert into exchange values
+(1,'10-10-18','12-12-18',null,'to','kuala lumper');
+rollback;
+
+-- update
+begin transaction;
+-- drop fk constraints
+alter table exchange drop constraint fk_animal_exchange;
+-- insert
+insert into exchange values
+(1,'10-10-18','12-12-18',null,'from','kuala lumper');
+update exchange
+set loan_type = 'to';
+rollback;
+
+/* Tests should pass when loan type 'from' is inserted or updated */
+-- insert
+begin transaction;
+-- drop fk constraints
+alter table exchange drop constraint fk_animal_exchange;
+-- insert
+insert into exchange values
+(1,'10-10-18','12-12-18',null,'from','kuala lumper');
+rollback;
+
+-- update
+begin transaction;
+-- drop fk constraints
+alter table exchange drop constraint fk_animal_exchange;
+-- insert
+insert into exchange values
+(1,'10-10-18','12-12-18',null,'to','kuala lumper');
+update exchange
+set loan_type = 'from';
+rollback;
+
+/* Tests should fail when loan type is not 'to' or 'from' inserted or updated */
+-- insert
+begin transaction;
+-- drop fk constraints
+alter table exchange drop constraint fk_animal_exchange;
+-- insert
+insert into exchange values
+(1,'10-10-18','12-12-18',null,'tow','kuala lumper');
+rollback;
+
+-- update
+begin transaction;
+-- drop fk constraints
+alter table exchange drop constraint fk_animal_exchange;
+-- insert
+insert into exchange values
+(1,'10-10-18','12-12-18',null,'from','kuala lumper');
+update exchange
+set loan_type = 'tow';
+rollback;
 
 /*===== CONSTRAINT 15 LineItemWeight =====*/
 /* Tests should pass upon inserting a line_item or updating an line_item where the weight is higher than 0.*/
