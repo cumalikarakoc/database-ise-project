@@ -44,7 +44,7 @@ Create trigger TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER
 after insert or update
 on "ORDER"
 for each row
-when (new.state <> 'placed')
+when (new.state <> 'Placed')
 execute procedure TRP_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER();
 
 -- Trigger function for trigger on table delivery.
@@ -52,7 +52,7 @@ Create or replace function TRP_OTHER_THAN_PLACED_HAS_DELIVERY_DELIVERY()
 Returns trigger as
 $$
 Begin
-	If exists (select 1 from "ORDER" where state <> 'placed' and Order_id = old.Order_id) then
+	If exists (select 1 from "ORDER" where state <> 'Placed' and Order_id = old.Order_id) then
 	Raise exception 'There is no delivery note for order % while it is %.', old.Order_id, (select state from "ORDER" where Order_id = old.Order_id);
 	end if;
 	return old;
@@ -70,5 +70,5 @@ execute procedure TRP_OTHER_THAN_PLACED_HAS_DELIVERY_DELIVERY();
 ALTER TABLE "ORDER" DROP CONSTRAINT IF EXISTS CHCK_PAID_HAS_INVOICE;
 
 ALTER TABLE "ORDER" ADD CONSTRAINT CHCK_PAID_HAS_INVOICE
-CHECK((state = 'paid' AND invoice_id IS NOT NULL) OR (state != 'paid' AND invoice_id IS NULL));
+CHECK((state = 'Paid' AND invoice_id IS NOT NULL) OR (state != 'Paid' AND invoice_id IS NULL));
 /*=============*/
