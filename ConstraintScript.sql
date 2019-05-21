@@ -10,6 +10,13 @@
 |	Gemaakt op:	5/7/2019 13:42				|
 \*-------------------------------------------------------------*/
 
+/*===== CONSTRAINT 3 PaidHasInvoice =====*/
+ALTER TABLE "ORDER" DROP CONSTRAINT IF EXISTS CHCK_PAID_HAS_INVOICE;
+
+ALTER TABLE "ORDER" ADD CONSTRAINT CHCK_PAID_HAS_INVOICE
+CHECK((state = 'paid' AND invoice_id IS NOT NULL) OR (state != 'paid' AND invoice_id IS NULL));
+/*=============*/
+
 /* Constraint 2 OtherThanPlacedHasDelivery
 Colom ORDER(State) An order with state that is not ‘placed’, must have a delivery note.
 =================================================
