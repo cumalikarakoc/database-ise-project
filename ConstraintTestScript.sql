@@ -60,3 +60,71 @@ INSERT INTO "ORDER" VALUES(1, 'jumbo', 'placed', '2019-12-12', 1);
 UPDATE "ORDER" SET state = 'awaiting payment', invoice_id = '1';
 ROLLBACK;
 /* ============= */
+
+
+
+/*===== CONSTRAINT 16 LineItemPrice =====*/
+/* Tests should pass upon inserting a line_item or updating an line_item that is 0 or higher.*/
+
+/* Test should pass as the price is higher than 0*/
+-- insert
+BEGIN TRANSACTION;
+INSERT INTO invoice VALUES('p1');
+INSERT INTO supplier VALUES('jumbo', '123123', 'ijssellaan');
+INSERT INTO "ORDER" VALUES('o123', 'jumbo', 'paid', '2019-12-12', 'p1');
+INSERT INTO food_kind VALUES('banaan');
+INSERT INTO line_item VALUES('o123', 'banaan', 1, 10);
+ROLLBACK;
+
+-- update
+BEGIN TRANSACTION;
+INSERT INTO invoice VALUES('p1');
+INSERT INTO supplier VALUES('jumbo', '123123', 'ijssellaan');
+INSERT INTO "ORDER" VALUES('o123', 'jumbo', 'paid', '2019-12-12', 'p1');
+INSERT INTO food_kind VALUES('banaan');
+INSERT INTO line_item VALUES('o123', 'banaan', 1, 10);
+UPDATE line_item SET price = 20;
+ROLLBACK;
+
+
+/* Test should pass as the price is equal to 0*/
+-- insert
+BEGIN TRANSACTION;
+INSERT INTO invoice VALUES('p1');
+INSERT INTO supplier VALUES('jumbo', '123123', 'ijssellaan');
+INSERT INTO "ORDER" VALUES('o123', 'jumbo', 'paid', '2019-12-12', 'p1');
+INSERT INTO food_kind VALUES('banaan');
+INSERT INTO line_item VALUES('o123', 'banaan', 0, 10);
+ROLLBACK;
+
+-- update
+BEGIN TRANSACTION;
+INSERT INTO invoice VALUES('p1');
+INSERT INTO supplier VALUES('jumbo', '123123', 'ijssellaan');
+INSERT INTO "ORDER" VALUES('o123', 'jumbo', 'paid', '2019-12-12', 'p1');
+INSERT INTO food_kind VALUES('banaan');
+INSERT INTO line_item VALUES('o123', 'banaan', 1, 10);
+UPDATE line_item SET price = '0';
+ROLLBACK;
+
+
+ /*Test should fail as the price is lower than 0*/
+-- insert
+BEGIN TRANSACTION;
+INSERT INTO invoice VALUES('p1');
+INSERT INTO supplier VALUES('jumbo', '123123', 'ijssellaan');
+INSERT INTO "ORDER" VALUES('o123', 'jumbo', 'paid', '2019-12-12', 'p1');
+INSERT INTO food_kind VALUES('banaan');
+INSERT INTO line_item VALUES('o123', 'banaan', -1, 10);
+ROLLBACK;
+
+-- update
+BEGIN TRANSACTION;
+INSERT INTO invoice VALUES('p1');
+INSERT INTO supplier VALUES('jumbo', '123123', 'ijssellaan');
+INSERT INTO "ORDER" VALUES('o123', 'jumbo', 'paid', '2019-12-12', 'p1');
+INSERT INTO food_kind VALUES('banaan');
+INSERT INTO line_item VALUES('o123', 'banaan', 1, 10);
+UPDATE line_item SET price = -1;
+ROLLBACK;
+/* ============= */

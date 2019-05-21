@@ -106,7 +106,7 @@ drop table if exists FOOD_KIND cascade;
 
 drop index if exists INVOICE_PK;
 
-drop table if exists INVOICE;
+drop table if exists INVOICE cascade;
 
 drop index if exists KEEPER_PK;
 
