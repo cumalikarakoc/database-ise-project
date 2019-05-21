@@ -15,32 +15,43 @@
 
 --insert
 begin transaction;
-insert into "ORDER" values ('Order1', 'supplier', 'Paid', current_date, null);
-insert into "ORDER" values ('Order2', 'Supplier2', 'Awaiting payment', current_date, null);
-insert into "ORDER" values ('Order3', 'Supplier2', 'Not complete', current_date, null);
-insert into "ORDER" values ('Order4', 'Supplier4', 'Placed', current_date, null);
-rollback transaction
+alter table "ORDER"
+drop constraint fk_order_supplier;
 
+insert into "ORDER" values ('Order1', 'supplier', 'Paid', current_date, null),
+('Order2', 'Supplier2', 'Awaiting payment', current_date, null),
+('Order3', 'Supplier2', 'Not complete', current_date, null),
+('Order4', 'Supplier4', 'Placed', current_date, null);
+rollback transaction
 
 --update
 begin transaction;
+alter table "ORDER"
+drop constraint fk_order_supplier;
+
 insert into "ORDER" values ('Order1', 'supplier', 'Awaiting payment', current_date, null);
 
 update "ORDER"
 set state = 'Paid'
-where Order_id = 'Order1';
 rollback transaction
 
 
 /*The following inserts and updates will fail because the state is not allowed*/
 --insert
 begin transaction;
-insert into "ORDER" values ('Order1', 'Supplier', 'Delivered', current_date, null);
-insert into "ORDER" values ('Order2', 'Supplier2', 'Canceled', current_date, null);
+alter table "ORDER"
+drop constraint fk_order_supplier;
+
+insert into "ORDER" values ('Order1', 'Supplier', 'Placed', current_date, null),
+('Order2', 'Supplier2', 'Canceled', current_date, null);
+
 rollback transaction
 
 --update
 begin transaction;
+alter table "ORDER"
+drop constraint fk_order_supplier;
+
 insert into "ORDER" values ('Order1', 'Supplier', 'Placed', current_date, null);
 
 update "ORDER"
