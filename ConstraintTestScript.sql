@@ -407,7 +407,7 @@ begin transaction;
 alter table EXCHANGE drop constraint if exists fk_animal_exchange;
 
 insert into EXCHANGE values('an-1', '2019-01-01', '2018-11-25', 'comments', 'to', 'place');
-rollback
+rollback;
 
 --update
 begin transaction;
