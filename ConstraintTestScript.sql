@@ -407,7 +407,7 @@ INSERT INTO food_kind VALUES('banaan');
 INSERT INTO line_item VALUES('o123', 'banaan', 10, 10);
 UPDATE line_item SET weight = -10;
 ROLLBACK;
-/*================*/
+
 
 /*===== CONSTRAINT 16 LineItemPrice =====*/
 /* Tests should pass upon inserting a line_item or updating an line_item where the price is 0 or higher.*/
@@ -479,7 +479,6 @@ INSERT INTO food_kind VALUES('banaan');
 INSERT INTO line_item VALUES('o123', 'banaan', 1, 10);
 UPDATE line_item SET price = -1;
 ROLLBACK;
-/*================*/
 
 /* ====== CONSTRAINT 21 SpeciesWeight ======*/
 /* Tests should pass upon insert a species gender or updating it */
