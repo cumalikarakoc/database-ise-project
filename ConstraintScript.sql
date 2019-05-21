@@ -72,6 +72,12 @@ ALTER TABLE "ORDER" DROP CONSTRAINT IF EXISTS CHCK_PAID_HAS_INVOICE;
 ALTER TABLE "ORDER" ADD CONSTRAINT CHCK_PAID_HAS_INVOICE
 CHECK((state = 'Paid' AND invoice_id IS NOT NULL) OR (state != 'Paid' AND invoice_id IS NULL));
 
+/*===== Constraint 5 AnimalGender =====*/
+/* column ANIMAL(Gender)can be male, female or other.*/
+alter table animal drop constraint if exists CHK_ANIMAL_GENDER;
+
+alter table animal add constraint CHK_ANIMAL_GENDER
+check(gender_s in ('male','female','other'));
 /*===== CONSTRAINT 16 LineItemPrice =====*/
 /* column LINE_ITEM(price) must be equal to 0 or higher*/
 ALTER TABLE line_item DROP CONSTRAINT IF EXISTS CHK_LINE_ITEM_PRICE;
