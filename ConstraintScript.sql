@@ -86,7 +86,7 @@ alter table exchange add constraint CHK_LOAN_TYPE
 CHECK(loan_type in ('to','from'));
 
 /*===== Constraint 10 SpottedAfterRelease ===== */
---Een dier kan niet gezien zijn in het wild voor zijn eerste vrijlating.
+-- An animal cannot have been seen in the wild before its first release. 
 -- SPOTTED
 create or replace function TRP_SPOTTED_AFTER_RELEASE() returns trigger as $$
    begin

@@ -367,8 +367,9 @@ alter table reintroduction drop constraint if exists fk_animal_reintroduction;
 alter table spotted drop constraint if exists fk_animal_spotted;
 
 insert into reintroduction values('an-1', '2018-12-12', 'location', null);
-insert into reintroduction values('an-1', '2019-11-05', 'location', null)
+insert into reintroduction values('an-1', '2019-11-05', 'location', null);
 insert into spotted values('an-1', '2018-10-11');
+rollback
 
 --update
 begin transaction;
@@ -376,7 +377,7 @@ alter table reintroduction drop constraint if exists fk_animal_reintroduction;
 alter table spotted drop constraint if exists fk_animal_spotted;
 
 insert into reintroduction values('an-1', '2018-10-05', 'location', null);
-insert into reintroduction values('an-1', '2019-11-05', 'location', null)
+insert into reintroduction values('an-1', '2019-11-05', 'location', null);
 insert into spotted values('an-1', '2018-10-05');
 
 update spotted set spot_date = '2018-04-04' where animal_id = 'an-1'; 
