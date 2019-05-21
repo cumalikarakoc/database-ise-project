@@ -383,6 +383,41 @@ update exchange
 set loan_type = 'tow';
 rollback;
 
+/*===== Constraint 11 AnimalReturned =====*/
+/* Tests should pass when return_date is on the same date as exchange_date or later.*/
+-- insert
+begin transaction;
+alter table EXCHANGE drop constraint if exists fk_animal_exchange;
+
+insert into EXCHANGE values('an-1', '2019-01-01', '2019-02-02', 'comments', 'to', 'place');
+rollback;
+
+--update
+begin transaction;
+alter table EXCHANGE drop constraint if exists fk_animal_exchange;
+
+insert into EXCHANGE values('an-1', '2019-01-01', '2019-02-02', 'comments', 'to', 'place');
+
+update EXCHANGE set return_date = '2019-03-03' where animal_id = 'an-1';
+rollback;
+
+/* Tests should fail if return_date is earlier than the exchange_date.*/
+-- insert
+begin transaction;
+alter table EXCHANGE drop constraint if exists fk_animal_exchange;
+
+insert into EXCHANGE values('an-1', '2019-01-01', '2018-11-25', 'comments', 'to', 'place');
+rollback
+
+--update
+begin transaction;
+alter table EXCHANGE drop constraint if exists fk_animal_exchange;
+
+insert into EXCHANGE values('an-1', '2019-01-01', '2018-11-25', 'comments', 'to', 'place');
+
+update EXCHANGE set exchange_date = '2018-03-03' where animal_id = 'an-1';
+rollback;
+
 /*===== CONSTRAINT 15 LineItemWeight =====*/
 /* Tests should pass upon inserting a line_item or updating an line_item where the weight is higher than 0.*/
 
