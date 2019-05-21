@@ -1,4 +1,4 @@
-﻿/*-------------------------------------------------------------*\
+/*-------------------------------------------------------------*\
 |			Constraints Script			|
 |---------------------------------------------------------------|
 |	Gemaakt door: 	Cumali karakoç,				|
@@ -71,4 +71,17 @@ ALTER TABLE "ORDER" DROP CONSTRAINT IF EXISTS CHCK_PAID_HAS_INVOICE;
 
 ALTER TABLE "ORDER" ADD CONSTRAINT CHCK_PAID_HAS_INVOICE
 CHECK((state = 'Paid' AND invoice_id IS NOT NULL) OR (state != 'Paid' AND invoice_id IS NULL));
-/*=============*/
+
+/*===== CONSTRAINT 16 LineItemPrice =====*/
+/* column LINE_ITEM(price) must be equal to 0 or higher*/
+ALTER TABLE line_item DROP CONSTRAINT IF EXISTS CHK_LINE_ITEM_PRICE;
+ALTER TABLE line_item ADD CONSTRAINT CHK_LINE_ITEM_PRICE
+CHECK(price >= '0.00');
+
+/*===== CONSTRAINT 21 SpeciesWeight =====*/
+/* column SPECIES_GENDER(Weight) must be higher than 0 */
+ALTER TABLE "species_gender" DROP CONSTRAINT IF EXISTS CHK_AVERAGE_WEIGHT;
+
+ALTER TABLE "species_gender" ADD CONSTRAINT CHK_AVERAGE_WEIGHT
+CHECK (average_weight > 0);
+/*================*/
