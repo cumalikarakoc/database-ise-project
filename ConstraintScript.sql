@@ -17,7 +17,9 @@ ALTER TABLE "ORDER" ADD CONSTRAINT CHCK_PAID_HAS_INVOICE
 CHECK((state = 'paid' AND invoice_id IS NOT NULL) OR (state != 'paid' AND invoice_id IS NULL));
 
 /*===== CONSTRAINT 21 SpeciesWeight =====*/
+/* Kolom SPECIES_GENDER(Weight) moet groter aan 0 */
 ALTER TABLE "species_gender" DROP CONSTRAINT IF EXISTS CHK_AVERAGE_WEIGHT;
 
 ALTER TABLE "species_gender" ADD CONSTRAINT CHK_AVERAGE_WEIGHT 
 CHECK (average_weight > 0);
+/*================*/
