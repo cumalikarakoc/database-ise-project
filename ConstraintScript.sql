@@ -11,36 +11,37 @@
 \*-------------------------------------------------------------*/
 /*===== CONSTRAINT 10 ===== */
 --Een dier kan niet gezien zijn in het wild voor zijn eerste vrijlating.
--- table SPOTTED
-CREATE OR REPLACE FUNCTION TRP_SPOTTED_AFTER_RELEASE() RETURNS TRIGGER AS $$
-   BEGIN
-   IF(NEW.spot_date < (SELECT reintroduction_date FROM REINTRODUCTION WHERE animal_id = NEW.animal_id ORDER BY reintroduction_date ASC LIMIT 1)) THEN
-      RAISE EXCEPTION 'Spot_date must be after the date when the animal is reintroduced to wild.';
-	  END IF;
-      RETURN NEW;
-   END;
-$$ LANGUAGE plpgsql;
+-- SPOTTED
+create or replace function TRP_SPOTTED_AFTER_RELEASE() returns trigger as $$
+   begin
+   if(new.spot_date < (select reintroduction_date from reintroduction where animal_id = new.animal_id order by reintroduction_date asc limit 1)) then
+      raise exception 'Spot_date must be after the date when the animal is reintroduced to wild.';
+	  end if;
+      return new;
+   end;
+$$ language plpgsql;
 
-CREATE TRIGGER TR_SPOTTED_AFTER_RELEASE AFTER INSERT OR UPDATE ON SPOTTED
-FOR EACH ROW 
-EXECUTE PROCEDURE TRP_SPOTTED_AFTER_RELEASE();
+create trigger TR_SPOTTED_AFTER_RELEASE after insert or update on spotted
+for each row 
+execute procedure TRP_SPOTTED_AFTER_RELEASE();
 
---table REINTRODUCTION
-CREATE OR REPLACE FUNCTION TRP_REINTRODUCTION_BEFORE_SPOTTED() RETURNS TRIGGER AS $$
-   BEGIN
-   IF((TG_OP = 'INSERT' OR TG_OP = 'UPDATE') 
-	  AND NEW.reintroduction_date > (SELECT MAX(spot_date) FROM SPOTTED WHERE animal_id = NEW.animal_id)) THEN
-      RAISE EXCEPTION 'Reintroduction date must be before the date when the animal is spotted.';
-	  RETURN NEW;
-	ELSIF(TG_OP = 'DELETE' AND COALESCE((SELECT MIN(spot_date) FROM SPOTTED WHERE animal_id = OLD.animal_id), CURRENT_DATE) < 
-		  						COALESCE((SELECT MIN(reintroduction_date) FROM REINTRODUCTION WHERE animal_id = OLD.animal_id), CURRENT_DATE)) THEN
-		RAISE EXCEPTION 'The reintoroduction date % of animal % may not be deleted because this animal is spotted after the reintroduction. Remove the associated spot_date first please.', OLD.reintroduction_date, OLD.animal_id;
-		END IF;
-      RETURN OLD;
-   END;
-$$ LANGUAGE plpgsql;
+-- REINTRODUCTION
+create or replace function TRP_REINTRODUCTION_BEFORE_SPOTTED() returns trigger as $$
+   begin
+   if((tg_op = 'UPDATE' or tg_op= 'DELETE') and
+	  coalesce((select min(spot_date) from spotted where animal_id = old.animal_id), current_date) < 
+		  	   coalesce((select min(reintroduction_date) from reintroduction where animal_id = old.animal_id), current_date)) then
+   if(tg_op = 'UPDATE') then
+      raise exception 'Reintroduction date must be before the date when the animal is spotted.';
+	elsif(tg_op = 'DELETE') then
+		raise exception 'The reintoroduction date % of animal % may not be deleted because this animal is spotted after this reintroduction. Remove the associated spot_date first please.', old.reintroduction_date, old.animal_id;
+		end if;
+	end if; 
+	return old;
+   end;
+$$ language plpgsql
 
-CREATE TRIGGER TR_REINTRODUCTION_BEFORE_SPOTTED AFTER INSERT OR UPDATE OR DELETE ON REINTRODUCTION
-FOR EACH ROW 
-EXECUTE PROCEDURE TRP_REINTRODUCTION_BEFORE_SPOTTED();
+create trigger TR_REINTRODUCTION_BEFORE_SPOTTED after update or delete on reintroduction
+for each row 
+execute procedure TRP_REINTRODUCTION_BEFORE_SPOTTED();
 /*==============*/
