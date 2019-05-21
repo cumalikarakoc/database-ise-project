@@ -66,8 +66,8 @@ on delivery
 for each row
 execute procedure TRP_OTHER_THAN_PLACED_HAS_DELIVERY_DELIVERY();
 
-/*===== CONSTRAINT 3 PaidHasInvoice =====*/
-ALTER TABLE "ORDER" DROP CONSTRAINT IF EXISTS CHCK_PAID_HAS_INVOICE;
+/*===== Constraint 3 PaidHasInvoice =====*/
+ALTER TABLE "ORDER" DROP CONSTRAINT IF EXISTS CHK_PAID_HAS_INVOICE;
 
 ALTER TABLE "ORDER" ADD CONSTRAINT CHCK_PAID_HAS_INVOICE
 CHECK((state = 'Paid' AND invoice_id IS NOT NULL) OR (state != 'Paid' AND invoice_id IS NULL));
@@ -78,6 +78,14 @@ alter table animal drop constraint if exists CHK_ANIMAL_GENDER;
 
 alter table animal add constraint CHK_ANIMAL_GENDER
 check(gender_s in ('male','female','other'));
+
+/*===== Constraint 7 LoanType =====*/
+/* Column EXCHANGE(Loan_type) loan type can only be ‘to’ or ‘from’.*/
+Alter table exchange drop constraint if exists CHK_LOAN_TYPE;
+
+alter table exchange add constraint CHK_LOAN_TYPE
+CHECK(loan_type in ('to','from'));
+
 /*===== CONSTRAINT 16 LineItemPrice =====*/
 /* column LINE_ITEM(price) must be equal to 0 or higher*/
 ALTER TABLE line_item DROP CONSTRAINT IF EXISTS CHK_LINE_ITEM_PRICE;
@@ -90,4 +98,4 @@ ALTER TABLE "species_gender" DROP CONSTRAINT IF EXISTS CHK_AVERAGE_WEIGHT;
 
 ALTER TABLE "species_gender" ADD CONSTRAINT CHK_AVERAGE_WEIGHT
 CHECK (average_weight > 0);
-/*================*/
+/*=============*/

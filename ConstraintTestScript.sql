@@ -272,6 +272,70 @@ update animal
 set gender_s = 'something';
 rollback;
 
+/*===== Constraint 7 LoanType =====*/
+/* Tests should pass when loan type 'to' is inserted or updated */
+-- insert
+begin transaction;
+-- drop fk constraints
+alter table exchange drop constraint fk_animal_exchange;
+-- insert
+insert into exchange values
+(1,'10-10-18','12-12-18',null,'to','kuala lumper');
+rollback;
+ 
+-- update
+begin transaction;
+-- drop fk constraints
+alter table exchange drop constraint fk_animal_exchange;
+-- insert
+insert into exchange values
+(1,'10-10-18','12-12-18',null,'from','kuala lumper');
+update exchange
+set loan_type = 'to';
+rollback; 
+
+/* Tests should pass when loan type 'from' is inserted or updated */
+-- insert
+begin transaction;
+-- drop fk constraints
+alter table exchange drop constraint fk_animal_exchange;
+-- insert
+insert into exchange values
+(1,'10-10-18','12-12-18',null,'from','kuala lumper');
+rollback;
+ 
+-- update
+begin transaction;
+-- drop fk constraints
+alter table exchange drop constraint fk_animal_exchange;
+-- insert
+insert into exchange values
+(1,'10-10-18','12-12-18',null,'to','kuala lumper');
+update exchange
+set loan_type = 'from';
+rollback; 
+
+/* Tests should fail when loan type is not 'to' or 'from' inserted or updated */
+-- insert
+begin transaction;
+-- drop fk constraints
+alter table exchange drop constraint fk_animal_exchange;
+-- insert
+insert into exchange values
+(1,'10-10-18','12-12-18',null,'tow','kuala lumper');
+rollback;
+ 
+-- update
+begin transaction;
+-- drop fk constraints
+alter table exchange drop constraint fk_animal_exchange;
+-- insert
+insert into exchange values
+(1,'10-10-18','12-12-18',null,'from','kuala lumper');
+update exchange
+set loan_type = 'tow';
+rollback; 
+
 /*===== CONSTRAINT 16 LineItemPrice =====*/
 /* Tests should pass upon inserting a line_item or updating an line_item that is 0 or higher.*/
 
