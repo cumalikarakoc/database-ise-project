@@ -1,4 +1,4 @@
-/*-------------------------------------------------------------*\
+﻿/*-------------------------------------------------------------*\
 |			Constraint Test Script			|
 |---------------------------------------------------------------|
 |	Gemaakt door: 	Cumali karakoç,				|
@@ -186,6 +186,7 @@ INSERT INTO "ORDER" VALUES(1, 'jumbo', 'Placed', '2019-12-12', 1);
 UPDATE "ORDER" SET state = 'Awaiting payment', invoice_id = '1';
 ROLLBACK;
 
+
 /*===== Constraint 5 AnimalGender =====*/
 /* Test should pass when inserting or updating animal gender to 'male' */
 -- insert
@@ -282,7 +283,7 @@ alter table exchange drop constraint fk_animal_exchange;
 insert into exchange values
 (1,'10-10-18','12-12-18',null,'to','kuala lumper');
 rollback;
- 
+
 -- update
 begin transaction;
 -- drop fk constraints
@@ -292,7 +293,7 @@ insert into exchange values
 (1,'10-10-18','12-12-18',null,'from','kuala lumper');
 update exchange
 set loan_type = 'to';
-rollback; 
+rollback;
 
 /* Tests should pass when loan type 'from' is inserted or updated */
 -- insert
@@ -303,7 +304,7 @@ alter table exchange drop constraint fk_animal_exchange;
 insert into exchange values
 (1,'10-10-18','12-12-18',null,'from','kuala lumper');
 rollback;
- 
+
 -- update
 begin transaction;
 -- drop fk constraints
@@ -313,7 +314,7 @@ insert into exchange values
 (1,'10-10-18','12-12-18',null,'to','kuala lumper');
 update exchange
 set loan_type = 'from';
-rollback; 
+rollback;
 
 /* Tests should fail when loan type is not 'to' or 'from' inserted or updated */
 -- insert
@@ -324,7 +325,7 @@ alter table exchange drop constraint fk_animal_exchange;
 insert into exchange values
 (1,'10-10-18','12-12-18',null,'tow','kuala lumper');
 rollback;
- 
+
 -- update
 begin transaction;
 -- drop fk constraints
@@ -334,26 +335,100 @@ insert into exchange values
 (1,'10-10-18','12-12-18',null,'from','kuala lumper');
 update exchange
 set loan_type = 'tow';
-rollback; 
+rollback;
+
+/*===== CONSTRAINT 15 LineItemWeight =====*/
+/* Tests should pass upon inserting a line_item or updating an line_item where the weight is higher than 0.*/
+
+/* Test should pass as the weight is higher than 0*/
+-- insert
+BEGIN TRANSACTION;
+drop trigger if exists TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER on "ORDER";
+INSERT INTO invoice VALUES('p1');
+INSERT INTO supplier VALUES('jumbo', '123123', 'ijssellaan');
+INSERT INTO "ORDER" VALUES('o123', 'jumbo', 'Paid', '2019-12-12', 'p1');
+INSERT INTO food_kind VALUES('banaan');
+INSERT INTO line_item VALUES('o123', 'banaan', 10, 10);
+ROLLBACK;
+
+-- update
+BEGIN TRANSACTION;
+drop trigger if exists TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER on "ORDER";
+INSERT INTO invoice VALUES('p1');
+INSERT INTO supplier VALUES('jumbo', '123123', 'ijssellaan');
+INSERT INTO "ORDER" VALUES('o123', 'jumbo', 'Paid', '2019-12-12', 'p1');
+INSERT INTO food_kind VALUES('banaan');
+INSERT INTO line_item VALUES('o123', 'banaan', 10, 15);
+UPDATE line_item SET weight = 10;
+ROLLBACK;
+
+
+/* Test should fail as the weight is equal to 0*/
+-- insert
+BEGIN TRANSACTION;
+drop trigger if exists TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER on "ORDER";
+INSERT INTO invoice VALUES('p1');
+INSERT INTO supplier VALUES('jumbo', '123123', 'ijssellaan');
+INSERT INTO "ORDER" VALUES('o123', 'jumbo', 'Paid', '2019-12-12', 'p1');
+INSERT INTO food_kind VALUES('banaan');
+INSERT INTO line_item VALUES('o123', 'banaan', 10, 0);
+ROLLBACK;
+
+-- update
+BEGIN TRANSACTION;
+drop trigger if exists TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER on "ORDER";
+INSERT INTO invoice VALUES('p1');
+INSERT INTO supplier VALUES('jumbo', '123123', 'ijssellaan');
+INSERT INTO "ORDER" VALUES('o123', 'jumbo', 'Paid', '2019-12-12', 'p1');
+INSERT INTO food_kind VALUES('banaan');
+INSERT INTO line_item VALUES('o123', 'banaan', 10, 10);
+UPDATE line_item SET weight = 0;
+ROLLBACK;
+
+
+/*Test should fail as the weight is lower than 0*/
+-- insert
+BEGIN TRANSACTION;
+drop trigger if exists TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER on "ORDER";
+INSERT INTO invoice VALUES('p1');
+INSERT INTO supplier VALUES('jumbo', '123123', 'ijssellaan');
+INSERT INTO "ORDER" VALUES('o123', 'jumbo', 'Paid', '2019-12-12', 'p1');
+INSERT INTO food_kind VALUES('banaan');
+INSERT INTO line_item VALUES('o123', 'banaan', 10, -10);
+ROLLBACK;
+
+-- update
+BEGIN TRANSACTION;
+drop trigger if exists TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER on "ORDER";
+INSERT INTO invoice VALUES('p1');
+INSERT INTO supplier VALUES('jumbo', '123123', 'ijssellaan');
+INSERT INTO "ORDER" VALUES('o123', 'jumbo', 'Paid', '2019-12-12', 'p1');
+INSERT INTO food_kind VALUES('banaan');
+INSERT INTO line_item VALUES('o123', 'banaan', 10, 10);
+UPDATE line_item SET weight = -10;
+ROLLBACK;
+
 
 /*===== CONSTRAINT 16 LineItemPrice =====*/
-/* Tests should pass upon inserting a line_item or updating an line_item that is 0 or higher.*/
+/* Tests should pass upon inserting a line_item or updating an line_item where the price is 0 or higher.*/
 
 /* Test should pass as the price is higher than 0*/
 -- insert
 BEGIN TRANSACTION;
+drop trigger if exists TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER on "ORDER";
 INSERT INTO invoice VALUES('p1');
 INSERT INTO supplier VALUES('jumbo', '123123', 'ijssellaan');
-INSERT INTO "ORDER" VALUES('o123', 'jumbo', 'paid', '2019-12-12', 'p1');
+INSERT INTO "ORDER" VALUES('o123', 'jumbo', 'Paid', '2019-12-12', 'p1');
 INSERT INTO food_kind VALUES('banaan');
 INSERT INTO line_item VALUES('o123', 'banaan', 1, 10);
 ROLLBACK;
 
 -- update
 BEGIN TRANSACTION;
+drop trigger if exists TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER on "ORDER";
 INSERT INTO invoice VALUES('p1');
 INSERT INTO supplier VALUES('jumbo', '123123', 'ijssellaan');
-INSERT INTO "ORDER" VALUES('o123', 'jumbo', 'paid', '2019-12-12', 'p1');
+INSERT INTO "ORDER" VALUES('o123', 'jumbo', 'Paid', '2019-12-12', 'p1');
 INSERT INTO food_kind VALUES('banaan');
 INSERT INTO line_item VALUES('o123', 'banaan', 1, 10);
 UPDATE line_item SET price = 20;
@@ -363,18 +438,20 @@ ROLLBACK;
 /* Test should pass as the price is equal to 0*/
 -- insert
 BEGIN TRANSACTION;
+drop trigger if exists TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER on "ORDER";
 INSERT INTO invoice VALUES('p1');
 INSERT INTO supplier VALUES('jumbo', '123123', 'ijssellaan');
-INSERT INTO "ORDER" VALUES('o123', 'jumbo', 'paid', '2019-12-12', 'p1');
+INSERT INTO "ORDER" VALUES('o123', 'jumbo', 'Paid', '2019-12-12', 'p1');
 INSERT INTO food_kind VALUES('banaan');
 INSERT INTO line_item VALUES('o123', 'banaan', 0, 10);
 ROLLBACK;
 
 -- update
 BEGIN TRANSACTION;
+drop trigger if exists TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER on "ORDER";
 INSERT INTO invoice VALUES('p1');
 INSERT INTO supplier VALUES('jumbo', '123123', 'ijssellaan');
-INSERT INTO "ORDER" VALUES('o123', 'jumbo', 'paid', '2019-12-12', 'p1');
+INSERT INTO "ORDER" VALUES('o123', 'jumbo', 'Paid', '2019-12-12', 'p1');
 INSERT INTO food_kind VALUES('banaan');
 INSERT INTO line_item VALUES('o123', 'banaan', 1, 10);
 UPDATE line_item SET price = 0;
@@ -384,18 +461,20 @@ ROLLBACK;
  /*Test should fail as the price is lower than 0*/
 -- insert
 BEGIN TRANSACTION;
+drop trigger if exists TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER on "ORDER";
 INSERT INTO invoice VALUES('p1');
 INSERT INTO supplier VALUES('jumbo', '123123', 'ijssellaan');
-INSERT INTO "ORDER" VALUES('o123', 'jumbo', 'paid', '2019-12-12', 'p1');
+INSERT INTO "ORDER" VALUES('o123', 'jumbo', 'Paid', '2019-12-12', 'p1');
 INSERT INTO food_kind VALUES('banaan');
 INSERT INTO line_item VALUES('o123', 'banaan', -1, 10);
 ROLLBACK;
 
 -- update
 BEGIN TRANSACTION;
+drop trigger if exists TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER on "ORDER";
 INSERT INTO invoice VALUES('p1');
 INSERT INTO supplier VALUES('jumbo', '123123', 'ijssellaan');
-INSERT INTO "ORDER" VALUES('o123', 'jumbo', 'paid', '2019-12-12', 'p1');
+INSERT INTO "ORDER" VALUES('o123', 'jumbo', 'Paid', '2019-12-12', 'p1');
 INSERT INTO food_kind VALUES('banaan');
 INSERT INTO line_item VALUES('o123', 'banaan', 1, 10);
 UPDATE line_item SET price = -1;

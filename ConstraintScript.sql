@@ -1,4 +1,4 @@
-/*-------------------------------------------------------------*\
+﻿/*-------------------------------------------------------------*\
 |			Constraints Script			|
 |---------------------------------------------------------------|
 |	Gemaakt door: 	Cumali karakoç,				|
@@ -85,6 +85,12 @@ Alter table exchange drop constraint if exists CHK_LOAN_TYPE;
 
 alter table exchange add constraint CHK_LOAN_TYPE
 CHECK(loan_type in ('to','from'));
+
+/*===== CONSTRAINT 15 LineItemWeight =====*/
+/* column LINE_ITEM(price) must be higher than 0*/
+ALTER TABLE line_item DROP CONSTRAINT IF EXISTS CHK_LINE_ITEM_WEIGHT;
+ALTER TABLE line_item ADD CONSTRAINT CHK_LINE_ITEM_WEIGHT
+CHECK(weight > 0);
 
 /*===== CONSTRAINT 16 LineItemPrice =====*/
 /* column LINE_ITEM(price) must be equal to 0 or higher*/
