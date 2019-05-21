@@ -338,41 +338,43 @@ set loan_type = 'tow';
 rollback;
 
 /*===== Constraint 9 EnclosureEndDate =====*/
-/* Tests should pass when end_date is after the date of stay of the animal.*/
+/* Tests should pass when end_date is on the same date as the date of stay of the animal or later.*/
 -- insert
 begin transaction;
-alter table animal_enclosure drop constraint if exists fk_animal_in_enclosure;
-alter table animal_enclosure drop constraint if exists fk_enclosure_has_animal;
+alter table ANIMAL_ENCLOSURE drop constraint if exists fk_animal_in_enclosure;
+alter table ANIMAL_ENCLOSURE drop constraint if exists fk_enclosure_has_animal;
 
-insert into animal_enclosure values('an-1', '2019-01-01', 'area', 1, '2019-02-02');
-rollback
+insert into ANIMAL_ENCLOSURE values('an-1', '2019-01-01', 'area', 1, '2019-02-02');
+rollback;
 
 --update
 begin transaction;
-alter table animal_enclosure drop constraint if exists fk_animal_in_enclosure;
-alter table animal_enclosure drop constraint if exists fk_enclosure_has_animal;
+alter table ANIMAL_ENCLOSURE drop constraint if exists fk_animal_in_enclosure;
+alter table ANIMAL_ENCLOSURE drop constraint if exists fk_enclosure_has_animal;
 
-insert into animal_enclosure values('an-1', '2019-01-01', 'area', 1, '2019-02-02');
-update animal_enclosure set since = '2019-01-20';
-rollback
+insert into ANIMAL_ENCLOSURE values('an-1', '2019-01-01', 'area', 1, '2019-02-02');
 
-/* Tests should fail when end_date is before the date of stay of the animal.*/
+update ANIMAL_ENCLOSURE set since = '2019-01-20';
+rollback;
+
+/* Tests should fail when end_date is earlier than the date of stay of the animal.*/
 -- insert
 begin transaction;
-alter table animal_enclosure drop constraint if exists fk_animal_in_enclosure;
-alter table animal_enclosure drop constraint if exists fk_enclosure_has_animal;
+alter table ANIMAL_ENCLOSURE drop constraint if exists fk_animal_in_enclosure;
+alter table ANIMAL_ENCLOSURE drop constraint if exists fk_enclosure_has_animal;
 
-insert into animal_enclosure values('an-1', '2019-01-01', 'area', 1, '2018-02-02');
-rollback
+insert into ANIMAL_ENCLOSURE values('an-1', '2019-01-01', 'area', 1, '2018-02-02');
+rollback;
 
 --update
 begin transaction;
-alter table animal_enclosure drop constraint if exists fk_animal_in_enclosure;
-alter table animal_enclosure drop constraint if exists fk_enclosure_has_animal;
+alter table ANIMAL_ENCLOSURE drop constraint if exists fk_animal_in_enclosure;
+alter table ANIMAL_ENCLOSURE drop constraint if exists fk_enclosure_has_animal;
 
-insert into animal_enclosure values('an-1', '2019-01-01', 'area', 1, '2019-02-02');
-update animal_enclosure set since = '2019-03-05';
-rollback
+insert into ANIMAL_ENCLOSURE values('an-1', '2019-01-01', 'area', 1, '2019-02-02');
+
+update ANIMAL_ENCLOSURE set since = '2019-03-05';
+rollback;
 
 /*===== CONSTRAINT 15 LineItemWeight =====*/
 /* Tests should pass upon inserting a line_item or updating an line_item where the weight is higher than 0.*/
