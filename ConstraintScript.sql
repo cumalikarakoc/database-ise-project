@@ -86,6 +86,13 @@ Alter table exchange drop constraint if exists CHK_LOAN_TYPE;
 alter table exchange add constraint CHK_LOAN_TYPE
 CHECK(loan_type in ('to','from'));
 
+/*===== Constraint 9 EnclosureEndDate =====*/
+/* Columns ANIMAL_ENCLOSURE(Since, End_date)  The end date may not be before the date when the animal is moved to the enclosure.*/
+alter table ANIMAL_ENCLOSURE drop constraint if exists CHK_ENCLOSURE_DATE;
+
+alter table ANIMAL_ENCLOSURE add constraint CHK_ENCLOSURE_DATE
+check(end_date >= since);
+
 /*===== CONSTRAINT 15 LineItemWeight =====*/
 /* column LINE_ITEM(price) must be higher than 0*/
 ALTER TABLE line_item DROP CONSTRAINT IF EXISTS CHK_LINE_ITEM_WEIGHT;
