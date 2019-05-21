@@ -104,7 +104,7 @@ INSERT INTO supplier VALUES('jumbo', '123123', 'ijssellaan');
 INSERT INTO "ORDER" VALUES('o123', 'jumbo', 'paid', '2019-12-12', 'p1');
 INSERT INTO food_kind VALUES('banaan');
 INSERT INTO line_item VALUES('o123', 'banaan', 1, 10);
-UPDATE line_item SET price = '0';
+UPDATE line_item SET price = 0;
 ROLLBACK;
 
 
