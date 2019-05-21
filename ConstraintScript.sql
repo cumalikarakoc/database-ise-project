@@ -16,6 +16,28 @@ ALTER TABLE "ORDER" DROP CONSTRAINT IF EXISTS CHCK_PAID_HAS_INVOICE;
 ALTER TABLE "ORDER" ADD CONSTRAINT CHCK_PAID_HAS_INVOICE
 CHECK((state = 'paid' AND invoice_id IS NOT NULL) OR (state != 'paid' AND invoice_id IS NULL));
 
+/*===== CONSTRAINT 14 DiscrepancyDate =====*/
+/* column DISCREPANCY(Place_date) cannot be before ORDER(Order_date)*/
+
+CREATE OR REPLACE FUNCTION TR_DISCREPANCY_DATE_FUNC()
+  RETURNS trigger AS
+$$
+BEGIN
+	
+	IF(NEW.place_date < (Select order_date from "ORDER" where order_id = NEW.order_id)) then
+		RAISE EXCEPTION 'place date is before orderdate. please adjust the date'; 
+	end if;
+    RETURN NEW;
+END;
+$$
+LANGUAGE 'plpgsql';
+
+CREATE TRIGGER TR_DISCREPANCY_DATE 
+  AFTER INSERT
+  ON discrepancy
+  FOR EACH ROW
+  EXECUTE PROCEDURE TR_DISCREPANCY_DATE_FUNC();
+
 /*===== CONSTRAINT 21 SpeciesWeight =====*/
 /* column SPECIES_GENDER(Weight) must be higher than 0 */
 ALTER TABLE "species_gender" DROP CONSTRAINT IF EXISTS CHK_AVERAGE_WEIGHT;
