@@ -18,7 +18,7 @@ start transaction;
 insert into supplier values
 ('Jumbo','123456789','Ruitenberglaan 27 Arnhem');
 insert into "ORDER" values
-(1,'Jumbo','placed','12-12-18');
+(1,'Jumbo','Placed','12-12-18',null);
 insert into delivery values
 (1,1,'message',null);
 rollback;
@@ -28,13 +28,13 @@ start transaction;
 insert into supplier values
 ('Jumbo','123456789','Ruitenberglaan 27 Arnhem');
 insert into "ORDER" values
-(1,'Jumbo','placed','12-12-18');
+(1,'Jumbo','Placed','12-12-18',null);
 insert into delivery values
 (1,1,'message',null);
 update "ORDER"
-set state = 'other';
+set state = 'Awaiting payment';
 update "ORDER"
-set state = 'placed';
+set state = 'Placed';
 rollback;
 
 /* test should pass upon inserting an order with state other than placed or updating an order state to something other than placed
@@ -46,11 +46,11 @@ start transaction;
 insert into supplier values
 ('Jumbo','123456789','Ruitenberglaan 27 Arnhem');
 insert into "ORDER" values
-(1,'Jumbo','placed','12-12-18');
+(1,'Jumbo','Placed','12-12-18',null);
 insert into delivery values
 (1,1,'message',null);
 update "ORDER"
-set state = 'other';
+set state = 'Awaiting payment';
 rollback;
 
 /* test should fail upon inserting an order with state other than placed or updating an order state to something other than placed
@@ -60,7 +60,7 @@ start transaction;
 insert into supplier values
 ('Jumbo','123456789','Ruitenberglaan 27 Arnhem');
 insert into "ORDER" values
-(1,'Jumbo','other','12-12-18');
+(1,'Jumbo','Awaiting payment','12-12-18');
 rollback;
 
 --update
@@ -68,9 +68,9 @@ start transaction;
 insert into supplier values
 ('Jumbo','123456789','Ruitenberglaan 27 Arnhem');
 insert into "ORDER" values
-(1,'Jumbo','placed','12-12-18');
+(1,'Jumbo','Placed','12-12-18', null);
 update "ORDER"
-set state = 'other';
+set state = 'Awaiting payment';
 rollback;
 
 /* test should pass upon deleting a delivery or updating a delivery
@@ -80,7 +80,7 @@ start transaction;
 insert into supplier values
 ('Jumbo','123456789','Ruitenberglaan 27 Arnhem');
 insert into "ORDER" values
-(1,'Jumbo','placed','12-12-18');
+(1,'Jumbo','Placed','12-12-18');
 insert into delivery values
 (1,1,'message',null);
 delete from delivery;
@@ -91,8 +91,8 @@ start transaction;
 insert into supplier values
 ('Jumbo','123456789','Ruitenberglaan 27 Arnhem');
 insert into "ORDER" values
-(1,'Jumbo','placed','12-12-18'),
-(2,'Jumbo','placed','10-10-18');
+(1,'Jumbo','Placed','12-12-18'),
+(2,'Jumbo','Placed','10-10-18');
 insert into delivery values
 (1,1,'message',null);
 update delivery
@@ -100,17 +100,17 @@ set Order_id = 2;
 rollback;
 
 /* test should fail upon deleting a delivery or updating a delivery
-because the order it correpsonds to is something other than placed*/
+because the order it correpsonds to is something other than Placed*/
 -- delete
 start transaction;
 insert into supplier values
 ('Jumbo','123456789','Ruitenberglaan 27 Arnhem');
 insert into "ORDER" values
-(1,'Jumbo','placed','12-12-18');
+(1,'Jumbo','Placed','12-12-18');
 insert into delivery values
 (1,1,'message',null);
 update "ORDER"
-set State = 'other';
+set State = 'Awaiting payment';
 delete from delivery;
 rollback;
 
@@ -119,12 +119,12 @@ start transaction;
 insert into supplier values
 ('Jumbo','123456789','Ruitenberglaan 27 Arnhem');
 insert into "ORDER" values
-(1,'Jumbo','placed','12-12-18'),
-(2,'Jumbo','placed','10-10-18');
+(1,'Jumbo','Placed','12-12-18'),
+(2,'Jumbo','Placed','10-10-18');
 insert into delivery values
 (1,1,'message',null);
 update "ORDER"
-set State = 'other'
+set State = 'Awaiting payment'
 where Order_id = '1';
 update delivery
 set Order_id = 2;
@@ -138,15 +138,15 @@ rollback;
 BEGIN TRANSACTION;
 INSERT INTO invoice VALUES('1');
 INSERT INTO supplier VALUES('jumbo', '123213', 'ijssellaan');
-INSERT INTO "ORDER" VALUES(1, 'jumbo', 'paid', '2019-12-12', '1');
+INSERT INTO "ORDER" VALUES(1, 'jumbo', 'Paid', '2019-12-12', '1');
 ROLLBACK;
 
 -- update 
 BEGIN TRANSACTION;
 INSERT INTO invoice VALUES('1');
 INSERT INTO supplier VALUES('jumbo', '123213', 'ijssellaan');
-INSERT INTO "ORDER" VALUES(1, 'jumbo', 'paid', '2019-12-12', '1');
-UPDATE "ORDER" SET state = 'paid', invoice_id = '1';
+INSERT INTO "ORDER" VALUES(1, 'jumbo', 'Paid', '2019-12-12', '1');
+UPDATE "ORDER" SET state = 'Paid', invoice_id = '1';
 ROLLBACK;
 
 
@@ -155,14 +155,14 @@ ROLLBACK;
 BEGIN TRANSACTION;
 INSERT INTO invoice VALUES('1');
 INSERT INTO supplier VALUES('jumbo', '123213', 'ijssellaan');
-INSERT INTO "ORDER" VALUES(1, 'jumbo', 'paid', '2019-12-12', null);
+INSERT INTO "ORDER" VALUES(1, 'jumbo', 'Paid', '2019-12-12', null);
 ROLLBACK;
 
 --update 
 BEGIN TRANSACTION;
 INSERT INTO invoice VALUES('1');
 INSERT INTO supplier VALUES('jumbo', '123213', 'ijssellaan');
-INSERT INTO "ORDER" VALUES(1, 'jumbo', 'placed', '2019-12-12', null);
+INSERT INTO "ORDER" VALUES(1, 'jumbo', 'Placed', '2019-12-12', null);
 UPDATE "ORDER" SET invoice_id = '1';
 ROLLBACK;
 
@@ -171,14 +171,14 @@ ROLLBACK;
 BEGIN TRANSACTION;
 INSERT INTO invoice VALUES('1');
 INSERT INTO supplier VALUES('jumbo', '123213', 'ijssellaan');
-INSERT INTO "ORDER" VALUES(1, 'jumbo', 'placed', '2019-12-12', 1);
+INSERT INTO "ORDER" VALUES(1, 'jumbo', 'Placed', '2019-12-12', 1);
 ROLLBACK;
 
 --update 
 BEGIN TRANSACTION;
 INSERT INTO invoice VALUES('1');
 INSERT INTO supplier VALUES('jumbo', '123213', 'ijssellaan');
-INSERT INTO "ORDER" VALUES(1, 'jumbo', 'placed', '2019-12-12', 1);
-UPDATE "ORDER" SET state = 'awaiting payment', invoice_id = '1';
+INSERT INTO "ORDER" VALUES(1, 'jumbo', 'Placed', '2019-12-12', 1);
+UPDATE "ORDER" SET state = 'Awaiting payment', invoice_id = '1';
 ROLLBACK;
 /* ============= */
