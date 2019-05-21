@@ -66,6 +66,7 @@ for each row
 execute procedure TRP_OTHER_THAN_PLACED_HAS_DELIVERY_DELIVERY();
 
 /*===== Constraint 3 PaidHasInvoice =====*/
+/*A paid order should have an invoice otherwise not.*/
 ALTER TABLE "ORDER" DROP CONSTRAINT IF EXISTS CHK_PAID_HAS_INVOICE;
 
 ALTER TABLE "ORDER" ADD CONSTRAINT CHCK_PAID_HAS_INVOICE
@@ -86,7 +87,7 @@ alter table exchange add constraint CHK_LOAN_TYPE
 CHECK(loan_type in ('to','from'));
 
 /*===== Constraint 10 SpottedAfterRelease ===== */
--- An animal cannot have been seen in the wild before its first release. 
+/* An animal cannot have been seen in the wild before its first release. */
 -- SPOTTED
 create or replace function TRP_SPOTTED_AFTER_RELEASE() returns trigger as $$
    begin
@@ -115,7 +116,7 @@ create or replace function TRP_REINTRODUCTION_BEFORE_SPOTTED() returns trigger a
 	end if; 
 	return old;
    end;
-$$ language plpgsql
+$$ language plpgsql;
 
 create trigger TR_REINTRODUCTION_BEFORE_SPOTTED after update or delete on reintroduction
 for each row 
