@@ -128,3 +128,47 @@ INSERT INTO line_item VALUES('o123', 'banaan', 1, 10);
 UPDATE line_item SET price = -1;
 ROLLBACK;
 /* ============= */
+
+/* ====== CONSTRAINT 21 SpeciesWeight ======*/
+/* Tests should pass upon insert a species gender or updating it */
+--Insert
+BEGIN TRANSACTION;
+INSERT INTO species VALUES('Apes', 'Are apes', 'Apes', 'Apes', '');
+INSERT INTO species_gender VALUES('Apes', 'male', 9.5, 009.5);
+ROLLBACK;
+
+--Update
+BEGIN TRANSACTION;
+INSERT INTO species VALUES('Apes', 'Are apes', 'Apes', 'Apes', '');
+INSERT INTO species_gender VALUES('Apes', 'male', 9.5, 009.5);
+UPDATE species_gender set average_weight = 10.1 where english_name = 'Apes';
+ROLLBACK;
+
+/* Tests should raise a check constraint error upon insert a species gender or updating it when the weight is 0 */
+--Insert
+BEGIN TRANSACTION;
+INSERT INTO species VALUES('Apes', 'Are apes', 'Apes', 'Apes', '');
+INSERT INTO species_gender VALUES('Apes', 'male', 0, 009.5);
+ROLLBACK;
+
+--Update
+BEGIN TRANSACTION;
+INSERT INTO species VALUES('Apes', 'Are apes', 'Apes', 'Apes', '');
+INSERT INTO species_gender VALUES('Apes', 'male', 9.5, 009.5);
+UPDATE species_gender set average_weight = 0 where english_name = 'Apes';
+ROLLBACK;
+
+/* Tests should raise a check constraint error upon insert a species gender or updating it when the weight is lower then 0 */
+--Insert
+BEGIN TRANSACTION;
+INSERT INTO species VALUES('Apes', 'Are apes', 'Apes', 'Apes', '');
+INSERT INTO species_gender VALUES('Apes', 'male', -5, 009.5);
+ROLLBACK;
+
+--Update
+BEGIN TRANSACTION;
+INSERT INTO species VALUES('Apes', 'Are apes', 'Apes', 'Apes', '');
+INSERT INTO species_gender VALUES('Apes', 'male', 9.5, 009.5);
+UPDATE species_gender set average_weight = -5 where english_name = 'Apes';
+ROLLBACK;
+/*================*/
