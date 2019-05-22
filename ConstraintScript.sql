@@ -9,6 +9,18 @@
 |	Versie:		1.0					|
 |	Gemaakt op:	5/7/2019 13:42				|
 \*-------------------------------------------------------------*/
+/* Constraint 1 OrderStates
+Column ORDER(State) An order must have one of the following states: Paid, Not complete, Awaiting payment, placed.
+
+To apply this constraint, a check constraint needs to be created. 
+The constraint checks if an order has one of the four states mentioned before.
+*/
+
+alter table "ORDER"
+add constraint CHK_ORDER_STATE 
+check (State in('Placed', 'Paid', 'Awaiting payment', 'Not complete'));
+
+
 /* Constraint 2 OtherThanPlacedHasDelivery
 Colom ORDER(State) An order with state that is not ‘placed’, must have a delivery note.
 =================================================
@@ -141,3 +153,4 @@ ALTER TABLE "species_gender" DROP CONSTRAINT IF EXISTS CHK_AVERAGE_WEIGHT;
 ALTER TABLE "species_gender" ADD CONSTRAINT CHK_AVERAGE_WEIGHT
 CHECK (average_weight > 0);
 /*=============*/
+
