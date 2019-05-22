@@ -382,6 +382,45 @@ update exchange
 set loan_type = 'tow';
 rollback;
 
+/*===== Constraint 9 EnclosureEndDate =====*/
+/* Tests should pass when end_date is on the same date as the date of stay of the animal or later.*/
+-- insert
+begin transaction;
+alter table ANIMAL_ENCLOSURE drop constraint if exists fk_animal_in_enclosure;
+alter table ANIMAL_ENCLOSURE drop constraint if exists fk_enclosure_has_animal;
+
+insert into ANIMAL_ENCLOSURE values('an-1', '2019-01-01', 'area', 1, '2019-02-02');
+rollback;
+
+--update
+begin transaction;
+alter table ANIMAL_ENCLOSURE drop constraint if exists fk_animal_in_enclosure;
+alter table ANIMAL_ENCLOSURE drop constraint if exists fk_enclosure_has_animal;
+
+insert into ANIMAL_ENCLOSURE values('an-1', '2019-01-01', 'area', 1, '2019-02-02');
+
+update ANIMAL_ENCLOSURE set since = '2019-01-20';
+rollback;
+
+/* Tests should fail when end_date is earlier than the date of stay of the animal.*/
+-- insert
+begin transaction;
+alter table ANIMAL_ENCLOSURE drop constraint if exists fk_animal_in_enclosure;
+alter table ANIMAL_ENCLOSURE drop constraint if exists fk_enclosure_has_animal;
+
+insert into ANIMAL_ENCLOSURE values('an-1', '2019-01-01', 'area', 1, '2018-02-02');
+rollback;
+
+-- update
+begin transaction;
+alter table ANIMAL_ENCLOSURE drop constraint if exists fk_animal_in_enclosure;
+alter table ANIMAL_ENCLOSURE drop constraint if exists fk_enclosure_has_animal;
+
+insert into ANIMAL_ENCLOSURE values('an-1', '2019-01-01', 'area', 1, '2019-02-02');
+
+update ANIMAL_ENCLOSURE set since = '2019-03-05';
+rollback;
+
 /*===== CONSTRAINT 10 SpottedAfterRelease ===== */
 /*Test should pass if the spot_date  is same as the the reintroduction_date or later than the reintroduction_date.*/
 -- insert
@@ -394,7 +433,7 @@ insert into reintroduction values('an-1', '2019-11-05', 'location', null);
 insert into spotted values('an-1', '2018-10-05');
 rollback;
 
---update
+-- update
 begin transaction;
 alter table reintroduction drop constraint if exists fk_animal_reintroduction;
 alter table spotted drop constraint if exists fk_animal_spotted;
@@ -403,7 +442,7 @@ insert into reintroduction values('an-1', '2018-10-05', 'location', null);
 insert into reintroduction values('an-1', '2019-11-05', 'location', null);
 insert into spotted values('an-1', '2018-10-05');
 
-update spotted set spot_date = '2018-11-06' where animal_id = 'an-1';
+update spotted set spot_date = '2018-11-06';
 rollback;
 
 /*Test should raise an error if spot_date is before the date when the animal is reintroduced in wild.*/
@@ -426,7 +465,7 @@ insert into reintroduction values('an-1', '2018-10-05', 'location', null);
 insert into reintroduction values('an-1', '2019-11-05', 'location', null);
 insert into spotted values('an-1', '2018-10-05');
 
-update spotted set spot_date = '2018-04-04' where animal_id = 'an-1'; 
+update spotted set spot_date = '2018-04-04'; 
 rollback;
 
 /*Test should pass if the there is still a reintroduction_date before the oldest spot_date after deleting or updating.*/
@@ -439,7 +478,7 @@ insert into reintroduction values('an-1', '2017-04-04', 'location', null);
 insert into reintroduction values('an-1', '2018-12-12', 'location', null);
 insert into spotted values('an-1', '2019-01-01');
 
-update reintroduction set reintroduction_date = '2019-05-05' where animal_id = 'an-1' and reintroduction_date = '2017-04-04';
+update reintroduction set reintroduction_date = '2019-05-05' where reintroduction_date = '2017-04-04';
 rollback;
 
 -- delete
@@ -451,7 +490,7 @@ insert into reintroduction values('an-1', '2017-04-04', 'location', null);
 insert into reintroduction values('an-1', '2018-12-12', 'location', null);
 insert into spotted values('an-1', '2019-01-01');
 
-delete from reintroduction where animal_id = 'an-1' and reintroduction_date = '2017-04-04';
+delete from reintroduction where reintroduction_date = '2017-04-04';
 rollback;
 
 /*Test should raise an error if there is no reintroduction_date before the oldest spot_date*/
@@ -464,7 +503,7 @@ insert into reintroduction values('an-1', '2017-04-04', 'location', null);
 insert into reintroduction values('an-1', '2018-12-12', 'location', null);
 insert into spotted values('an-1', '2018-01-01');
 
-update reintroduction set reintroduction_date = '2019-05-05' where animal_id = 'an-1' and reintroduction_date = '2017-04-04';
+update reintroduction set reintroduction_date = '2019-05-05' where reintroduction_date = '2017-04-04';
 rollback;
 
 -- delete
@@ -476,7 +515,7 @@ insert into reintroduction values('an-1', '2017-04-04', 'location', null);
 insert into reintroduction values('an-1', '2019-04-03', 'location', null);
 insert into spotted values('an-1', '2019-01-01');
 
-delete from reintroduction where animal_id = 'an-1' and reintroduction_date = '2017-04-04';
+delete from reintroduction where reintroduction_date = '2017-04-04';
 rollback;
 
 /*===== Constraint 11 AnimalReturned =====*/
@@ -494,7 +533,7 @@ alter table EXCHANGE drop constraint if exists fk_animal_exchange;
 
 insert into EXCHANGE values('an-1', '2019-01-01', '2019-02-02', 'comments', 'to', 'place');
 
-update EXCHANGE set return_date = '2019-03-03' where animal_id = 'an-1';
+update EXCHANGE set return_date = '2019-03-03';
 rollback;
 
 /* Tests should fail if return_date is earlier than the exchange_date.*/
@@ -511,7 +550,7 @@ alter table EXCHANGE drop constraint if exists fk_animal_exchange;
 
 insert into EXCHANGE values('an-1', '2019-01-01', '2018-11-25', 'comments', 'to', 'place');
 
-update EXCHANGE set exchange_date = '2018-03-03' where animal_id = 'an-1';
+update EXCHANGE set exchange_date = '2018-03-03';
 rollback;
 
 /*===== CONSTRAINT 15 LineItemWeight =====*/

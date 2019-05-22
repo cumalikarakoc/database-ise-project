@@ -98,6 +98,13 @@ Alter table exchange drop constraint if exists CHK_LOAN_TYPE;
 alter table exchange add constraint CHK_LOAN_TYPE
 CHECK(loan_type in ('to','from'));
 
+/*===== Constraint 9 EnclosureEndDate =====*/
+/* Columns ANIMAL_ENCLOSURE(Since, End_date)  The end date may not be before the date when the animal is moved to the enclosure.*/
+alter table ANIMAL_ENCLOSURE drop constraint if exists CHK_ENCLOSURE_DATE;
+
+alter table ANIMAL_ENCLOSURE add constraint CHK_ENCLOSURE_DATE
+check(end_date >= since);
+
 /*===== Constraint 10 SpottedAfterRelease ===== */
 /* An animal cannot have been seen in the wild before its first release. */
 -- SPOTTED
