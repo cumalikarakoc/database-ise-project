@@ -134,6 +134,13 @@ create trigger TR_REINTRODUCTION_BEFORE_SPOTTED after update or delete on reintr
 for each row 
 execute procedure TRP_REINTRODUCTION_BEFORE_SPOTTED();
 
+/*===== Constraint 11 AnimalReturned =====*/
+/* Column EXCHANGE(Return_date) An animal can only be returned after it has been exchanged.*/
+alter table EXCHANGE drop constraint if exists CHK_ANIMAL_RETURNED ;
+
+alter table EXCHANGE add constraint CHK_ANIMAL_RETURNED
+check(return_date >= exchange_date);
+
 /*===== CONSTRAINT 15 LineItemWeight =====*/
 /* column LINE_ITEM(price) must be higher than 0*/
 ALTER TABLE line_item DROP CONSTRAINT IF EXISTS CHK_LINE_ITEM_WEIGHT;
