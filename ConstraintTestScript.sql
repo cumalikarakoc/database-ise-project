@@ -835,7 +835,7 @@ begin transaction;
 alter table feeding drop constraint fk_feeding_for_animal;
 alter table feeding drop constraint fk_food_to_be_fed;
 insert into feeding VALUES('1', 'Kapsalon', '11/11/12',1);
-update feeding set amount = 2 where animal_id = '1' and food_type_ft = 'Kapsalon' and since_f = '11/11/12';
+update feeding set amount = 2;
 rollback;
 
 /*test should fail upon inserting/updating a food amount equal to 0*/
@@ -851,7 +851,7 @@ begin transaction;
 alter table feeding drop constraint fk_feeding_for_animal;
 alter table feeding drop constraint fk_food_to_be_fed;
 insert into feeding VALUES('1', 'Kapsalon', '11/11/12',1);
-update feeding set amount = 0 where animal_id = '1' and food_type_ft = 'Kapsalon' and since_f = '11/11/12';
+update feeding set amount = 0;
 rollback;
 
 
@@ -868,9 +868,8 @@ begin transaction;
 alter table feeding drop constraint fk_feeding_for_animal;
 alter table feeding drop constraint fk_food_to_be_fed;
 insert into feeding VALUES('1', 'Kapsalon', '11/11/12',1);
-update feeding set amount = -1 where animal_id = '1' and food_type_ft = 'Kapsalon' and since_f = '11/11/12';
+update feeding set amount = -1;
 rollback;
-
 
 /* ====== CONSTRAINT 19 AnimalVisitsVet ======*/
 /* Test should pass upon a visit date after the animal`s birth date*/
@@ -932,7 +931,6 @@ insert into animal VALUES('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
 insert into animal_visits_vet VALUES('1', '12/12/13', 'Regular check', 'Doctor Pol', '12/12/20');
 update animal_visits_vet set visit_date = '1/1/10';
 rollback;
-
 
 /* ====== CONSTRAINT 21 SpeciesWeight ======*/
 /* Tests should pass upon insert a species gender or updating it */
