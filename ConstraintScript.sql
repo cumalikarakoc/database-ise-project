@@ -155,6 +155,13 @@ alter table EXCHANGE drop constraint if exists CHK_ANIMAL_RETURNED ;
 alter table EXCHANGE add constraint CHK_ANIMAL_RETURNED
 check(return_date >= exchange_date);
 
+/*===== Constraint 13 MateAndAnimalId =====*/
+/* Columns MATING(Animal_id, Mate_id) Animal_id and mate_id cannot be the same.*/
+alter table mating drop constraint if exists CHK_MATE_AND_ANIMAL_ID;
+
+alter table mating add constraint CHK_MATE_AND_ANIMAL_ID
+check(animal_id <> mate_id);
+
 /*===== CONSTRAINT 15 LineItemWeight =====*/
 /* column LINE_ITEM(price) must be higher than 0*/
 ALTER TABLE line_item DROP CONSTRAINT IF EXISTS CHK_LINE_ITEM_WEIGHT;
