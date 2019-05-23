@@ -629,21 +629,67 @@ insert into EXCHANGE values('an-1', '2019-01-01', '2018-11-25', 'comments', 'to'
 update EXCHANGE set exchange_date = '2018-03-03';
 rollback;
 
+/*===== Constraint 13 MateAndAnimalId ===== */
+/* Tests should pass because mate id and animal id are not the same */
+-- insert
+begin transaction;
+alter table mating drop constraint fk_breeding_mate;
+alter table mating drop constraint fk_mating_breeding__animal;
+
+insert into mating values
+('sai-1', '12-12-18', 'duiven', 'sai-2'),
+('sai-2', '01-01-19', 'duiven', 'sai-1');
+rollback;
+
+-- update
+begin transaction;
+alter table mating drop constraint fk_breeding_mate;
+alter table mating drop constraint fk_mating_breeding__animal;
+
+insert into mating values
+('sai-1', '12-12-18', 'duiven', 'sai-2'),
+('sai-2', '01-01-19', 'duiven', 'sai-1');
+
+update mating
+set animal_id = 'sai-3';
+rollback;
+
+/* Tests should fail because mate id and animal id are the same */
+begin transaction;
+alter table mating drop constraint fk_breeding_mate;
+alter table mating drop constraint fk_mating_breeding__animal;
+
+insert into mating values
+('sai-1', '12-12-18', 'duiven', 'sai-2'),
+('sai-2', '01-01-19', 'duiven', 'sai-2');
+rollback;
+
+-- update
+begin transaction;
+alter table mating drop constraint fk_breeding_mate;
+alter table mating drop constraint fk_mating_breeding__animal;
+
+insert into mating values
+('sai-1', '12-12-18', 'duiven', 'sai-2'),
+('sai-2', '01-01-19', 'duiven', 'sai-1');
+
+update mating
+set animal_id = 'sai-2';
+rollback;
+
 /* ====== CONSTRAINT 14 DiscrepancyDate ======*/
 /* Tests should pass upon insert a discrapency date or updating it */
 --Insert
 BEGIN TRANSACTION;
-Insert into invoice values (1);
-Insert into supplier values ('berry', '06123456789', 'arnhem');
-Insert into "ORDER" values (1, 'berry', 'awaiting', '03-03-2019', 1);
+alter table mating drop constraint fk_order_discrepancy;
+
 Insert into discrepancy values (1, 1, 'test', '04-04-2019');
 ROLLBACK;
 
 --Update
 BEGIN TRANSACTION;
-Insert into invoice values (1);
-Insert into supplier values ('berry', '06123456789', 'arnhem');
-Insert into "ORDER" values (1, 'berry', 'awaiting', '03-03-2019', 1);
+alter table mating drop constraint fk_order_discrepancy;
+
 Insert into discrepancy values (1, 1, 'test', '04-04-2019');
 Update discrepancy set place_date = '05-05-2019' where discrepancy_id = 1;
 ROLLBACK;
@@ -651,21 +697,18 @@ ROLLBACK;
 /* Tests should fail after inserting and updating a earlier date */
 --Insert
 BEGIN TRANSACTION;
-Insert into invoice values (1);
-Insert into supplier values ('berry', '06123456789', 'arnhem');
-Insert into "ORDER" values (1, 'berry', 'awaiting', '03-03-2019', 1);
+alter table mating drop constraint fk_order_discrepancy;
+
 Insert into discrepancy values (1, 1, 'test', '02-02-2019');
 ROLLBACK;
 
 --Update
 BEGIN TRANSACTION;
-Insert into invoice values (1);
-Insert into supplier values ('berry', '06123456789', 'arnhem');
-Insert into "ORDER" values (1, 'berry', 'awaiting', '03-03-2019', 1);
+alter table mating drop constraint fk_order_discrepancy;
+
 Insert into discrepancy values (1, 1, 'test', '04-04-2019');
 Update discrepancy set place_date = '02-02-2019' where discrepancy_id = 1;
 ROLLBACK;
-
 
 /*===== CONSTRAINT 15 LineItemWeight =====*/
 /* Tests should pass upon inserting a line_item or updating an line_item where the weight is higher than 0.*/
