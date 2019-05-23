@@ -931,7 +931,6 @@ ROLLBACK;
 BEGIN TRANSACTION;
 ALTER TABLE stock DROP IF EXISTS fk_animal_foodstock;
 ALTER TABLE stock DROP IF EXISTS fk_food_in_stock;
-
 INSERT INTO stock values ('apen', 'bananen', 5);
 ROLLBACK;
 
@@ -939,7 +938,6 @@ ROLLBACK;
 BEGIN TRANSACTION;
 ALTER TABLE stock DROP IF EXISTS fk_animal_foodstock;
 ALTER TABLE stock DROP IF EXISTS fk_food_in_stock;
-
 INSERT INTO stock values ('apen', 'bananen', 5);
 UPDATE stock SET amount = 6;
 ROLLBACK;
@@ -949,7 +947,6 @@ ROLLBACK;
 BEGIN TRANSACTION;
 ALTER TABLE stock DROP IF EXISTS fk_animal_foodstock;
 ALTER TABLE stock DROP IF EXISTS fk_food_in_stock;
-
 INSERT INTO stock values ('apen', 'bananen', 0);
 ROLLBACK;
 
@@ -957,9 +954,8 @@ ROLLBACK;
 BEGIN TRANSACTION;
 ALTER TABLE stock DROP IF EXISTS fk_animal_foodstock;
 ALTER TABLE stock DROP IF EXISTS fk_food_in_stock;
-
 INSERT INTO stock values ('apen', 'bananen', 5);
-UPDATE stock SET amount = 0 where area_name = 'apen' and food_type_ft = 'bananen';
+UPDATE stock SET amount = 0;
 ROLLBACK;
 
 /* Tests should fail upon inserting or updating a value lower than 0 */
@@ -967,7 +963,6 @@ ROLLBACK;
 BEGIN TRANSACTION;
 ALTER TABLE stock DROP IF EXISTS fk_animal_foodstock;
 ALTER TABLE stock DROP IF EXISTS fk_food_in_stock;
-
 INSERT INTO stock values ('apen', 'bananen', -5);
 ROLLBACK;
 
@@ -975,9 +970,8 @@ ROLLBACK;
 BEGIN TRANSACTION;
 IALTER TABLE stock DROP IF EXISTS fk_animal_foodstock;
 ALTER TABLE stock DROP IF EXISTS fk_food_in_stock;
-
 INSERT INTO stock values ('apen', 'bananen', 5);
-UPDATE stock SET amount = -5 where area_name = 'apen' and food_type_ft = 'bananen';
+UPDATE stock SET amount = -5;
 ROLLBACK;
 
 /* ====== CONSTRAINT 19 AnimalVisitsVet ======*/
