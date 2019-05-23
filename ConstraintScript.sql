@@ -13,12 +13,12 @@
 /* Constraint 4 NotCompleteHasDiscrepancy
 Column ORDER(State) An order with the state not complete has a discrepancy note.
 
-=========================================================
-= State			= Action		Allowed	=
-=========================================================
-= Not Complete		= delete discrepancy	no	=
-= Paid			= delete discerepancy	yes	=
-=========================================================
+=================================================================
+= State			= Action		= Allowed	=
+=================================================================
+= Not Complete		= delete discrepancy	= no		=
+= Paid			= delete discerepancy	= yes		=
+=================================================================
 
 To apply this constraint, a triggger is created on table order. It will check the state after every update or insert.
 There is another trigger created on discrepany in case when a discrepancy gets deleted or a note is assigned to another order
