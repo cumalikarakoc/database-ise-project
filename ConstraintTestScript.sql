@@ -700,19 +700,19 @@ ROLLBACK;
 /* Test should pass upon a visit date after the animal`s birth date*/
 --Insert
 begin transaction;
-insert into species VALUES('Duck', 'A duck likes bread', 'Aves','Anseriformes', 'Anatidae');
+alter table animal drop constraint fk_animal_of_species;
+alter table animal_visits_vet drop constraint fk_prescription_of_vet_visit;
+alter table animal_visits_vet drop constraint fk_vet_visited_animal;
 insert into animal VALUES('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
-insert into prescription VALUES('Regular check');
-insert into vet VALUES('Doctor Pol');
 insert into animal_visits_vet VALUES('1', '12/12/13', 'Regular check', 'Doctor Pol', '12/12/14');
 rollback;
 
 --Update
 begin transaction;
-insert into species VALUES('Duck', 'A duck likes bread', 'Aves','Anseriformes', 'Anatidae');
+alter table animal drop constraint fk_animal_of_species;
+alter table animal_visits_vet drop constraint fk_prescription_of_vet_visit;
+alter table animal_visits_vet drop constraint fk_vet_visited_animal;
 insert into animal VALUES('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
-insert into prescription VALUES('Regular check');
-insert into vet VALUES('Doctor Pol');
 insert into animal_visits_vet VALUES('1', '12/12/13', 'Regular check', 'Doctor Pol', '12/12/20');
 update animal_visits_vet set visit_date = '1/1/14';
 rollback;
@@ -720,19 +720,19 @@ rollback;
 /* Test should pass upon a visit date on the animal`s birth date*/
 --Insert
 begin transaction;
-insert into species VALUES('Duck', 'A duck likes bread', 'Aves','Anseriformes', 'Anatidae');
+alter table animal drop constraint fk_animal_of_species;
+alter table animal_visits_vet drop constraint fk_prescription_of_vet_visit;
+alter table animal_visits_vet drop constraint fk_vet_visited_animal;
 insert into animal VALUES('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
-insert into prescription VALUES('Regular check');
-insert into vet VALUES('Doctor Pol');
 insert into animal_visits_vet VALUES('1', '1/1/11', 'Regular check', 'Doctor Pol', '12/12/14');
 rollback;
 
 --Update
 begin transaction;
-insert into species VALUES('Duck', 'A duck likes bread', 'Aves','Anseriformes', 'Anatidae');
+alter table animal drop constraint fk_animal_of_species;
+alter table animal_visits_vet drop constraint fk_prescription_of_vet_visit;
+alter table animal_visits_vet drop constraint fk_vet_visited_animal;
 insert into animal VALUES('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
-insert into prescription VALUES('Regular check');
-insert into vet VALUES('Doctor Pol');
 insert into animal_visits_vet VALUES('1', '12/12/13', 'Regular check', 'Doctor Pol', '12/12/20');
 update animal_visits_vet set visit_date = '1/1/11';
 rollback;
@@ -740,19 +740,19 @@ rollback;
 /* Test should fail upon a visit date is before the animal`s birth date*/
 --Insert
 begin transaction;
-insert into species VALUES('Duck', 'A duck likes bread', 'Aves','Anseriformes', 'Anatidae');
+alter table animal drop constraint fk_animal_of_species;
+alter table animal_visits_vet drop constraint fk_prescription_of_vet_visit;
+alter table animal_visits_vet drop constraint fk_vet_visited_animal;
 insert into animal VALUES('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
-insert into prescription VALUES('Regular check');
-insert into vet VALUES('Doctor Pol');
 insert into animal_visits_vet VALUES('1', '1/1/10', 'Regular check', 'Doctor Pol', '12/12/14');
 rollback;
 
 --Update
 begin transaction;
-insert into species VALUES('Duck', 'A duck likes bread', 'Aves','Anseriformes', 'Anatidae');
+alter table animal drop constraint fk_animal_of_species;
+alter table animal_visits_vet drop constraint fk_prescription_of_vet_visit;
+alter table animal_visits_vet drop constraint fk_vet_visited_animal;
 insert into animal VALUES('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
-insert into prescription VALUES('Regular check');
-insert into vet VALUES('Doctor Pol');
 insert into animal_visits_vet VALUES('1', '12/12/13', 'Regular check', 'Doctor Pol', '12/12/20');
 update animal_visits_vet set visit_date = '1/1/10';
 rollback;
