@@ -9,6 +9,17 @@
 |	Versie:		1.0					|
 |	Gemaakt op:	5/7/2019 13:42				|
 \*-------------------------------------------------------------*/
+/* Constraint 1 OrderStates
+Column ORDER(State) An order must have one of the following states: Paid, Not complete, Awaiting payment, placed.
+
+To apply this constraint, a check constraint needs to be created. 
+The constraint checks if an order has one of the four states mentioned before.
+*/
+
+alter table "ORDER"
+add constraint CHK_ORDER_STATE 
+check (State in('Placed', 'Paid', 'Awaiting payment', 'Not complete'));
+
 
 /* Constraint 2 OtherThanPlacedHasDelivery
 Colom ORDER(State) An order with state that is not ‘placed’, must have a delivery note.
@@ -67,6 +78,7 @@ for each row
 execute procedure TRP_OTHER_THAN_PLACED_HAS_DELIVERY_DELIVERY();
 
 /*===== Constraint 3 PaidHasInvoice =====*/
+/*A paid order should have an invoice otherwise not.*/
 ALTER TABLE "ORDER" DROP CONSTRAINT IF EXISTS CHK_PAID_HAS_INVOICE;
 
 ALTER TABLE "ORDER" ADD CONSTRAINT CHCK_PAID_HAS_INVOICE
@@ -85,6 +97,56 @@ Alter table exchange drop constraint if exists CHK_LOAN_TYPE;
 
 alter table exchange add constraint CHK_LOAN_TYPE
 CHECK(loan_type in ('to','from'));
+
+/*===== Constraint 9 EnclosureEndDate =====*/
+/* Columns ANIMAL_ENCLOSURE(Since, End_date)  The end date may not be before the date when the animal is moved to the enclosure.*/
+alter table ANIMAL_ENCLOSURE drop constraint if exists CHK_ENCLOSURE_DATE;
+
+alter table ANIMAL_ENCLOSURE add constraint CHK_ENCLOSURE_DATE
+check(end_date >= since);
+
+/*===== Constraint 10 SpottedAfterRelease ===== */
+/* An animal cannot have been seen in the wild before its first release. */
+-- SPOTTED
+create or replace function TRP_SPOTTED_AFTER_RELEASE() returns trigger as $$
+   begin
+   if(new.spot_date < (select reintroduction_date from reintroduction where animal_id = new.animal_id order by reintroduction_date asc limit 1)) then
+      raise exception 'Spot_date must be after the date when the animal is reintroduced to wild.';
+	  end if;
+      return new;
+   end;
+$$ language plpgsql;
+
+create trigger TR_SPOTTED_AFTER_RELEASE after insert or update on spotted
+for each row 
+execute procedure TRP_SPOTTED_AFTER_RELEASE();
+
+-- REINTRODUCTION
+create or replace function TRP_REINTRODUCTION_BEFORE_SPOTTED() returns trigger as $$
+   begin
+   if((tg_op = 'UPDATE' or tg_op= 'DELETE') and
+	  coalesce((select min(spot_date) from spotted where animal_id = old.animal_id), current_date) < 
+		  	   coalesce((select min(reintroduction_date) from reintroduction where animal_id = old.animal_id), current_date)) then
+   if(tg_op = 'UPDATE') then
+      raise exception 'Reintroduction date must be before the date when the animal is spotted.';
+	elsif(tg_op = 'DELETE') then
+		raise exception 'The reintoroduction date % of animal % may not be deleted because this animal is spotted after this reintroduction. Remove the associated spot_date first please.', old.reintroduction_date, old.animal_id;
+		end if;
+	end if; 
+	return old;
+   end;
+$$ language plpgsql;
+
+create trigger TR_REINTRODUCTION_BEFORE_SPOTTED after update or delete on reintroduction
+for each row 
+execute procedure TRP_REINTRODUCTION_BEFORE_SPOTTED();
+
+/*===== Constraint 11 AnimalReturned =====*/
+/* Column EXCHANGE(Return_date) An animal can only be returned after it has been exchanged.*/
+alter table EXCHANGE drop constraint if exists CHK_ANIMAL_RETURNED ;
+
+alter table EXCHANGE add constraint CHK_ANIMAL_RETURNED
+check(return_date >= exchange_date);
 
 /*===== CONSTRAINT 15 LineItemWeight =====*/
 /* column LINE_ITEM(price) must be higher than 0*/
@@ -124,3 +186,4 @@ ALTER TABLE "species_gender" DROP CONSTRAINT IF EXISTS CHK_AVERAGE_WEIGHT;
 ALTER TABLE "species_gender" ADD CONSTRAINT CHK_AVERAGE_WEIGHT
 CHECK (average_weight > 0);
 /*=============*/
+
