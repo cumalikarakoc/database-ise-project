@@ -167,6 +167,12 @@ ALTER TABLE line_item DROP CONSTRAINT IF EXISTS CHK_LINE_ITEM_PRICE;
 ALTER TABLE line_item ADD CONSTRAINT CHK_LINE_ITEM_PRICE
 CHECK(price >= '0.00');
 
+/*===== CONSTRAINT 18 FeedingAmount =====*/
+/* The weight of the food fed to an animal has to be 0 or higher*/
+alter table feeding drop constraint if exists CHK_FEEDING_AMOUNT;
+alter table feeding add constraint CHK_FEEDING_AMOUNT
+CHECK(amount > 0);
+
 /*===== CONSTRAINT 19 AnimalVisitsVet =====*/
 /* An animal cannot visit a vet before his birth date*/
 create or replace function TRP_ANIMAL_VISITS_VET()
