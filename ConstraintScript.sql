@@ -207,6 +207,36 @@ alter table EXCHANGE drop constraint if exists CHK_ANIMAL_RETURNED ;
 alter table EXCHANGE add constraint CHK_ANIMAL_RETURNED
 check(return_date >= exchange_date);
 
+/*===== Constraint 12 OffspringId =====*/
+/* Columns OFFSRPING(Offspring_id, Animal_id, Mate_id) An animal may not be its own parent or child.*/
+-- MATING
+create or replace function TRP_OFFSPRING_PARENTS() returns trigger as $$
+   begin
+   if(new.mate_id in (select offspring_id from OFFSPRING where animal_id = new.animal_id and mating_date = new.mating_date)) then
+      raise exception 'An animal may not be its own parent.';
+	  end if;
+      return new;
+   end;
+$$ language plpgsql;
+
+create trigger TR_OFFSPRING_PARENTS after update on MATING
+for each row 
+execute procedure TRP_OFFSPRING_PARENTS();
+
+-- OFFSPRING
+create or replace function TRP_OFFSPRING_ID() returns trigger as $$
+   begin
+   if(new.offspring_id = new.animal_id or new.offspring_id = (select mate_id from MATING where animal_id = new.animal_id and mating_date = new.mating_date)) then
+      raise exception 'An animal may not be its own child.';
+	  end if;
+      return new;
+   end;
+$$ language plpgsql;
+
+create trigger TR_OFFSPRING_ID after insert or update on OFFSPRING
+for each row 
+execute procedure TRP_OFFSPRING_ID();
+
 /*===== Constraint 13 MateAndAnimalId =====*/
 /* Columns MATING(Animal_id, Mate_id) Animal_id and mate_id cannot be the same.*/
 alter table mating drop constraint if exists CHK_MATE_AND_ANIMAL_ID;
@@ -266,21 +296,6 @@ CREATE TRIGGER TR_DISCREPANCY_DATE
   ON discrepancy
   FOR EACH ROW
   EXECUTE PROCEDURE TR_DISCREPANCY_DATE_FUNC();
-
-/*===== Constraint 17 StockAmount ======*/
-/* column STOCK(Amount) Amount must be higher or equal to 0. */
-ALTER TABLE "stock" DROP CONSTRAINT IF EXISTS CHK_STOCK_AMOUNT;
-
-ALTER TABLE "stock" ADD CONSTRAINT CHK_STOCK_AMOUNT  
-CHECK (amount >= 0);
-
-/*===== Constraint 20 MaturityAge ======*/
-/* column SPECIES_GENDER(Maturity_age) Age must be higher or equal to 0. */
-ALTER TABLE "species_gender" DROP CONSTRAINT IF EXISTS CHK_MATURITY_AGE ;
-
-ALTER TABLE "species_gender" ADD CONSTRAINT CHK_MATURITY_AGE   
-CHECK (maturity_age >= 0);
-
 
 /*===== CONSTRAINT 21 SpeciesWeight =====*/
 /* column SPECIES_GENDER(Weight) must be higher than 0 */
