@@ -98,6 +98,13 @@ Alter table exchange drop constraint if exists CHK_LOAN_TYPE;
 alter table exchange add constraint CHK_LOAN_TYPE
 CHECK(loan_type in ('to','from'));
 
+/*===== Constraint 8 NextVisitVet =====*/
+/* Columns ANIMAL_VISITS_VET(Next_visit, Visit_date) The next visit date cant be before the visit date. */
+alter table animal_visits_vet drop constraint if exists CHK_NEXT_VISIT_VET;
+
+alter table animal_visits_vet add constraint CHK_NEXT_VISIT_VET
+check(next_visit > visit_date);
+
 /*===== Constraint 9 EnclosureEndDate =====*/
 /* Columns ANIMAL_ENCLOSURE(Since, End_date)  The end date may not be before the date when the animal is moved to the enclosure.*/
 alter table ANIMAL_ENCLOSURE drop constraint if exists CHK_ENCLOSURE_DATE;
