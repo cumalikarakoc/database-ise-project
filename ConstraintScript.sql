@@ -10,49 +10,42 @@
 |	Gemaakt op:	5/7/2019 13:42				|
 \*-------------------------------------------------------------*/
 
---Constraint 6
+/*Constraint 6 
+Columns ANIMAL_ENCLOSURE(Animal_id, Since, End_date) an animal cant stay in two enclosures at a time
+
+===========================================================================
+= Animal_id		= Since		= End_date		= Allowed =
+===========================================================================
+= 2			= 2019-05-23	= 2019-05-25		= Yes	  =
+= 2			= 2019-05-27	= 2019-05-28		= No	  =
+= 2			= 2019-05-27	= 2019-05-29		= No	  =
+= 2			= 2019-05-29	= null			= Yes	  =
+= 2			= 2019-05-30	= null			= No	  =
+===========================================================================
+
+A trigger will be created wich checks if dates don't overlap
+*/
+
 create or replace function TRP_ANIMAL_HAS_ONE_ENCLOSURE() returns trigger as $$
 
 begin
-
- if (TG_OP = 'UPDATE') then
-  if new.End_date < old.Since then
-   raise exception 'End date cant be before new date';
-   return old;
+  if exists (select End_date from ANIMAL_ENCLOSURE where animal_id = new.animal_id and End_date is null and not (animal_id = new.animal_id and since = new.since)) then
+   raise exception 'An animal % can stay at one enclosure at a time', new.animal_id;
   end if;
- end if;
-
- if (TG_OP = 'INSERT') then
-  if (select Since from ANIMAL_ENCLOSURE where Animal_id = new.Animal_id order by End_date asc limit 1) is not null then --check if animal lived in an enclosure before.
-   if (select End_date from ANIMAL_ENCLOSURE where Animal_id = new.Animal_id order by End_date desc limit 1) is null then
-    raise exception 'Animal is still asigned to another enclosure';
-   end if;
-   if new.Since < (select End_date from ANIMAL_ENCLOSURE where Animal_id = new.Animal_id order by End_date desc limit 1) then --check if the end date of the previous enclosure an animal stayed in, is before the since date that is inserted.
-    raise exception 'The end date of the previous stay has to be before the since date';
-   end if;
-  else
-   raise notice 'Eerste verblijf';
+   if exists
+   (select since, end_date 
+   from ANIMAL_ENCLOSURE
+   where animal_id = new.animal_id and ((new.since > since
+   and new.since < end_date)
+   or
+   (new.end_date > since
+   and new.end_date < end_date)
+   or
+   (new.since < since
+    and new.end_date > end_date
+   ))) then
+   raise exception 'The dates overlap';
   end if;
-  if new.Since > new.End_date then
-   raise exception 'The end date has to be after the since date'; 
-  end if;
- end if;
  return null;
 end;
-
 $$ language 'plpgsql';
-
-begin transaction;
-alter table animal_enclosure drop constraint fk_animal_in_enclosure;
-alter table animal_enclosure drop constraint fk_enclosure_has_animal;
-
-insert into animal_enclosure values
-('sai-1','10-10-2018','big bois',1,'11-11-2018');
-insert into animal_enclosure values
-('sai-1','09-09-2018','big bois',1,'12-12-2018');
-rollback;
-
-select * from animal_enclosure
-where animal_id = new.animal_id
-and new.since < since
-and new.end_date > end_date
