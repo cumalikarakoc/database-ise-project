@@ -382,6 +382,82 @@ update exchange
 set loan_type = 'tow';
 rollback;
 
+/*===== Constraint 8 NextVisitVet =====*/
+/*Tests should pass when a next_visit that is later than visit_date is inserted or updated*/
+-- insert
+begin transaction;
+alter table animal_visits_vet drop constraint if exists fk_animal_check_up;
+alter table animal_visits_vet drop constraint if exists fk_prescription_of_vet_visit;
+alter table animal_visits_vet drop constraint if exists fk_vet_visited_animal;
+
+insert into animal_visits_vet values
+('sai-1','10-10-2018','pil','Bob','12-12-2018'),
+('sai-2','10-10-2018','pil','BOB','12-12-2018');
+rollback;
+-- update
+begin transaction;
+alter table animal_visits_vet drop constraint if exists fk_animal_check_up;
+alter table animal_visits_vet drop constraint if exists fk_prescription_of_vet_visit;
+alter table animal_visits_vet drop constraint if exists fk_vet_visited_animal;
+
+insert into animal_visits_vet values
+('sai-1','10-10-2018','pil','Bob','12-12-2018'),
+('sai-2','10-10-2018','pil','BOB','12-12-2018'); 
+
+update animal_visits_vet values
+set next_visit = '11-11-2018';
+rollback;
+
+/* tests should fail because next_visit that is before visit_date is inserted or updated*/
+-- insert
+begin transaction;
+alter table animal_visits_vet drop constraint if exists fk_animal_check_up;
+alter table animal_visits_vet drop constraint if exists fk_prescription_of_vet_visit;
+alter table animal_visits_vet drop constraint if exists fk_vet_visited_animal;
+
+insert into animal_visits_vet values
+('sai-1','10-10-2018','pil','Bob','12-12-2018'),
+('sai-2','12-12-2018','pil','BOB','10-10-2018');
+rollback;
+-- update
+begin transaction;
+alter table animal_visits_vet drop constraint if exists fk_animal_check_up;
+alter table animal_visits_vet drop constraint if exists fk_prescription_of_vet_visit;
+alter table animal_visits_vet drop constraint if exists fk_vet_visited_animal;
+
+insert into animal_visits_vet values
+('sai-1','11-11-2018','pil','Bob','12-12-2018'),
+('sai-2','11-11-2018','pil','BOB','12-12-2018'); 
+
+update animal_visits_vet values
+set next_visit = '10-10-2018';
+rollback;
+
+/* tests should fail because next_visit that is before visit_date is inserted or updated*/
+-- insert
+begin transaction;
+alter table animal_visits_vet drop constraint if exists fk_animal_check_up;
+alter table animal_visits_vet drop constraint if exists fk_prescription_of_vet_visit;
+alter table animal_visits_vet drop constraint if exists fk_vet_visited_animal;
+
+insert into animal_visits_vet values
+('sai-1','10-10-2018','pil','Bob','12-12-2018'),
+('sai-2','11-11-2018','pil','BOB','11-11-2018');
+rollback;
+-- update
+begin transaction;
+alter table animal_visits_vet drop constraint if exists fk_animal_check_up;
+alter table animal_visits_vet drop constraint if exists fk_prescription_of_vet_visit;
+alter table animal_visits_vet drop constraint if exists fk_vet_visited_animal;
+
+insert into animal_visits_vet values
+('sai-1','10-10-2018','pil','Bob','11-11-2018'),
+('sai-2','11-11-2018','pil','BOB','12-12-2018'); 
+
+update animal_visits_vet values
+set next_visit = '11-11-2018';
+rollback;
+
 /*===== Constraint 9 EnclosureEndDate =====*/
 /* Tests should pass when end_date is on the same date as the date of stay of the animal or later.*/
 -- insert
