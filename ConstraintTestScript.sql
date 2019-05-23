@@ -96,6 +96,61 @@ Insert into discrepancy values (1, 1, 'test', '04-04-2019');
 Update discrepancy set place_date = '02-02-2019' where discrepancy_id = 1;
 ROLLBACK;
 
+/* ====== Constraint 17 StockAmount ======*/
+/* Tests should pass upon inserting or updating a value higher than 0 */
+--Insert
+BEGIN TRANSACTION;
+INSERT INTO keeper values ('henkie');
+INSERT INTO area VALUES('apen', 'henkie');
+INSERT INTO food_kind values ('bananen');
+INSERT INTO stock values ('apen', 'bananen', 5);
+ROLLBACK;
+
+--Update
+BEGIN TRANSACTION;
+INSERT INTO keeper values ('henkie');
+INSERT INTO area VALUES('apen', 'henkie');
+INSERT INTO food_kind values ('bananen');
+INSERT INTO stock values ('apen', 'bananen', 5);
+UPDATE stock SET amount = 6 where area_name = 'apen' and food_type_ft = 'bananen';
+ROLLBACK;
+
+/* Tests should pass upon inserting or updating a value equal to 0 */
+--Insert
+BEGIN TRANSACTION;
+INSERT INTO keeper values ('henkie');
+INSERT INTO area VALUES('apen', 'henkie');
+INSERT INTO food_kind values ('bananen');
+INSERT INTO stock values ('apen', 'bananen', 0);
+ROLLBACK;
+
+--Update
+BEGIN TRANSACTION;
+INSERT INTO keeper values ('henkie');
+INSERT INTO area VALUES('apen', 'henkie');
+INSERT INTO food_kind values ('bananen');
+INSERT INTO stock values ('apen', 'bananen', 5);
+UPDATE stock SET amount = 0 where area_name = 'apen' and food_type_ft = 'bananen';
+ROLLBACK;
+
+/* Tests should fail upon inserting or updating a value lower than 0 */
+--Insert
+BEGIN TRANSACTION;
+INSERT INTO keeper values ('henkie');
+INSERT INTO area VALUES('apen', 'henkie');
+INSERT INTO food_kind values ('bananen');
+INSERT INTO stock values ('apen', 'bananen', -5);
+ROLLBACK;
+
+--Update
+BEGIN TRANSACTION;
+INSERT INTO keeper values ('henkie');
+INSERT INTO area VALUES('apen', 'henkie');
+INSERT INTO food_kind values ('bananen');
+INSERT INTO stock values ('apen', 'bananen', 5);
+UPDATE stock SET amount = -5 where area_name = 'apen' and food_type_ft = 'bananen';
+ROLLBACK;
+
 /* ====== CONSTRAINT 21 SpeciesWeight ======*/
 /* Tests should pass upon insert a species gender or updating it */
 --Insert
