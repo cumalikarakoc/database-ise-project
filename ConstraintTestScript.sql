@@ -1178,6 +1178,55 @@ INSERT INTO line_item VALUES('o123', 'banaan', 1, 10);
 UPDATE line_item SET price = -1;
 ROLLBACK;
 
+/* ====== Constraint 17 StockAmount ======*/
+/* Tests should pass upon inserting or updating a value higher than 0 */
+--Insert
+BEGIN TRANSACTION;
+ALTER TABLE stock DROP IF EXISTS fk_animal_foodstock;
+ALTER TABLE stock DROP IF EXISTS fk_food_in_stock;
+INSERT INTO stock values ('apen', 'bananen', 5);
+ROLLBACK;
+
+--Update
+BEGIN TRANSACTION;
+ALTER TABLE stock DROP IF EXISTS fk_animal_foodstock;
+ALTER TABLE stock DROP IF EXISTS fk_food_in_stock;
+INSERT INTO stock values ('apen', 'bananen', 5);
+UPDATE stock SET amount = 6;
+ROLLBACK;
+
+/* Tests should pass upon inserting or updating a value equal to 0 */
+--Insert
+BEGIN TRANSACTION;
+ALTER TABLE stock DROP IF EXISTS fk_animal_foodstock;
+ALTER TABLE stock DROP IF EXISTS fk_food_in_stock;
+INSERT INTO stock values ('apen', 'bananen', 0);
+ROLLBACK;
+
+--Update
+BEGIN TRANSACTION;
+ALTER TABLE stock DROP IF EXISTS fk_animal_foodstock;
+ALTER TABLE stock DROP IF EXISTS fk_food_in_stock;
+INSERT INTO stock values ('apen', 'bananen', 5);
+UPDATE stock SET amount = 0;
+ROLLBACK;
+
+/* Tests should fail upon inserting or updating a value lower than 0 */
+--Insert
+BEGIN TRANSACTION;
+ALTER TABLE stock DROP IF EXISTS fk_animal_foodstock;
+ALTER TABLE stock DROP IF EXISTS fk_food_in_stock;
+INSERT INTO stock values ('apen', 'bananen', -5);
+ROLLBACK;
+
+--Update
+BEGIN TRANSACTION;
+IALTER TABLE stock DROP IF EXISTS fk_animal_foodstock;
+ALTER TABLE stock DROP IF EXISTS fk_food_in_stock;
+INSERT INTO stock values ('apen', 'bananen', 5);
+UPDATE stock SET amount = -5;
+ROLLBACK;
+
 /* ====== CONSTRAINT 19 AnimalVisitsVet ======*/
 /* Test should pass upon a visit date after the animal`s birth date*/
 --Insert
