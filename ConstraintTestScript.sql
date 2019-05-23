@@ -1,4 +1,4 @@
-﻿/*-------------------------------------------------------------*\
+/*-------------------------------------------------------------*\
 |			Constraint Test Script			|
 |---------------------------------------------------------------|
 |	Gemaakt door: 	Cumali karakoç,				|
@@ -9,6 +9,7 @@
 |	Versie:		1.0					|
 |	Gemaakt op:	5/7/2019 13:42				|
 \*-------------------------------------------------------------*/
+
 /* Constraint 1 OrderStates Test */
 /* These inserts and updates pass when one of the four accepted states is inserted.*/
 --insert
@@ -231,6 +232,86 @@ INSERT INTO "ORDER" VALUES(1, 'jumbo', 'Placed', '2019-12-12', 1);
 UPDATE "ORDER" SET state = 'Awaiting payment', invoice_id = '1';
 ROLLBACK;
 
+/* Constraint 4 NotCompleteHasDiscrepancy */
+/* The trigger on ORDER will be tested first. The next insert and update will fail
+ because there isn't a discrepancy note */
+--insert
+begin transaction;
+insert into "ORDER" values
+('Order3', 'Supplier2', 'Not complete', current_date, null);
+rollback transaction;
+
+--update
+begin transaction;
+insert into "ORDER" values
+('Order2', 'Supplier2', 'Awaiting payment', current_date, null);
+update "ORDER"
+set state = 'Not complete';
+rollback transaction;
+
+/* The following test will succeed because a discrepancy note exists. For a discrepancy note to be created,
+there has to be an order. Thats why an order is created first.*/
+--insert
+begin transaction;
+insert into "ORDER" values
+('1', 'test', 'Placed', current_date, null);
+insert into DISCREPANCY (order_id, message, place_date) values
+('1', 'test', current_date);
+update "ORDER"
+set state = 'Not complete';
+rollback transaction
+
+/* Now the trigger on DISCREPANCY will be tested. This wil fail because the order it gets assigend to hasnt the state Not complete.
+When deleted it will also fail because the order is still not completed.*/
+--update
+begin transaction;
+insert into "ORDER" values
+('1', 'test', 'Placed', current_date, null),
+('2', 'test', 'Paid', current_date, null);
+insert into DISCREPANCY (order_id, message, place_date) values
+('1', 'test', current_date);
+update "ORDER"
+set state = 'Not complete';
+update DISCREPANCY
+set order_id = '2';
+rollback transaction;
+
+--delete
+begin transaction;
+insert into "ORDER" values
+('1', 'test', 'Placed', current_date, null);
+insert into DISCREPANCY (order_id, message, place_date) values
+('1', 'test', current_date);
+update "ORDER"
+set state = 'Not complete';
+delete from DISCREPANCY;
+rollback transaction;
+
+/* The following tests will succeed. Because the order has been completed, so its state changes. */
+--update
+begin transaction;
+insert into "ORDER" values
+('1', 'test', 'Placed', current_date, null),
+('2', 'test', 'Paid', current_date, null);
+insert into DISCREPANCY (order_id, message, place_date) values
+('1', 'test', current_date),
+('2', 'test', current_date);
+update "ORDER"
+set state = 'Not complete';
+update "ORDER"
+set state = 'Not complete';
+update DISCREPANCY
+set order_id = '2';
+rollback transaction;
+
+--delete
+begin transaction;
+insert into "ORDER" values
+('1', 'test', 'Placed', current_date, null);
+insert into DISCREPANCY (order_id, message, place_date) values
+('1', 'test', current_date);
+delete from DISCREPANCY;
+rollback transaction;
 
 /*===== Constraint 5 AnimalGender =====*/
 /* Test should pass when inserting or updating animal gender to 'male' */
@@ -317,6 +398,178 @@ insert into animal values
 update animal
 set gender_s = 'something';
 rollback;
+
+/*===== Constraint 6 AnimalHasOneEnclosure =====*/
+/* The following tests will succeed because none of the the date will overlap */
+
+--insert
+begin transaction;
+alter table ANIMAL_ENCLOSURE
+drop constraint fk_animal_in_enclosure;
+
+alter table ANIMAL_ENCLOSURE
+drop constraint fk_enclosure_has_animal;
+
+insert into ANIMAL_ENCLOSURE values
+('1', '2019-05-23', 'test', 1, '2019-05-24');
+
+insert into ANIMAL_ENCLOSURE values
+('1', '2019-05-25', 'test', 2, '2019-05-26');
+rollback transaction;
+
+--update
+begin transaction;
+alter table ANIMAL_ENCLOSURE
+drop constraint fk_animal_in_enclosure;
+
+alter table ANIMAL_ENCLOSURE
+drop constraint fk_enclosure_has_animal;
+
+insert into ANIMAL_ENCLOSURE values
+('1', '2019-05-23', 'test', 1, null);
+
+update ANIMAL_ENCLOSURE
+set End_date = '2019-05-24'
+where Animal_id = '1';
+rollback transaction;
+
+/* The following test will fail because the new since date is in between an older since and end_date.*/
+--insert
+begin transaction;
+alter table ANIMAL_ENCLOSURE
+drop constraint fk_animal_in_enclosure;
+
+alter table ANIMAL_ENCLOSURE
+drop constraint fk_enclosure_has_animal;
+
+insert into ANIMAL_ENCLOSURE values
+('1', '2019-05-23', 'test', 1, '2019-05-25');
+
+insert into ANIMAL_ENCLOSURE values
+('1', '2019-05-24', 'test', 2, '2019-05-26');
+rollback transaction;
+
+--update
+begin transaction;
+alter table ANIMAL_ENCLOSURE
+drop constraint fk_animal_in_enclosure;
+
+alter table ANIMAL_ENCLOSURE
+drop constraint fk_enclosure_has_animal;
+
+insert into ANIMAL_ENCLOSURE values
+('1', '2019-05-23', 'test', 1, '2019-05-25'),
+('1', '2019-05-25', 'test', 2, '2019-05-31'),
+('1', '2019-06-01', 'test', 3, '2019-06-02');
+
+update ANIMAL_ENCLOSURE
+set Since = '2019-05-24'
+where animal_id = '1' and Since = '2019-05-25';
+
+rollback transaction;
+
+/* The next test will fail because the end_date is in between an older since date and end_date*/
+--insert
+begin transaction;
+alter table ANIMAL_ENCLOSURE
+drop constraint fk_animal_in_enclosure;
+
+alter table ANIMAL_ENCLOSURE
+drop constraint fk_enclosure_has_animal;
+
+insert into ANIMAL_ENCLOSURE values
+('1', '2019-05-23', 'test', 1, '2019-05-25');
+
+insert into ANIMAL_ENCLOSURE values
+('1', '2019-05-10', 'test', 2, '2019-05-24');
+rollback transaction;
+
+--update
+begin transaction;
+alter table ANIMAL_ENCLOSURE
+drop constraint fk_animal_in_enclosure;
+
+alter table ANIMAL_ENCLOSURE
+drop constraint fk_enclosure_has_animal;
+
+insert into ANIMAL_ENCLOSURE values
+('1', '2019-05-23', 'test', 1, '2019-05-25'),
+('1', '2019-05-25', 'test', 2, '2019-05-31');
+
+update ANIMAL_ENCLOSURE
+set since = '2019-05-10',
+    End_date = '2019-05-26'
+where animal_id = '1' and Since = '2019-05-23';
+rollback transaction;
+
+/* This test will fail because the the new since date and end_date are in between a older since date and end_date. */
+--insert
+begin transaction;
+alter table ANIMAL_ENCLOSURE
+drop constraint fk_animal_in_enclosure;
+
+alter table ANIMAL_ENCLOSURE
+drop constraint fk_enclosure_has_animal;
+
+insert into ANIMAL_ENCLOSURE values
+('1', '2019-05-23', 'test', 1, '2019-05-30');
+
+insert into ANIMAL_ENCLOSURE values
+('1', '2019-05-24', 'test', 1, '2019-05-26');
+
+rollback transaction;
+
+--update
+begin transaction;
+alter table ANIMAL_ENCLOSURE
+drop constraint fk_animal_in_enclosure;
+
+alter table ANIMAL_ENCLOSURE
+drop constraint fk_enclosure_has_animal;
+
+insert into ANIMAL_ENCLOSURE values
+('1', '2019-05-23', 'test', 1, '2019-05-25'),
+('1', '2019-05-25', 'test', 2, '2019-05-31');
+
+update ANIMAL_ENCLOSURE
+set since = '2019-05-26',
+    End_date = '2019-05-29'
+where animal_id = '1' and Since = '2019-05-23';
+rollback transaction;
+
+/* The following test will fail because the new since date is before the old since date and the new end_date is before the old end_date */
+--insert
+begin transaction;
+alter table ANIMAL_ENCLOSURE
+drop constraint fk_animal_in_enclosure;
+
+alter table ANIMAL_ENCLOSURE
+drop constraint fk_enclosure_has_animal;
+
+insert into ANIMAL_ENCLOSURE values
+('1', '2019-05-23', 'test', 1, '2019-05-25');
+
+insert into ANIMAL_ENCLOSURE values
+('1', '2019-05-20', 'test', 1, '2019-05-26');
+rollback transaction;
+
+--update
+begin transaction;
+alter table ANIMAL_ENCLOSURE
+drop constraint fk_animal_in_enclosure;
+
+alter table ANIMAL_ENCLOSURE
+drop constraint fk_enclosure_has_animal;
+
+insert into ANIMAL_ENCLOSURE values
+('1', '2019-05-23', 'test', 1, '2019-05-25'),
+('1', '2019-05-25', 'test', 2, '2019-05-31');
+
+update ANIMAL_ENCLOSURE
+set since = '2019-05-24',
+    End_date = '2019-06-01'
+where animal_id = '1' and Since = '2019-05-23';
+rollback transaction;
 
 /*===== Constraint 7 LoanType =====*/
 /* Tests should pass when loan type 'to' is inserted or updated */
@@ -629,6 +882,77 @@ insert into EXCHANGE values('an-1', '2019-01-01', '2018-11-25', 'comments', 'to'
 update EXCHANGE set exchange_date = '2018-03-03';
 rollback;
 
+/*===== CONSTRAINT 12 OffspringId =====*/
+/* Test should pass if the updated mating_id is not the same as the offspring_id in table offspring. */
+begin transaction;
+alter table mating drop constraint if exists fk_breeding_mate; -- MATING(animal_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_mating_breeding__animal; -- MATING(mate_id) -> ANIMAL(animal_id)
+alter table offspring drop constraint if exists fk_offsprin_animal_of_animal; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
+
+insert into mating values('an-1', '2019-04-04', 'ica', 'mate-1');
+insert into offspring values('2019-04-04', 'an offspring', 'an-1', 'off-1');
+
+update mating set mate_id = 'mate-2';
+rollback;
+
+/* Test should fail if the updated mate_id is the same as the offspring_id of the concerning mating. */
+begin transaction;
+alter table mating drop constraint if exists fk_breeding_mate; -- MATING(animal_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_mating_breeding__animal; -- MATING(mate_id) -> ANIMAL(animal_id)
+alter table offspring drop constraint if exists fk_offsprin_animal_of_animal; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
+
+insert into mating values('an-1', '2019-04-04', 'ica', 'mate-1');
+insert into offspring values('2019-04-04', 'an offspring', 'an-1', 'off-1');
+
+update mating set mate_id = 'off-1';
+rollback;
+
+/* Test should pass if an offspring is inserted or updated with a different id than the animal_id or the mate_id. */
+-- insert
+begin transaction;
+alter table mating drop constraint if exists fk_breeding_mate; -- MATING(animal_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_mating_breeding__animal; -- MATING(mate_id) -> ANIMAL(animal_id)
+alter table offspring drop constraint if exists fk_offsprin_animal_of_animal; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
+
+insert into mating values('an-1', '2019-04-04', 'ica', 'mate-1');
+insert into offspring values('2019-04-04', 'an offspring', 'an-1', 'off-1');
+rollback;
+
+-- update
+begin transaction;
+alter table mating drop constraint if exists fk_breeding_mate; -- MATING(animal_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_mating_breeding__animal; -- MATING(mate_id) -> ANIMAL(animal_id)
+alter table offspring drop constraint if exists fk_offsprin_animal_of_animal; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
+
+insert into mating values('an-1', '2019-04-04', 'ica', 'mate-1');
+insert into offspring values('2019-04-04', 'an offspring', 'an-1', 'off-1');
+
+update offspring set offspring_id = 'off-2';
+rollback;
+
+/*Test should fail if an inserted or updated offspring has the same id as the animal_id or the mate_id*/
+-- insert
+begin transaction;
+alter table mating drop constraint if exists fk_breeding_mate; -- MATING(animal_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_mating_breeding__animal; -- MATING(mate_id) -> ANIMAL(animal_id)
+alter table offspring drop constraint if exists fk_offsprin_animal_of_animal; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
+
+insert into mating values('an-1', '2019-04-04', 'ica', 'mate-1');
+insert into offspring values('2019-04-04', 'an offspring', 'an-1', 'an-1');
+rollback;
+
+--update
+begin transaction;
+alter table mating drop constraint if exists fk_breeding_mate; -- MATING(animal_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_mating_breeding__animal; -- MATING(mate_id) -> ANIMAL(animal_id)
+alter table offspring drop constraint if exists fk_offsprin_animal_of_animal; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
+
+insert into mating values('an-1', '2019-04-04', 'ica', 'mate-1');
+insert into offspring values('2019-04-04', 'an offspring', 'an-1', 'off-1');
+
+update offspring set offspring_id = 'mate-1';
+rollback;
+
 /*===== Constraint 13 MateAndAnimalId ===== */
 /* Tests should pass because mate id and animal id are not the same */
 -- insert
@@ -655,6 +979,7 @@ set animal_id = 'sai-3';
 rollback;
 
 /* Tests should fail because mate id and animal id are the same */
+-- insert
 begin transaction;
 alter table mating drop constraint fk_breeding_mate;
 alter table mating drop constraint fk_mating_breeding__animal;
@@ -677,8 +1002,48 @@ update mating
 set animal_id = 'sai-2';
 rollback;
 
+/* ====== CONSTRAINT 14 DiscrepancyDate ======*/
+/* Tests should pass upon insert a discrapency date or updating it */
+--Insert
+BEGIN TRANSACTION;
+alter table "ORDER" drop constraint fk_order_invoice_of_invoice;
+alter table "ORDER" drop constraint fk_order_supplier;
 
-/*===== Constraint 15 LineItemWeight =====*/
+Insert into "ORDER" values ('1', 'berry', 'awaiting', '03-03-2019', '1');
+Insert into discrepancy values (1, 1, 'test', '04-04-2019');
+ROLLBACK;
+
+--Update
+BEGIN TRANSACTION;
+alter table "ORDER" drop constraint fk_order_invoice_of_invoice;
+alter table "ORDER" drop constraint fk_order_supplier;
+
+Insert into "ORDER" values ('1', 'berry', 'awaiting', '03-03-2019', '1');
+Insert into discrepancy values (1, 1, 'test', '04-04-2019');
+Update discrepancy set place_date = '05-05-2019';
+ROLLBACK;
+
+/* Tests should fail after inserting and updating a earlier date */
+--Insert
+BEGIN TRANSACTION;
+alter table "ORDER" drop constraint fk_order_invoice_of_invoice;
+alter table "ORDER" drop constraint fk_order_supplier;
+
+Insert into "ORDER" values ('1', 'berry', 'awaiting', '03-03-2019', '1');
+Insert into discrepancy values (1, 1, 'test', '02-02-2019');
+ROLLBACK;
+
+--Update
+BEGIN TRANSACTION;
+alter table "ORDER" drop constraint fk_order_invoice_of_invoice;
+alter table "ORDER" drop constraint fk_order_supplier;
+
+Insert into "ORDER" values ('1', 'berry', 'awaiting', '03-03-2019', '1');
+Insert into discrepancy values (1, 1, 'test', '04-04-2019');
+Update discrepancy set place_date = '02-02-2019';
+ROLLBACK;
+
+/*===== CONSTRAINT 15 LineItemWeight =====*/
 /* Tests should pass upon inserting a line_item or updating an line_item where the weight is higher than 0.*/
 
 /* Test should pass as the weight is higher than 0*/
@@ -819,6 +1184,55 @@ INSERT INTO "ORDER" VALUES('o123', 'jumbo', 'Paid', '2019-12-12', 'p1');
 INSERT INTO food_kind VALUES('banaan');
 INSERT INTO line_item VALUES('o123', 'banaan', 1, 10);
 UPDATE line_item SET price = -1;
+ROLLBACK;
+
+/* ====== Constraint 17 StockAmount ======*/
+/* Tests should pass upon inserting or updating a value higher than 0 */
+--Insert
+BEGIN TRANSACTION;
+ALTER TABLE stock DROP IF EXISTS fk_animal_foodstock;
+ALTER TABLE stock DROP IF EXISTS fk_food_in_stock;
+INSERT INTO stock values ('apen', 'bananen', 5);
+ROLLBACK;
+
+--Update
+BEGIN TRANSACTION;
+ALTER TABLE stock DROP IF EXISTS fk_animal_foodstock;
+ALTER TABLE stock DROP IF EXISTS fk_food_in_stock;
+INSERT INTO stock values ('apen', 'bananen', 5);
+UPDATE stock SET amount = 6;
+ROLLBACK;
+
+/* Tests should pass upon inserting or updating a value equal to 0 */
+--Insert
+BEGIN TRANSACTION;
+ALTER TABLE stock DROP IF EXISTS fk_animal_foodstock;
+ALTER TABLE stock DROP IF EXISTS fk_food_in_stock;
+INSERT INTO stock values ('apen', 'bananen', 0);
+ROLLBACK;
+
+--Update
+BEGIN TRANSACTION;
+ALTER TABLE stock DROP IF EXISTS fk_animal_foodstock;
+ALTER TABLE stock DROP IF EXISTS fk_food_in_stock;
+INSERT INTO stock values ('apen', 'bananen', 5);
+UPDATE stock SET amount = 0;
+ROLLBACK;
+
+/* Tests should fail upon inserting or updating a value lower than 0 */
+--Insert
+BEGIN TRANSACTION;
+ALTER TABLE stock DROP IF EXISTS fk_animal_foodstock;
+ALTER TABLE stock DROP IF EXISTS fk_food_in_stock;
+INSERT INTO stock values ('apen', 'bananen', -5);
+ROLLBACK;
+
+--Update
+BEGIN TRANSACTION;
+IALTER TABLE stock DROP IF EXISTS fk_animal_foodstock;
+ALTER TABLE stock DROP IF EXISTS fk_food_in_stock;
+INSERT INTO stock values ('apen', 'bananen', 5);
+UPDATE stock SET amount = -5;
 ROLLBACK;
 
 /* ====== CONSTRAINT 18 FeedingAmount ======*/

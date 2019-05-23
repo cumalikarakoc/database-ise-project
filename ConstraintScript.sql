@@ -1,4 +1,4 @@
-﻿﻿/*-------------------------------------------------------------*\
+/*-------------------------------------------------------------*\
 |			Constraints Script			|
 |---------------------------------------------------------------|
 |	Gemaakt door: 	Cumali karakoç,				|
@@ -9,6 +9,7 @@
 |	Versie:		1.0					|
 |	Gemaakt op:	5/7/2019 13:42				|
 \*-------------------------------------------------------------*/
+
 /* Constraint 1 OrderStates
 Column ORDER(State) An order must have one of the following states: Paid, Not complete, Awaiting payment, placed.
 
@@ -83,6 +84,57 @@ ALTER TABLE "ORDER" DROP CONSTRAINT IF EXISTS CHK_PAID_HAS_INVOICE;
 
 ALTER TABLE "ORDER" ADD CONSTRAINT CHCK_PAID_HAS_INVOICE
 CHECK((state = 'Paid' AND invoice_id IS NOT NULL) OR (state != 'Paid' AND invoice_id IS NULL));
+                                                      
+/* Constraint 4 NotCompleteHasDiscrepancy
+Column ORDER(State) An order with the state not complete has a discrepancy note.
+
+=================================================================
+= State			= Action		= Allowed	=
+=================================================================
+= Not Complete		= delete discrepancy	= no		=
+= Paid			= delete discerepancy	= yes		=
+=================================================================
+
+To apply this constraint, a triggger is created on table order. It will check the state after every update or insert.
+There is another trigger created on discrepany in case when a discrepancy gets deleted or a note is assigned to another order
+that hasnt the state not complete.
+*/
+
+--Order trigger
+create or replace function TRP_NOT_COMPLETE_HAS_DISCREPANCY() returns trigger as $$
+
+begin
+ if new.state = 'Not complete' then
+  if old.order_id not in (select order_id from DISCREPANCY where order_id = old.order_id) then
+   raise exception 'Order % requires a discrepancy note.', NEW.order_id;
+  end if;
+ end if;
+ return new;
+end;
+$$ language 'plpgsql';
+
+create trigger TR_NOT_COMPLETE_HAS_DISCREPANCY after insert or update on "ORDER"
+ for each row execute procedure TRP_NOT_COMPLETE_HAS_DISCREPANCY();
+
+--discrepancy trigger
+create or replace function TRP_DISCREPANCY_NOTE_HAS_ORDER() returns trigger as $$
+
+begin
+ if (TG_OP = 'UPDATE') then
+  if (select state from "ORDER" where order_id = new.order_id) <> 'Not complete' then
+   raise exception 'Order % doesnt have the state Not complete', new.order_id;
+  end if;  
+ elsif (TG_OP = 'DELETE') then
+  if (select state from "ORDER" where order_id = old.order_id) = 'Not complete' then
+   raise exception 'Order % has state Not complete', old.order_id;
+  end if;
+ end if;
+ return old;
+end;
+$$ language 'plpgsql';
+
+create trigger TR_DISCREPANCY_NOTE_HAS_ORDER after update or delete on DISCREPANCY
+ for each row execute procedure TRP_DISCREPANCY_NOTE_HAS_ORDER();
 
 /*===== Constraint 5 AnimalGender =====*/
 /* column ANIMAL(Gender)can be male, female or other.*/
@@ -90,6 +142,50 @@ alter table animal drop constraint if exists CHK_ANIMAL_GENDER;
 
 alter table animal add constraint CHK_ANIMAL_GENDER
 check(gender_s in ('male','female','other'));
+                   
+/*===== Constraint 6 AnimalHasOneEnclosure =====*/
+/* Columns ANIMAL_ENCLOSURE(Animal_id, Since, End_date) an animal cant stay in two enclosures at a time
+
+The table represents inserts. So if the since or end_date overlaps with previous dates it isnt allowed.
+===========================================================================
+= Animal_id		= Since		= End_date		= Allowed =
+===========================================================================
+= 2			= 2019-05-23	= 2019-05-25		= Yes	  =
+= 2			= 2019-05-27	= 2019-05-28		= Yes	  = 
+= 2			= 2019-05-27	= 2019-05-29		= No	  = This inst allowed because the since date is before the previous end date
+= 2			= 2019-05-29	= null			= Yes	  = 
+= 2			= 2019-05-30	= null			= No	  = This isnt allowed because the previous end date is null. That means the animal is
+=========================================================================== still assigend to a enclosure
+
+A trigger will be created wich checks if dates don't overlap
+*/
+
+create or replace function TRP_ANIMAL_HAS_ONE_ENCLOSURE() returns trigger as $$
+
+begin
+  if exists (select End_date from ANIMAL_ENCLOSURE where animal_id = new.animal_id and End_date is null and not (animal_id = new.animal_id and since = new.since)) then
+   raise exception 'An animal % can stay at one enclosure at a time', new.animal_id;
+  end if;
+   if exists
+   (select since, end_date 
+   from ANIMAL_ENCLOSURE
+   where animal_id = new.animal_id and ((new.since >= since
+   and new.since < end_date)
+   or
+   (new.end_date > since
+   and new.end_date =< end_date)
+   or
+   (new.since =< since
+    and new.end_date >= end_date
+   ))) then
+   raise exception 'The enclosure dates for animal % overlap', new.animal_id;
+  end if;
+ return null;
+end;
+$$ language 'plpgsql';
+
+create trigger TR_ANIMAL_HAS_ONE_ENCLOSURE after insert or update on ANIMAL_ENCLOSURE
+ for each row execute procedure TRP_ANIMAL_HAS_ONE_ENCLOSURE();
 
 /*===== Constraint 7 LoanType =====*/
 /* Column EXCHANGE(Loan_type) loan type can only be ‘to’ or ‘from’.*/
@@ -155,6 +251,36 @@ alter table EXCHANGE drop constraint if exists CHK_ANIMAL_RETURNED ;
 alter table EXCHANGE add constraint CHK_ANIMAL_RETURNED
 check(return_date >= exchange_date);
 
+/*===== Constraint 12 OffspringId =====*/
+/* Columns OFFSRPING(Offspring_id, Animal_id, Mate_id) An animal may not be its own parent or child.*/
+-- MATING
+create or replace function TRP_OFFSPRING_PARENTS() returns trigger as $$
+   begin
+   if(new.mate_id in (select offspring_id from OFFSPRING where animal_id = new.animal_id and mating_date = new.mating_date)) then
+      raise exception 'An animal may not be its own parent.';
+	  end if;
+      return new;
+   end;
+$$ language plpgsql;
+
+create trigger TR_OFFSPRING_PARENTS after update on MATING
+for each row 
+execute procedure TRP_OFFSPRING_PARENTS();
+
+-- OFFSPRING
+create or replace function TRP_OFFSPRING_ID() returns trigger as $$
+   begin
+   if(new.offspring_id = new.animal_id or new.offspring_id = (select mate_id from MATING where animal_id = new.animal_id and mating_date = new.mating_date)) then
+      raise exception 'An animal may not be its own child.';
+	  end if;
+      return new;
+   end;
+$$ language plpgsql;
+
+create trigger TR_OFFSPRING_ID after insert or update on OFFSPRING
+for each row 
+execute procedure TRP_OFFSPRING_ID();
+
 /*===== Constraint 13 MateAndAnimalId =====*/
 /* Columns MATING(Animal_id, Mate_id) Animal_id and mate_id cannot be the same.*/
 alter table mating drop constraint if exists CHK_MATE_AND_ANIMAL_ID;
@@ -199,6 +325,35 @@ create trigger TR_ANIMAL_VISITS_VET before insert or update
 
 
 
+/*===== CONSTRAINT 14 DiscrepancyDate =====*/
+/* column DISCREPANCY(Place_date) cannot be before ORDER(Order_date)*/
+
+CREATE OR REPLACE FUNCTION TR_DISCREPANCY_DATE_FUNC()
+  RETURNS trigger AS
+$$
+BEGIN
+	
+	IF(NEW.place_date < (Select order_date from "ORDER" where order_id = NEW.order_id)) then
+		RAISE EXCEPTION 'place date is before orderdate. please adjust the date'; 
+	end if;
+    RETURN NEW;
+END;
+$$
+LANGUAGE 'plpgsql';
+
+CREATE TRIGGER TR_DISCREPANCY_DATE 
+  AFTER INSERT OR UPDATE
+  ON discrepancy
+  FOR EACH ROW
+  EXECUTE PROCEDURE TR_DISCREPANCY_DATE_FUNC();
+
+/*====== CONSTRAINT 17 ======*/
+/* column STOCK(Amount) must be higher than or equal to 0. */
+ALTER TABLE "stock" DROP CONSTRAINT IF EXISTS CHK_STOCK_AMOUNT;
+
+ALTER TABLE "stock" ADD CONSTRAINT CHK_STOCK_AMOUNT  
+CHECK (amount >= 0);
+
 /*===== CONSTRAINT 21 SpeciesWeight =====*/
 /* column SPECIES_GENDER(Weight) must be higher than 0 */
 ALTER TABLE "species_gender" DROP CONSTRAINT IF EXISTS CHK_AVERAGE_WEIGHT;
@@ -206,4 +361,3 @@ ALTER TABLE "species_gender" DROP CONSTRAINT IF EXISTS CHK_AVERAGE_WEIGHT;
 ALTER TABLE "species_gender" ADD CONSTRAINT CHK_AVERAGE_WEIGHT
 CHECK (average_weight > 0);
 /*=============*/
-
