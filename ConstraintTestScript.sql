@@ -629,7 +629,56 @@ insert into EXCHANGE values('an-1', '2019-01-01', '2018-11-25', 'comments', 'to'
 update EXCHANGE set exchange_date = '2018-03-03';
 rollback;
 
-/*===== CONSTRAINT 15 LineItemWeight =====*/
+/*===== Constraint 13 MateAndAnimalId ===== */
+/* Tests should pass because mate id and animal id are not the same */
+-- insert
+begin transaction;
+alter table mating drop constraint fk_breeding_mate;
+alter table mating drop constraint fk_mating_breeding__animal;
+
+insert into mating values
+('sai-1', '12-12-18', 'duiven', 'sai-2'),
+('sai-2', '01-01-19', 'duiven', 'sai-1');
+rollback;
+
+-- update
+begin transaction;
+alter table mating drop constraint fk_breeding_mate;
+alter table mating drop constraint fk_mating_breeding__animal;
+
+insert into mating values
+('sai-1', '12-12-18', 'duiven', 'sai-2'),
+('sai-2', '01-01-19', 'duiven', 'sai-1');
+
+update mating
+set animal_id = 'sai-3';
+rollback;
+
+/* Tests should fail because mate id and animal id are the same */
+begin transaction;
+alter table mating drop constraint fk_breeding_mate;
+alter table mating drop constraint fk_mating_breeding__animal;
+
+insert into mating values
+('sai-1', '12-12-18', 'duiven', 'sai-2'),
+('sai-2', '01-01-19', 'duiven', 'sai-2');
+rollback;
+
+-- update
+begin transaction;
+alter table mating drop constraint fk_breeding_mate;
+alter table mating drop constraint fk_mating_breeding__animal;
+
+insert into mating values
+('sai-1', '12-12-18', 'duiven', 'sai-2'),
+('sai-2', '01-01-19', 'duiven', 'sai-1');
+
+update mating
+set animal_id = 'sai-2';
+rollback;
+
+
+/*===== Constraint 15 LineItemWeight =====*/
 /* Tests should pass upon inserting a line_item or updating an line_item where the weight is higher than 0.*/
 
 /* Test should pass as the weight is higher than 0*/
