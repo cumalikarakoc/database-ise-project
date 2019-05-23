@@ -41,3 +41,18 @@ begin
 end;
 
 $$ language 'plpgsql';
+
+begin transaction;
+alter table animal_enclosure drop constraint fk_animal_in_enclosure;
+alter table animal_enclosure drop constraint fk_enclosure_has_animal;
+
+insert into animal_enclosure values
+('sai-1','10-10-2018','big bois',1,'11-11-2018');
+insert into animal_enclosure values
+('sai-1','09-09-2018','big bois',1,'12-12-2018');
+rollback;
+
+select * from animal_enclosure
+where animal_id = new.animal_id
+and new.since < since
+and new.end_date > end_date
