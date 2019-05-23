@@ -1,4 +1,4 @@
-/*-------------------------------------------------------------*\
+﻿/*-------------------------------------------------------------*\
 |			Constraints Script			|
 |---------------------------------------------------------------|
 |	Gemaakt door: 	Cumali karakoç,				|
@@ -357,7 +357,6 @@ CHECK (amount >= 0);
 /*===== Constraint 20 MaturityAge ======*/
 /* column SPECIES_GENDER(Maturity_age) Age must be higher or equal to 0. */
 ALTER TABLE "species_gender" DROP CONSTRAINT IF EXISTS CHK_MATURITY_AGE ;
-
 
 ALTER TABLE "species_gender" ADD CONSTRAINT CHK_MATURITY_AGE   
 CHECK (maturity_age >= 0);
