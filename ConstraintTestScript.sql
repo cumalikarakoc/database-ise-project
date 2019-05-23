@@ -1,4 +1,4 @@
-/*-------------------------------------------------------------*\
+﻿/*-------------------------------------------------------------*\
 |			Constraint Test Script			|
 |---------------------------------------------------------------|
 |	Gemaakt door: 	Cumali karakoç,				|
@@ -681,17 +681,15 @@ rollback;
 /* Tests should pass upon insert a discrapency date or updating it */
 --Insert
 BEGIN TRANSACTION;
-Insert into invoice values (1);
-Insert into supplier values ('berry', '06123456789', 'arnhem');
-Insert into "ORDER" values (1, 'berry', 'awaiting', '03-03-2019', 1);
+alter table mating drop constraint fk_order_discrepancy;
+
 Insert into discrepancy values (1, 1, 'test', '04-04-2019');
 ROLLBACK;
 
 --Update
 BEGIN TRANSACTION;
-Insert into invoice values (1);
-Insert into supplier values ('berry', '06123456789', 'arnhem');
-Insert into "ORDER" values (1, 'berry', 'awaiting', '03-03-2019', 1);
+alter table mating drop constraint fk_order_discrepancy;
+
 Insert into discrepancy values (1, 1, 'test', '04-04-2019');
 Update discrepancy set place_date = '05-05-2019' where discrepancy_id = 1;
 ROLLBACK;
@@ -699,17 +697,15 @@ ROLLBACK;
 /* Tests should fail after inserting and updating a earlier date */
 --Insert
 BEGIN TRANSACTION;
-Insert into invoice values (1);
-Insert into supplier values ('berry', '06123456789', 'arnhem');
-Insert into "ORDER" values (1, 'berry', 'awaiting', '03-03-2019', 1);
+alter table mating drop constraint fk_order_discrepancy;
+
 Insert into discrepancy values (1, 1, 'test', '02-02-2019');
 ROLLBACK;
 
 --Update
 BEGIN TRANSACTION;
-Insert into invoice values (1);
-Insert into supplier values ('berry', '06123456789', 'arnhem');
-Insert into "ORDER" values (1, 'berry', 'awaiting', '03-03-2019', 1);
+alter table mating drop constraint fk_order_discrepancy;
+
 Insert into discrepancy values (1, 1, 'test', '04-04-2019');
 Update discrepancy set place_date = '02-02-2019' where discrepancy_id = 1;
 ROLLBACK;
