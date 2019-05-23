@@ -677,8 +677,40 @@ update mating
 set animal_id = 'sai-2';
 rollback;
 
+/* ====== CONSTRAINT 14 DiscrepancyDate ======*/
+/* Tests should pass upon insert a discrapency date or updating it */
+--Insert
+BEGIN TRANSACTION;
+alter table mating drop constraint fk_order_discrepancy;
 
-/*===== Constraint 15 LineItemWeight =====*/
+Insert into discrepancy values (1, 1, 'test', '04-04-2019');
+ROLLBACK;
+
+--Update
+BEGIN TRANSACTION;
+alter table mating drop constraint fk_order_discrepancy;
+
+Insert into discrepancy values (1, 1, 'test', '04-04-2019');
+Update discrepancy set place_date = '05-05-2019' where discrepancy_id = 1;
+ROLLBACK;
+
+/* Tests should fail after inserting and updating a earlier date */
+--Insert
+BEGIN TRANSACTION;
+alter table mating drop constraint fk_order_discrepancy;
+
+Insert into discrepancy values (1, 1, 'test', '02-02-2019');
+ROLLBACK;
+
+--Update
+BEGIN TRANSACTION;
+alter table mating drop constraint fk_order_discrepancy;
+
+Insert into discrepancy values (1, 1, 'test', '04-04-2019');
+Update discrepancy set place_date = '02-02-2019' where discrepancy_id = 1;
+ROLLBACK;
+
+/*===== CONSTRAINT 15 LineItemWeight =====*/
 /* Tests should pass upon inserting a line_item or updating an line_item where the weight is higher than 0.*/
 
 /* Test should pass as the weight is higher than 0*/
