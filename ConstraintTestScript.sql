@@ -111,7 +111,7 @@ update ANIMAL_ENCLOSURE
 set since = '2019-05-10',
     End_date = '2019-05-26'
 where animal_id = '1' and Since = '2019-05-23';
-
+rollback transaction;
 
 /* This test will fail because the the new since date and end_date are in between a older since date and end_date. */
 --insert
