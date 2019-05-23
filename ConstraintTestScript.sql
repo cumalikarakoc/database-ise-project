@@ -925,6 +925,61 @@ INSERT INTO line_item VALUES('o123', 'banaan', 1, 10);
 UPDATE line_item SET price = -1;
 ROLLBACK;
 
+/* ====== Constraint 17 StockAmount ======*/
+/* Tests should pass upon inserting or updating a value higher than 0 */
+--Insert
+BEGIN TRANSACTION;
+INSERT INTO keeper values ('henkie');
+INSERT INTO area VALUES('apen', 'henkie');
+INSERT INTO food_kind values ('bananen');
+INSERT INTO stock values ('apen', 'bananen', 5);
+ROLLBACK;
+
+--Update
+BEGIN TRANSACTION;
+INSERT INTO keeper values ('henkie');
+INSERT INTO area VALUES('apen', 'henkie');
+INSERT INTO food_kind values ('bananen');
+INSERT INTO stock values ('apen', 'bananen', 5);
+UPDATE stock SET amount = 6 where area_name = 'apen' and food_type_ft = 'bananen';
+ROLLBACK;
+
+/* Tests should pass upon inserting or updating a value equal to 0 */
+--Insert
+BEGIN TRANSACTION;
+INSERT INTO keeper values ('henkie');
+INSERT INTO area VALUES('apen', 'henkie');
+INSERT INTO food_kind values ('bananen');
+INSERT INTO stock values ('apen', 'bananen', 0);
+ROLLBACK;
+
+--Update
+BEGIN TRANSACTION;
+INSERT INTO keeper values ('henkie');
+INSERT INTO area VALUES('apen', 'henkie');
+INSERT INTO food_kind values ('bananen');
+INSERT INTO stock values ('apen', 'bananen', 5);
+UPDATE stock SET amount = 0 where area_name = 'apen' and food_type_ft = 'bananen';
+ROLLBACK;
+
+/* Tests should fail upon inserting or updating a value lower than 0 */
+--Insert
+BEGIN TRANSACTION;
+INSERT INTO keeper values ('henkie');
+INSERT INTO area VALUES('apen', 'henkie');
+INSERT INTO food_kind values ('bananen');
+INSERT INTO stock values ('apen', 'bananen', -5);
+ROLLBACK;
+
+--Update
+BEGIN TRANSACTION;
+INSERT INTO keeper values ('henkie');
+INSERT INTO area VALUES('apen', 'henkie');
+INSERT INTO food_kind values ('bananen');
+INSERT INTO stock values ('apen', 'bananen', 5);
+UPDATE stock SET amount = -5 where area_name = 'apen' and food_type_ft = 'bananen';
+ROLLBACK;
+
 /* ====== CONSTRAINT 19 AnimalVisitsVet ======*/
 /* Test should pass upon a visit date after the animal`s birth date*/
 --Insert

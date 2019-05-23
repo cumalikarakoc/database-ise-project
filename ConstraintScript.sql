@@ -245,6 +245,14 @@ CREATE TRIGGER TR_DISCREPANCY_DATE
   FOR EACH ROW
   EXECUTE PROCEDURE TR_DISCREPANCY_DATE_FUNC();
 
+/*====== CONSTRAINT 17 ======*/
+/* column STOCK(Amount) must be higher than or equal to 0. */
+ALTER TABLE "stock" DROP CONSTRAINT IF EXISTS CHK_STOCK_AMOUNT;
+
+ALTER TABLE "stock" ADD CONSTRAINT CHK_STOCK_AMOUNT  
+CHECK (amount >= 0);
+
+
 /*===== CONSTRAINT 21 SpeciesWeight =====*/
 /* column SPECIES_GENDER(Weight) must be higher than 0 */
 ALTER TABLE "species_gender" DROP CONSTRAINT IF EXISTS CHK_AVERAGE_WEIGHT;
