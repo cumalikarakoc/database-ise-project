@@ -1,4 +1,4 @@
-﻿/*-------------------------------------------------------------*\
+﻿﻿/*-------------------------------------------------------------*\
 |			Constraints Script			|
 |---------------------------------------------------------------|
 |	Gemaakt door: 	Cumali karakoç,				|
@@ -98,6 +98,13 @@ Alter table exchange drop constraint if exists CHK_LOAN_TYPE;
 alter table exchange add constraint CHK_LOAN_TYPE
 CHECK(loan_type in ('to','from'));
 
+/*===== Constraint 8 NextVisitVet =====*/
+/* Columns ANIMAL_VISITS_VET(Next_visit, Visit_date) The next visit date cant be before the visit date. */
+alter table animal_visits_vet drop constraint if exists CHK_NEXT_VISIT_VET;
+
+alter table animal_visits_vet add constraint CHK_NEXT_VISIT_VET
+check(next_visit > visit_date);
+
 /*===== Constraint 9 EnclosureEndDate =====*/
 /* Columns ANIMAL_ENCLOSURE(Since, End_date)  The end date may not be before the date when the animal is moved to the enclosure.*/
 alter table ANIMAL_ENCLOSURE drop constraint if exists CHK_ENCLOSURE_DATE;
@@ -178,6 +185,13 @@ create trigger TR_OFFSPRING_ID after insert or update on OFFSPRING
 for each row 
 execute procedure TRP_OFFSPRING_ID();
 
+/*===== Constraint 13 MateAndAnimalId =====*/
+/* Columns MATING(Animal_id, Mate_id) Animal_id and mate_id cannot be the same.*/
+alter table mating drop constraint if exists CHK_MATE_AND_ANIMAL_ID;
+
+alter table mating add constraint CHK_MATE_AND_ANIMAL_ID
+check(animal_id <> mate_id);
+
 /*===== CONSTRAINT 15 LineItemWeight =====*/
 /* column LINE_ITEM(price) must be higher than 0*/
 ALTER TABLE line_item DROP CONSTRAINT IF EXISTS CHK_LINE_ITEM_WEIGHT;
@@ -189,6 +203,47 @@ CHECK(weight > 0);
 ALTER TABLE line_item DROP CONSTRAINT IF EXISTS CHK_LINE_ITEM_PRICE;
 ALTER TABLE line_item ADD CONSTRAINT CHK_LINE_ITEM_PRICE
 CHECK(price >= '0.00');
+
+/*===== CONSTRAINT 19 AnimalVisitsVet =====*/
+/* An animal cannot visit a vet before his birth date*/
+create or replace function TRP_ANIMAL_VISITS_VET()
+	returns trigger as
+  $$
+	begin
+		if (new.visit_date < (select birth_date from animal where animal_id = new.animal_id ))
+		then raise exception 'An animal cannot visit a vet before his birth date';
+		end if;
+	return new;
+		end;
+  $$
+  language 'plpgsql';
+
+create trigger TR_ANIMAL_VISITS_VET before insert or update
+  on animal_visits_vet for each row execute procedure TRP_ANIMAL_VISITS_VET();
+
+
+
+/*===== CONSTRAINT 14 DiscrepancyDate =====*/
+/* column DISCREPANCY(Place_date) cannot be before ORDER(Order_date)*/
+
+CREATE OR REPLACE FUNCTION TR_DISCREPANCY_DATE_FUNC()
+  RETURNS trigger AS
+$$
+BEGIN
+	
+	IF(NEW.place_date < (Select order_date from "ORDER" where order_id = NEW.order_id)) then
+		RAISE EXCEPTION 'place date is before orderdate. please adjust the date'; 
+	end if;
+    RETURN NEW;
+END;
+$$
+LANGUAGE 'plpgsql';
+
+CREATE TRIGGER TR_DISCREPANCY_DATE 
+  AFTER INSERT OR UPDATE
+  ON discrepancy
+  FOR EACH ROW
+  EXECUTE PROCEDURE TR_DISCREPANCY_DATE_FUNC();
 
 /*===== CONSTRAINT 21 SpeciesWeight =====*/
 /* column SPECIES_GENDER(Weight) must be higher than 0 */

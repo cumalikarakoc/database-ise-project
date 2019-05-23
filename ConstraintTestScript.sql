@@ -382,6 +382,82 @@ update exchange
 set loan_type = 'tow';
 rollback;
 
+/*===== Constraint 8 NextVisitVet =====*/
+/*Tests should pass when a next_visit that is later than visit_date is inserted or updated*/
+-- insert
+begin transaction;
+alter table animal_visits_vet drop constraint if exists fk_animal_check_up;
+alter table animal_visits_vet drop constraint if exists fk_prescription_of_vet_visit;
+alter table animal_visits_vet drop constraint if exists fk_vet_visited_animal;
+
+insert into animal_visits_vet values
+('sai-1','10-10-2018','pil','Bob','12-12-2018'),
+('sai-2','10-10-2018','pil','BOB','12-12-2018');
+rollback;
+-- update
+begin transaction;
+alter table animal_visits_vet drop constraint if exists fk_animal_check_up;
+alter table animal_visits_vet drop constraint if exists fk_prescription_of_vet_visit;
+alter table animal_visits_vet drop constraint if exists fk_vet_visited_animal;
+
+insert into animal_visits_vet values
+('sai-1','10-10-2018','pil','Bob','12-12-2018'),
+('sai-2','10-10-2018','pil','BOB','12-12-2018'); 
+
+update animal_visits_vet values
+set next_visit = '11-11-2018';
+rollback;
+
+/* tests should fail because next_visit that is before visit_date is inserted or updated*/
+-- insert
+begin transaction;
+alter table animal_visits_vet drop constraint if exists fk_animal_check_up;
+alter table animal_visits_vet drop constraint if exists fk_prescription_of_vet_visit;
+alter table animal_visits_vet drop constraint if exists fk_vet_visited_animal;
+
+insert into animal_visits_vet values
+('sai-1','10-10-2018','pil','Bob','12-12-2018'),
+('sai-2','12-12-2018','pil','BOB','10-10-2018');
+rollback;
+-- update
+begin transaction;
+alter table animal_visits_vet drop constraint if exists fk_animal_check_up;
+alter table animal_visits_vet drop constraint if exists fk_prescription_of_vet_visit;
+alter table animal_visits_vet drop constraint if exists fk_vet_visited_animal;
+
+insert into animal_visits_vet values
+('sai-1','11-11-2018','pil','Bob','12-12-2018'),
+('sai-2','11-11-2018','pil','BOB','12-12-2018'); 
+
+update animal_visits_vet values
+set next_visit = '10-10-2018';
+rollback;
+
+/* tests should fail because next_visit that is before visit_date is inserted or updated*/
+-- insert
+begin transaction;
+alter table animal_visits_vet drop constraint if exists fk_animal_check_up;
+alter table animal_visits_vet drop constraint if exists fk_prescription_of_vet_visit;
+alter table animal_visits_vet drop constraint if exists fk_vet_visited_animal;
+
+insert into animal_visits_vet values
+('sai-1','10-10-2018','pil','Bob','12-12-2018'),
+('sai-2','11-11-2018','pil','BOB','11-11-2018');
+rollback;
+-- update
+begin transaction;
+alter table animal_visits_vet drop constraint if exists fk_animal_check_up;
+alter table animal_visits_vet drop constraint if exists fk_prescription_of_vet_visit;
+alter table animal_visits_vet drop constraint if exists fk_vet_visited_animal;
+
+insert into animal_visits_vet values
+('sai-1','10-10-2018','pil','Bob','11-11-2018'),
+('sai-2','11-11-2018','pil','BOB','12-12-2018'); 
+
+update animal_visits_vet values
+set next_visit = '11-11-2018';
+rollback;
+
 /*===== Constraint 9 EnclosureEndDate =====*/
 /* Tests should pass when end_date is on the same date as the date of stay of the animal or later.*/
 -- insert
@@ -465,7 +541,7 @@ insert into reintroduction values('an-1', '2018-10-05', 'location', null);
 insert into reintroduction values('an-1', '2019-11-05', 'location', null);
 insert into spotted values('an-1', '2018-10-05');
 
-update spotted set spot_date = '2018-04-04'; 
+update spotted set spot_date = '2018-04-04';
 rollback;
 
 /*Test should pass if the there is still a reintroduction_date before the oldest spot_date after deleting or updating.*/
@@ -624,6 +700,88 @@ insert into offspring values('2019-04-04', 'an offspring', 'an-1', 'off-1');
 update offspring set offspring_id = 'mate-1';
 rollback;
 
+/*===== Constraint 13 MateAndAnimalId ===== */
+/* Tests should pass because mate id and animal id are not the same */
+-- insert
+begin transaction;
+alter table mating drop constraint fk_breeding_mate;
+alter table mating drop constraint fk_mating_breeding__animal;
+
+insert into mating values
+('sai-1', '12-12-18', 'duiven', 'sai-2'),
+('sai-2', '01-01-19', 'duiven', 'sai-1');
+rollback;
+
+-- update
+begin transaction;
+alter table mating drop constraint fk_breeding_mate;
+alter table mating drop constraint fk_mating_breeding__animal;
+
+insert into mating values
+('sai-1', '12-12-18', 'duiven', 'sai-2'),
+('sai-2', '01-01-19', 'duiven', 'sai-1');
+
+update mating
+set animal_id = 'sai-3';
+rollback;
+
+/* Tests should fail because mate id and animal id are the same */
+-- insert
+begin transaction;
+alter table mating drop constraint fk_breeding_mate;
+alter table mating drop constraint fk_mating_breeding__animal;
+
+insert into mating values
+('sai-1', '12-12-18', 'duiven', 'sai-2'),
+('sai-2', '01-01-19', 'duiven', 'sai-2');
+rollback;
+
+-- update
+begin transaction;
+alter table mating drop constraint fk_breeding_mate;
+alter table mating drop constraint fk_mating_breeding__animal;
+
+insert into mating values
+('sai-1', '12-12-18', 'duiven', 'sai-2'),
+('sai-2', '01-01-19', 'duiven', 'sai-1');
+
+update mating
+set animal_id = 'sai-2';
+rollback;
+
+/* ====== CONSTRAINT 14 DiscrepancyDate ======*/
+/* Tests should pass upon insert a discrapency date or updating it */
+--Insert
+BEGIN TRANSACTION;
+alter table mating drop constraint fk_order_discrepancy;
+
+Insert into discrepancy values (1, 1, 'test', '04-04-2019');
+ROLLBACK;
+
+--Update
+BEGIN TRANSACTION;
+alter table mating drop constraint fk_order_discrepancy;
+
+Insert into discrepancy values (1, 1, 'test', '04-04-2019');
+Update discrepancy set place_date = '05-05-2019' where discrepancy_id = 1;
+ROLLBACK;
+
+/* Tests should fail after inserting and updating a earlier date */
+--Insert
+BEGIN TRANSACTION;
+alter table mating drop constraint fk_order_discrepancy;
+
+Insert into discrepancy values (1, 1, 'test', '02-02-2019');
+ROLLBACK;
+
+--Update
+BEGIN TRANSACTION;
+alter table mating drop constraint fk_order_discrepancy;
+
+Insert into discrepancy values (1, 1, 'test', '04-04-2019');
+Update discrepancy set place_date = '02-02-2019' where discrepancy_id = 1;
+ROLLBACK;
+
 /*===== CONSTRAINT 15 LineItemWeight =====*/
 /* Tests should pass upon inserting a line_item or updating an line_item where the weight is higher than 0.*/
 
@@ -766,6 +924,68 @@ INSERT INTO food_kind VALUES('banaan');
 INSERT INTO line_item VALUES('o123', 'banaan', 1, 10);
 UPDATE line_item SET price = -1;
 ROLLBACK;
+
+/* ====== CONSTRAINT 19 AnimalVisitsVet ======*/
+/* Test should pass upon a visit date after the animal`s birth date*/
+--Insert
+begin transaction;
+alter table animal drop constraint fk_animal_of_species;
+alter table animal_visits_vet drop constraint fk_prescription_of_vet_visit;
+alter table animal_visits_vet drop constraint fk_vet_visited_animal;
+insert into animal VALUES('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
+insert into animal_visits_vet VALUES('1', '12/12/13', 'Regular check', 'Doctor Pol', '12/12/14');
+rollback;
+
+--Update
+begin transaction;
+alter table animal drop constraint fk_animal_of_species;
+alter table animal_visits_vet drop constraint fk_prescription_of_vet_visit;
+alter table animal_visits_vet drop constraint fk_vet_visited_animal;
+insert into animal VALUES('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
+insert into animal_visits_vet VALUES('1', '12/12/13', 'Regular check', 'Doctor Pol', '12/12/20');
+update animal_visits_vet set visit_date = '1/1/14';
+rollback;
+
+/* Test should pass upon a visit date on the animal`s birth date*/
+--Insert
+begin transaction;
+alter table animal drop constraint fk_animal_of_species;
+alter table animal_visits_vet drop constraint fk_prescription_of_vet_visit;
+alter table animal_visits_vet drop constraint fk_vet_visited_animal;
+insert into animal VALUES('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
+insert into animal_visits_vet VALUES('1', '1/1/11', 'Regular check', 'Doctor Pol', '12/12/14');
+rollback;
+
+--Update
+begin transaction;
+alter table animal drop constraint fk_animal_of_species;
+alter table animal_visits_vet drop constraint fk_prescription_of_vet_visit;
+alter table animal_visits_vet drop constraint fk_vet_visited_animal;
+insert into animal VALUES('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
+insert into animal_visits_vet VALUES('1', '12/12/13', 'Regular check', 'Doctor Pol', '12/12/20');
+update animal_visits_vet set visit_date = '1/1/11';
+rollback;
+
+/* Test should fail upon a visit date is before the animal`s birth date*/
+--Insert
+begin transaction;
+alter table animal drop constraint fk_animal_of_species;
+alter table animal_visits_vet drop constraint fk_prescription_of_vet_visit;
+alter table animal_visits_vet drop constraint fk_vet_visited_animal;
+insert into animal VALUES('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
+insert into animal_visits_vet VALUES('1', '1/1/10', 'Regular check', 'Doctor Pol', '12/12/14');
+rollback;
+
+--Update
+begin transaction;
+alter table animal drop constraint fk_animal_of_species;
+alter table animal_visits_vet drop constraint fk_prescription_of_vet_visit;
+alter table animal_visits_vet drop constraint fk_vet_visited_animal;
+insert into animal VALUES('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
+insert into animal_visits_vet VALUES('1', '12/12/13', 'Regular check', 'Doctor Pol', '12/12/20');
+update animal_visits_vet set visit_date = '1/1/10';
+rollback;
+
 
 /* ====== CONSTRAINT 21 SpeciesWeight ======*/
 /* Tests should pass upon insert a species gender or updating it */
