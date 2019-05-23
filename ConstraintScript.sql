@@ -348,6 +348,14 @@ ALTER TABLE "stock" DROP CONSTRAINT IF EXISTS CHK_STOCK_AMOUNT;
 ALTER TABLE "stock" ADD CONSTRAINT CHK_STOCK_AMOUNT  
 CHECK (amount >= 0);
 
+/*===== Constraint 20 MaturityAge ======*/
+/* column SPECIES_GENDER(Maturity_age) Age must be higher or equal to 0. */
+ALTER TABLE "species_gender" DROP CONSTRAINT IF EXISTS CHK_MATURITY_AGE ;
+
+
+ALTER TABLE "species_gender" ADD CONSTRAINT CHK_MATURITY_AGE   
+CHECK (maturity_age >= 0);
+
 /*===== CONSTRAINT 21 SpeciesWeight =====*/
 /* column SPECIES_GENDER(Weight) must be higher than 0 */
 ALTER TABLE "species_gender" DROP CONSTRAINT IF EXISTS CHK_AVERAGE_WEIGHT;

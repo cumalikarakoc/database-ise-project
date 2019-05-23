@@ -1,4 +1,4 @@
-/*-------------------------------------------------------------*\
+﻿/*-------------------------------------------------------------*\
 |			Constraint Test Script			|
 |---------------------------------------------------------------|
 |	Gemaakt door: 	Cumali karakoç,				|
@@ -1296,6 +1296,48 @@ insert into animal_visits_vet VALUES('1', '12/12/13', 'Regular check', 'Doctor P
 update animal_visits_vet set visit_date = '1/1/10';
 rollback;
 
+/* ====== CONSTRAINT 20 MaturityAge ======*/
+/* Tests should pass upon inserting or updating a age higher than 0*/
+--Insert
+BEGIN TRANSACTION;
+ALTER TABLE species_gender DROP IF EXISTS fk_species_with_gender;
+INSERT INTO species_gender values ('aap', '', 5, 5);
+ROLLBACK;
+
+--Update
+BEGIN TRANSACTION;
+ALTER TABLE species_gender DROP IF EXISTS fk_species_with_gender;
+INSERT INTO species_gender values ('aap', 'male', 5, 5);
+UPDATE species_gender SET maturity_age = 6 where english_name = 'aap' and gender = 'male';
+ROLLBACK;
+
+/* Tests should pass upon inserting or updating a age equal to 0*/
+--Insert
+BEGIN TRANSACTION;
+ALTER TABLE species_gender DROP IF EXISTS fk_species_with_gender;
+INSERT INTO species_gender values ('aap', '', 5, 0);
+ROLLBACK;
+
+--Update
+BEGIN TRANSACTION;
+ALTER TABLE species_gender DROP IF EXISTS fk_species_with_gender;
+INSERT INTO species_gender values ('aap', 'male', 5, 5);
+UPDATE species_gender SET maturity_age = 0 where english_name = 'aap' and gender = 'male';
+ROLLBACK;
+
+/* Tests should fail upon inserting or updating a age lower than 0 */
+--Insert
+BEGIN TRANSACTION;
+ALTER TABLE species_gender DROP IF EXISTS fk_species_with_gender;
+INSERT INTO species_gender values ('aap', '', 5, -2);
+ROLLBACK;
+
+--Update
+BEGIN TRANSACTION;
+ALTER TABLE species_gender DROP IF EXISTS fk_species_with_gender;
+INSERT INTO species_gender values ('aap', 'male', 5, 5);
+UPDATE species_gender SET maturity_age = -2 where english_name = 'aap' and gender = 'male';
+ROLLBACK;
 
 /* ====== CONSTRAINT 21 SpeciesWeight ======*/
 /* Tests should pass upon insert a species gender or updating it */
