@@ -13,6 +13,7 @@
 /*Constraint 6 
 Columns ANIMAL_ENCLOSURE(Animal_id, Since, End_date) an animal cant stay in two enclosures at a time
 
+The table represents inserts. So if the since or end_date overlaps with previous dates it isnt allowed.
 ===========================================================================
 = Animal_id		= Since		= End_date		= Allowed =
 ===========================================================================
@@ -44,8 +45,11 @@ begin
    (new.since < since
     and new.end_date > end_date
    ))) then
-   raise exception 'The dates overlap';
+   raise exception 'The enclosure dates for animal % overlap', new.animal_id;
   end if;
  return null;
 end;
 $$ language 'plpgsql';
+
+create trigger TR_ANIMAL_HAS_ONE_ENCLOSURE after insert or update on ANIMAL_ENCLOSURE
+ for each row execute procedure TRP_ANIMAL_HAS_ONE_ENCLOSURE();
