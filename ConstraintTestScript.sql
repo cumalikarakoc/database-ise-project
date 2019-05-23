@@ -1006,33 +1006,41 @@ rollback;
 /* Tests should pass upon insert a discrapency date or updating it */
 --Insert
 BEGIN TRANSACTION;
-alter table mating drop constraint fk_order_discrepancy;
+alter table "ORDER" drop constraint fk_order_invoice_of_invoice;
+alter table "ORDER" drop constraint fk_order_supplier;
 
+Insert into "ORDER" values ('1', 'berry', 'awaiting', '03-03-2019', '1');
 Insert into discrepancy values (1, 1, 'test', '04-04-2019');
 ROLLBACK;
 
 --Update
 BEGIN TRANSACTION;
-alter table mating drop constraint fk_order_discrepancy;
+alter table "ORDER" drop constraint fk_order_invoice_of_invoice;
+alter table "ORDER" drop constraint fk_order_supplier;
 
+Insert into "ORDER" values ('1', 'berry', 'awaiting', '03-03-2019', '1');
 Insert into discrepancy values (1, 1, 'test', '04-04-2019');
-Update discrepancy set place_date = '05-05-2019' where discrepancy_id = 1;
+Update discrepancy set place_date = '05-05-2019';
 ROLLBACK;
 
 /* Tests should fail after inserting and updating a earlier date */
 --Insert
 BEGIN TRANSACTION;
-alter table mating drop constraint fk_order_discrepancy;
+alter table "ORDER" drop constraint fk_order_invoice_of_invoice;
+alter table "ORDER" drop constraint fk_order_supplier;
 
+Insert into "ORDER" values ('1', 'berry', 'awaiting', '03-03-2019', '1');
 Insert into discrepancy values (1, 1, 'test', '02-02-2019');
 ROLLBACK;
 
 --Update
 BEGIN TRANSACTION;
-alter table mating drop constraint fk_order_discrepancy;
+alter table "ORDER" drop constraint fk_order_invoice_of_invoice;
+alter table "ORDER" drop constraint fk_order_supplier;
 
+Insert into "ORDER" values ('1', 'berry', 'awaiting', '03-03-2019', '1');
 Insert into discrepancy values (1, 1, 'test', '04-04-2019');
-Update discrepancy set place_date = '02-02-2019' where discrepancy_id = 1;
+Update discrepancy set place_date = '02-02-2019';
 ROLLBACK;
 
 /*===== CONSTRAINT 15 LineItemWeight =====*/
