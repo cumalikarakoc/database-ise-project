@@ -151,6 +151,49 @@ INSERT INTO stock values ('apen', 'bananen', 5);
 UPDATE stock SET amount = -5 where area_name = 'apen' and food_type_ft = 'bananen';
 ROLLBACK;
 
+/* ====== CONSTRAINT 20 MaturityAge ======*/
+/* Tests should pass upon inserting or updating a age higher than 0*/
+--Insert
+BEGIN TRANSACTION;
+INSERT INTO species VALUES ('aap', '', '', '', '');
+INSERT INTO species_gender values ('aap', '', 5, 5);
+ROLLBACK;
+
+--Update
+BEGIN TRANSACTION;
+INSERT INTO species VALUES ('aap', 'male', '', '', '');
+INSERT INTO species_gender values ('aap', 'male', 5, 5);
+UPDATE species_gender SET maturity_age = 6 where english_name = 'aap' and gender = 'male';
+ROLLBACK;
+
+/* Tests should pass upon inserting or updating a age equal to 0*/
+--Insert
+BEGIN TRANSACTION;
+INSERT INTO species VALUES ('aap', '', '', '', '');
+INSERT INTO species_gender values ('aap', '', 5, 0);
+ROLLBACK;
+
+--Update
+BEGIN TRANSACTION;
+INSERT INTO species VALUES ('aap', 'male', '', '', '');
+INSERT INTO species_gender values ('aap', 'male', 5, 5);
+UPDATE species_gender SET maturity_age = 0 where english_name = 'aap' and gender = 'male';
+ROLLBACK;
+
+/* Tests should fail upon inserting or updating a age lower than 0 */
+--Insert
+BEGIN TRANSACTION;
+INSERT INTO species VALUES ('aap', '', '', '', '');
+INSERT INTO species_gender values ('aap', '', 5, -2);
+ROLLBACK;
+
+--Update
+BEGIN TRANSACTION;
+INSERT INTO species VALUES ('aap', 'male', '', '', '');
+INSERT INTO species_gender values ('aap', 'male', 5, 5);
+UPDATE species_gender SET maturity_age = -2 where english_name = 'aap' and gender = 'male';
+ROLLBACK;
+
 /* ====== CONSTRAINT 21 SpeciesWeight ======*/
 /* Tests should pass upon insert a species gender or updating it */
 --Insert
