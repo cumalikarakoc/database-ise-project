@@ -1235,6 +1235,56 @@ INSERT INTO stock values ('apen', 'bananen', 5);
 UPDATE stock SET amount = -5;
 ROLLBACK;
 
+/* ====== CONSTRAINT 18 FeedingAmount ======*/
+/*Test should pass upon inserting/updating a food amount higher than 0*/
+--insert
+begin transaction;
+alter table feeding drop constraint fk_feeding_for_animal;
+alter table feeding drop constraint fk_food_to_be_fed;
+insert into feeding VALUES('1', 'Kapsalon', '11/11/12',1);
+rollback;
+
+--update
+begin transaction;
+alter table feeding drop constraint fk_feeding_for_animal;
+alter table feeding drop constraint fk_food_to_be_fed;
+insert into feeding VALUES('1', 'Kapsalon', '11/11/12',1);
+update feeding set amount = 2;
+rollback;
+
+/*test should fail upon inserting/updating a food amount equal to 0*/
+--insert
+begin transaction;
+alter table feeding drop constraint fk_feeding_for_animal;
+alter table feeding drop constraint fk_food_to_be_fed;
+insert into feeding VALUES('1', 'Kapsalon', '11/11/12',0);
+rollback;
+
+--update
+begin transaction;
+alter table feeding drop constraint fk_feeding_for_animal;
+alter table feeding drop constraint fk_food_to_be_fed;
+insert into feeding VALUES('1', 'Kapsalon', '11/11/12',1);
+update feeding set amount = 0;
+rollback;
+
+
+/*test should fail upon inserting/updating a food amount less than 0*/
+--insert
+begin transaction;
+alter table feeding drop constraint fk_feeding_for_animal;
+alter table feeding drop constraint fk_food_to_be_fed;
+insert into feeding VALUES('1', 'Kapsalon', '11/11/12',-1);
+rollback;
+
+--update
+begin transaction;
+alter table feeding drop constraint fk_feeding_for_animal;
+alter table feeding drop constraint fk_food_to_be_fed;
+insert into feeding VALUES('1', 'Kapsalon', '11/11/12',1);
+update feeding set amount = -1;
+rollback;
+
 /* ====== CONSTRAINT 19 AnimalVisitsVet ======*/
 /* Test should pass upon a visit date after the animal`s birth date*/
 --Insert
