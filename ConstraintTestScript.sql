@@ -629,6 +629,77 @@ insert into EXCHANGE values('an-1', '2019-01-01', '2018-11-25', 'comments', 'to'
 update EXCHANGE set exchange_date = '2018-03-03';
 rollback;
 
+/*===== CONSTRAINT 12 OffspringId =====*/
+/* Test should pass if the updated mating_id is not the same as the offspring_id in table offspring. */
+begin transaction;
+alter table mating drop constraint if exists fk_breeding_mate; -- MATING(animal_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_mating_breeding__animal; -- MATING(mate_id) -> ANIMAL(animal_id)
+alter table offspring drop constraint if exists fk_offsprin_animal_of_animal; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
+
+insert into mating values('an-1', '2019-04-04', 'ica', 'mate-1');
+insert into offspring values('2019-04-04', 'an offspring', 'an-1', 'off-1');
+
+update mating set mate_id = 'mate-2';
+rollback;
+
+/* Test should fail if the updated mate_id is the same as the offspring_id of the concerning mating. */
+begin transaction;
+alter table mating drop constraint if exists fk_breeding_mate; -- MATING(animal_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_mating_breeding__animal; -- MATING(mate_id) -> ANIMAL(animal_id)
+alter table offspring drop constraint if exists fk_offsprin_animal_of_animal; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
+
+insert into mating values('an-1', '2019-04-04', 'ica', 'mate-1');
+insert into offspring values('2019-04-04', 'an offspring', 'an-1', 'off-1');
+
+update mating set mate_id = 'off-1';
+rollback;
+
+/* Test should pass if an offspring is inserted or updated with a different id than the animal_id or the mate_id. */
+-- insert
+begin transaction;
+alter table mating drop constraint if exists fk_breeding_mate; -- MATING(animal_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_mating_breeding__animal; -- MATING(mate_id) -> ANIMAL(animal_id)
+alter table offspring drop constraint if exists fk_offsprin_animal_of_animal; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
+
+insert into mating values('an-1', '2019-04-04', 'ica', 'mate-1');
+insert into offspring values('2019-04-04', 'an offspring', 'an-1', 'off-1');
+rollback;
+
+-- update
+begin transaction;
+alter table mating drop constraint if exists fk_breeding_mate; -- MATING(animal_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_mating_breeding__animal; -- MATING(mate_id) -> ANIMAL(animal_id)
+alter table offspring drop constraint if exists fk_offsprin_animal_of_animal; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
+
+insert into mating values('an-1', '2019-04-04', 'ica', 'mate-1');
+insert into offspring values('2019-04-04', 'an offspring', 'an-1', 'off-1');
+
+update offspring set offspring_id = 'off-2';
+rollback;
+
+/*Test should fail if an inserted or updated offspring has the same id as the animal_id or the mate_id*/
+-- insert
+begin transaction;
+alter table mating drop constraint if exists fk_breeding_mate; -- MATING(animal_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_mating_breeding__animal; -- MATING(mate_id) -> ANIMAL(animal_id)
+alter table offspring drop constraint if exists fk_offsprin_animal_of_animal; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
+
+insert into mating values('an-1', '2019-04-04', 'ica', 'mate-1');
+insert into offspring values('2019-04-04', 'an offspring', 'an-1', 'an-1');
+rollback;
+
+--update
+begin transaction;
+alter table mating drop constraint if exists fk_breeding_mate; -- MATING(animal_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_mating_breeding__animal; -- MATING(mate_id) -> ANIMAL(animal_id)
+alter table offspring drop constraint if exists fk_offsprin_animal_of_animal; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
+
+insert into mating values('an-1', '2019-04-04', 'ica', 'mate-1');
+insert into offspring values('2019-04-04', 'an offspring', 'an-1', 'off-1');
+
+update offspring set offspring_id = 'mate-1';
+rollback;
+
 /*===== Constraint 13 MateAndAnimalId ===== */
 /* Tests should pass because mate id and animal id are not the same */
 -- insert
@@ -655,6 +726,7 @@ set animal_id = 'sai-3';
 rollback;
 
 /* Tests should fail because mate id and animal id are the same */
+-- insert
 begin transaction;
 alter table mating drop constraint fk_breeding_mate;
 alter table mating drop constraint fk_mating_breeding__animal;
