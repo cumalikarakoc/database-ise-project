@@ -155,13 +155,15 @@ ROLLBACK;
 /* Tests should pass upon inserting or updating a age higher than 0*/
 --Insert
 BEGIN TRANSACTION;
-INSERT INTO species VALUES ('aap', '', '', '', '');
+ALTER TABLE species_gender DROP CONSTRAINT IF EXISTS fk_species_with_gender;
+
 INSERT INTO species_gender values ('aap', '', 5, 5);
 ROLLBACK;
 
 --Update
 BEGIN TRANSACTION;
-INSERT INTO species VALUES ('aap', 'male', '', '', '');
+ALTER TABLE species_gender DROP CONSTRAINT IF EXISTS fk_species_with_gender;
+
 INSERT INTO species_gender values ('aap', 'male', 5, 5);
 UPDATE species_gender SET maturity_age = 6 where english_name = 'aap' and gender = 'male';
 ROLLBACK;
@@ -169,13 +171,15 @@ ROLLBACK;
 /* Tests should pass upon inserting or updating a age equal to 0*/
 --Insert
 BEGIN TRANSACTION;
-INSERT INTO species VALUES ('aap', '', '', '', '');
+ALTER TABLE species_gender DROP CONSTRAINT IF EXISTS fk_species_with_gender;
+
 INSERT INTO species_gender values ('aap', '', 5, 0);
 ROLLBACK;
 
 --Update
 BEGIN TRANSACTION;
-INSERT INTO species VALUES ('aap', 'male', '', '', '');
+ALTER TABLE species_gender DROP CONSTRAINT IF EXISTS fk_species_with_gender;
+
 INSERT INTO species_gender values ('aap', 'male', 5, 5);
 UPDATE species_gender SET maturity_age = 0 where english_name = 'aap' and gender = 'male';
 ROLLBACK;
@@ -183,13 +187,15 @@ ROLLBACK;
 /* Tests should fail upon inserting or updating a age lower than 0 */
 --Insert
 BEGIN TRANSACTION;
-INSERT INTO species VALUES ('aap', '', '', '', '');
+ALTER TABLE species_gender DROP CONSTRAINT IF EXISTS fk_species_with_gender;
+
 INSERT INTO species_gender values ('aap', '', 5, -2);
 ROLLBACK;
 
 --Update
 BEGIN TRANSACTION;
-INSERT INTO species VALUES ('aap', 'male', '', '', '');
+ALTER TABLE species_gender DROP CONSTRAINT IF EXISTS fk_species_with_gender;
+
 INSERT INTO species_gender values ('aap', 'male', 5, 5);
 UPDATE species_gender SET maturity_age = -2 where english_name = 'aap' and gender = 'male';
 ROLLBACK;
