@@ -1,4 +1,4 @@
-﻿/*-------------------------------------------------------------*\
+﻿﻿/*-------------------------------------------------------------*\
 |			Constraints Script			|
 |---------------------------------------------------------------|
 |	Gemaakt door: 	Cumali karakoç,				|
@@ -97,6 +97,25 @@ CHECK(weight > 0);
 ALTER TABLE line_item DROP CONSTRAINT IF EXISTS CHK_LINE_ITEM_PRICE;
 ALTER TABLE line_item ADD CONSTRAINT CHK_LINE_ITEM_PRICE
 CHECK(price >= '0.00');
+
+/*===== CONSTRAINT 19 AnimalVisitsVet =====*/
+/* An animal cannot visit a vet before his birth date*/
+create or replace function TRP_ANIMAL_VISITS_VET()
+	returns trigger as
+  $$
+	begin
+		if (new.visit_date < (select birth_date from animal where animal_id = new.animal_id ))
+		then raise exception 'An animal cannot visit a vet before his birth date';
+		end if;
+	return new;
+		end;
+  $$
+  language 'plpgsql';
+
+create trigger TR_ANIMAL_VISITS_VET before insert or update
+  on animal_visits_vet for each row execute procedure TRP_ANIMAL_VISITS_VET();
+
+
 
 /*===== CONSTRAINT 21 SpeciesWeight =====*/
 /* column SPECIES_GENDER(Weight) must be higher than 0 */

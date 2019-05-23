@@ -479,7 +479,68 @@ INSERT INTO food_kind VALUES('banaan');
 INSERT INTO line_item VALUES('o123', 'banaan', 1, 10);
 UPDATE line_item SET price = -1;
 ROLLBACK;
-/*================*/
+
+/* ====== CONSTRAINT 19 AnimalVisitsVet ======*/
+/* Test should pass upon a visit date after the animal`s birth date*/
+--Insert
+begin transaction;
+insert into species VALUES('Duck', 'A duck likes bread', 'Aves','Anseriformes', 'Anatidae');
+insert into animal VALUES('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
+insert into prescription VALUES('Regular check');
+insert into vet VALUES('Doctor Pol');
+insert into animal_visits_vet VALUES('1', '12/12/13', 'Regular check', 'Doctor Pol', '12/12/14');
+rollback;
+
+--Update
+begin transaction;
+insert into species VALUES('Duck', 'A duck likes bread', 'Aves','Anseriformes', 'Anatidae');
+insert into animal VALUES('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
+insert into prescription VALUES('Regular check');
+insert into vet VALUES('Doctor Pol');
+insert into animal_visits_vet VALUES('1', '12/12/13', 'Regular check', 'Doctor Pol', '12/12/20');
+update animal_visits_vet set visit_date = '1/1/14';
+rollback;
+
+/* Test should pass upon a visit date on the animal`s birth date*/
+--Insert
+begin transaction;
+insert into species VALUES('Duck', 'A duck likes bread', 'Aves','Anseriformes', 'Anatidae');
+insert into animal VALUES('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
+insert into prescription VALUES('Regular check');
+insert into vet VALUES('Doctor Pol');
+insert into animal_visits_vet VALUES('1', '1/1/11', 'Regular check', 'Doctor Pol', '12/12/14');
+rollback;
+
+--Update
+begin transaction;
+insert into species VALUES('Duck', 'A duck likes bread', 'Aves','Anseriformes', 'Anatidae');
+insert into animal VALUES('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
+insert into prescription VALUES('Regular check');
+insert into vet VALUES('Doctor Pol');
+insert into animal_visits_vet VALUES('1', '12/12/13', 'Regular check', 'Doctor Pol', '12/12/20');
+update animal_visits_vet set visit_date = '1/1/11';
+rollback;
+
+/* Test should fail upon a visit date is before the animal`s birth date*/
+--Insert
+begin transaction;
+insert into species VALUES('Duck', 'A duck likes bread', 'Aves','Anseriformes', 'Anatidae');
+insert into animal VALUES('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
+insert into prescription VALUES('Regular check');
+insert into vet VALUES('Doctor Pol');
+insert into animal_visits_vet VALUES('1', '1/1/10', 'Regular check', 'Doctor Pol', '12/12/14');
+rollback;
+
+--Update
+begin transaction;
+insert into species VALUES('Duck', 'A duck likes bread', 'Aves','Anseriformes', 'Anatidae');
+insert into animal VALUES('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
+insert into prescription VALUES('Regular check');
+insert into vet VALUES('Doctor Pol');
+insert into animal_visits_vet VALUES('1', '12/12/13', 'Regular check', 'Doctor Pol', '12/12/20');
+update animal_visits_vet set visit_date = '1/1/10';
+rollback;
+
 
 /* ====== CONSTRAINT 21 SpeciesWeight ======*/
 /* Tests should pass upon insert a species gender or updating it */
