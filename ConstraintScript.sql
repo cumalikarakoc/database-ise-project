@@ -381,7 +381,25 @@ end;
 $$
 language 'plpgsql';
 
+create or replace function TRP_ANIMAL_SINCE()
+  returns trigger as
+$$
+begin
+  if (new.birth_date > (select since from animal_enclosure where animal_id = new.animal_id ))
+  then raise exception 'An animal cannot be in an enclosure before its birth_date';
+  end if;
+  return new;
+end;
+$$
+language 'plpgsql';
+
 drop trigger if exists TR_ANIMAL_ENCLOSURE_SINCE on animal_enclosure;
 create trigger TR_ANIMAL_ENCLOSURE_SINCE before insert or update
   on animal_enclosure for each row execute procedure TRP_ANIMAL_ENCLOSURE_SINCE();
+
+drop trigger if exists TR_ANIMAL_BIRTH_DATE_SINCE on animal;
+create trigger TR_ANIMAL_BIRTH_DATE_SINCE before update
+  on animal for each row execute procedure TRP_ANIMAL_SINCE();
+
 /*=============*/
+
