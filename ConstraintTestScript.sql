@@ -1,4 +1,6 @@
-﻿/*-------------------------------------------------------------*\
+﻿-- noinspection SqlResolveForFile
+
+/*-------------------------------------------------------------*\
 |			Constraint Test Script			|
 |---------------------------------------------------------------|
 |	Gemaakt door: 	Cumali karakoç,				|
@@ -259,7 +261,7 @@ insert into DISCREPANCY (order_id, message, place_date) values
 ('1', 'test', current_date);
 update "ORDER"
 set state = 'Not complete';
-rollback transaction
+rollback transaction;
 
 /* Now the trigger on DISCREPANCY will be tested. This wil fail because the order it gets assigend to hasnt the state Not complete.
 When deleted it will also fail because the order is still not completed.*/
@@ -783,7 +785,7 @@ alter table spotted drop constraint if exists fk_animal_spotted;
 insert into reintroduction values('an-1', '2018-12-12', 'location', null);
 insert into reintroduction values('an-1', '2019-11-05', 'location', null);
 insert into spotted values('an-1', '2018-10-11');
-rollback
+rollback;
 
 --update
 begin transaction;
@@ -1229,7 +1231,7 @@ ROLLBACK;
 
 --Update
 BEGIN TRANSACTION;
-IALTER TABLE stock DROP IF EXISTS fk_animal_foodstock;
+ALTER TABLE stock DROP IF EXISTS fk_animal_foodstock;
 ALTER TABLE stock DROP IF EXISTS fk_food_in_stock;
 INSERT INTO stock values ('apen', 'bananen', 5);
 UPDATE stock SET amount = -5;
