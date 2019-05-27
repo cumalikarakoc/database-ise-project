@@ -189,7 +189,7 @@ create trigger TR_ANIMAL_HAS_ONE_ENCLOSURE after insert or update on animal_encl
 
 /*===== Constraint 7 LoanType =====*/
 /* Column EXCHANGE(Loan_type) loan type can only be ‘to’ or ‘from’.*/
-Alter table exchange drop constraint if exists CHK_LOAN_TYPE;
+alter table exchange drop constraint if exists CHK_LOAN_TYPE;
 
 alter table exchange add constraint CHK_LOAN_TYPE
 CHECK(loan_type in ('to','from'));
@@ -263,7 +263,7 @@ create or replace function TRP_OFFSPRING_PARENTS() returns trigger as $$
    end;
 $$ language plpgsql;
 
-create trigger TR_OFFSPRING_PARENTS after update on MATING
+create trigger TR_OFFSPRING_PARENTS after update on mating
 for each row 
 execute procedure TRP_OFFSPRING_PARENTS();
 
@@ -325,9 +325,9 @@ check(price >= '0.00');
 
 /*====== CONSTRAINT 17 ======*/
 /* column STOCK(Amount) must be higher than or equal to 0. */
-alter table "stock" drop constraint if exists CHK_STOCK_AMOUNT;
+alter table stock drop constraint if exists CHK_STOCK_AMOUNT;
 
-alter table "stock" add constraint CHK_STOCK_AMOUNT  
+alter table stock add constraint CHK_STOCK_AMOUNT  
 check (amount >= 0);
 
 /*===== CONSTRAINT 18 FeedingAmount =====*/
