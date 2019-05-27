@@ -288,6 +288,28 @@ alter table mating drop constraint if exists CHK_MATE_AND_ANIMAL_ID;
 alter table mating add constraint CHK_MATE_AND_ANIMAL_ID
 check(animal_id <> mate_id);
 
+/*===== CONSTRAINT 14 DiscrepancyDate =====*/
+/* column DISCREPANCY(Place_date) cannot be before ORDER(Order_date)*/
+
+CREATE OR REPLACE FUNCTION TR_DISCREPANCY_DATE_FUNC()
+  RETURNS trigger AS
+$$
+BEGIN
+
+  IF(NEW.place_date < (Select order_date from "ORDER" where order_id = NEW.order_id)) then
+    RAISE EXCEPTION 'place date is before orderdate. please adjust the date';
+  end if;
+  RETURN NEW;
+END;
+$$
+LANGUAGE 'plpgsql';
+
+CREATE TRIGGER TR_DISCREPANCY_DATE
+  AFTER INSERT OR UPDATE
+  ON discrepancy
+  FOR EACH ROW
+EXECUTE PROCEDURE TR_DISCREPANCY_DATE_FUNC();
+
 /*===== CONSTRAINT 15 LineItemWeight =====*/
 /* column LINE_ITEM(price) must be higher than 0*/
 ALTER TABLE line_item DROP CONSTRAINT IF EXISTS CHK_LINE_ITEM_WEIGHT;
@@ -299,6 +321,13 @@ CHECK(weight > 0);
 ALTER TABLE line_item DROP CONSTRAINT IF EXISTS CHK_LINE_ITEM_PRICE;
 ALTER TABLE line_item ADD CONSTRAINT CHK_LINE_ITEM_PRICE
 CHECK(price >= '0.00');
+
+/*====== CONSTRAINT 17 ======*/
+/* column STOCK(Amount) must be higher than or equal to 0. */
+ALTER TABLE "stock" DROP CONSTRAINT IF EXISTS CHK_STOCK_AMOUNT;
+
+ALTER TABLE "stock" ADD CONSTRAINT CHK_STOCK_AMOUNT
+CHECK (amount >= 0);
 
 /*===== CONSTRAINT 18 FeedingAmount =====*/
 /* The weight of the food fed to an animal has to be 0 or higher*/
@@ -322,37 +351,6 @@ create or replace function TRP_ANIMAL_VISITS_VET()
 
 create trigger TR_ANIMAL_VISITS_VET before insert or update
   on animal_visits_vet for each row execute procedure TRP_ANIMAL_VISITS_VET();
-
-
-
-/*===== CONSTRAINT 14 DiscrepancyDate =====*/
-/* column DISCREPANCY(Place_date) cannot be before ORDER(Order_date)*/
-
-CREATE OR REPLACE FUNCTION TR_DISCREPANCY_DATE_FUNC()
-  RETURNS trigger AS
-$$
-BEGIN
-	
-	IF(NEW.place_date < (Select order_date from "ORDER" where order_id = NEW.order_id)) then
-		RAISE EXCEPTION 'place date is before orderdate. please adjust the date'; 
-	end if;
-    RETURN NEW;
-END;
-$$
-LANGUAGE 'plpgsql';
-
-CREATE TRIGGER TR_DISCREPANCY_DATE 
-  AFTER INSERT OR UPDATE
-  ON discrepancy
-  FOR EACH ROW
-  EXECUTE PROCEDURE TR_DISCREPANCY_DATE_FUNC();
-
-/*====== CONSTRAINT 17 ======*/
-/* column STOCK(Amount) must be higher than or equal to 0. */
-ALTER TABLE "stock" DROP CONSTRAINT IF EXISTS CHK_STOCK_AMOUNT;
-
-ALTER TABLE "stock" ADD CONSTRAINT CHK_STOCK_AMOUNT  
-CHECK (amount >= 0);
 
 /*===== Constraint 20 MaturityAge ======*/
 /* column SPECIES_GENDER(Maturity_age) Age must be higher or equal to 0. */
