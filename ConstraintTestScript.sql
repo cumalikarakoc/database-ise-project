@@ -1430,4 +1430,59 @@ insert into species values('Apes', 'Are apes', 'Apes', 'Apes', '');
 insert into species_gender values('Apes', 'male', 9.5, 009.5);
 update species_gender set average_weight = -5 where english_name = 'Apes';
 rollback;
+
+/* ====== CONSTRAINT 22 AnimalEnclosureSince ======*/
+/* Test should pass because the birth_date is after the since enclosure date */
+--Insert
+begin transaction;
+alter table animal drop constraint fk_animal_of_species;
+alter table animal_enclosure drop constraint fk_enclosure_has_animal;
+insert into animal values('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
+insert into animal_enclosure values('1', 'Mensen', '1', '12/12/12');
+rollback;
+
+--Update
+begin transaction;
+alter table animal drop constraint fk_animal_of_species;
+alter table animal_enclosure drop constraint fk_enclosure_has_animal;
+insert into animal values('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
+insert into animal_enclosure values('1', 'Mensen', '1', '12/12/12');
+update animal_enclosure set since = '12/12/13';
+rollback;
+
+/* Test should pass because the birth_date is on the same date as the since enclosure date */
+--Insert
+begin transaction;
+alter table animal drop constraint fk_animal_of_species;
+alter table animal_enclosure drop constraint fk_enclosure_has_animal;
+insert into animal values('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
+insert into animal_enclosure values('1', 'Mensen', '1', '1/1/11');
+rollback;
+
+--Update
+begin transaction;
+alter table animal drop constraint fk_animal_of_species;
+alter table animal_enclosure drop constraint fk_enclosure_has_animal;
+insert into animal values('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
+insert into animal_enclosure values('1', 'Mensen', '1', '12/12/12');
+update animal_enclosure set since = '1/1/11';
+rollback;
+
+/* Test should fail because the birth_date is before the since enclosure date */
+--Insert
+begin transaction;
+alter table animal drop constraint fk_animal_of_species;
+alter table animal_enclosure drop constraint fk_enclosure_has_animal;
+insert into animal values('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
+insert into animal_enclosure values('1', 'Mensen', '1', '1/1/10');
+rollback;
+
+--Update
+begin transaction;
+alter table animal drop constraint fk_animal_of_species;
+alter table animal_enclosure drop constraint fk_enclosure_has_animal;
+insert into animal values('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
+insert into animal_enclosure values('1', 'Mensen', '1', '12/12/12');
+update animal_enclosure set since = '1/1/10';
+rollback;
 /*================*/
