@@ -259,7 +259,7 @@ insert into DISCREPANCY (order_id, message, place_date) values
 ('1', 'test', current_date);
 update "ORDER"
 set state = 'Not complete';
-rollback
+rollback;
 
 /* Now the trigger on DISCREPANCY will be tested. This wil fail because the order it gets assigend to hasnt the state Not complete.
 When deleted it will also fail because the order is still not completed.*/
@@ -783,7 +783,7 @@ alter table spotted drop constraint if exists fk_animal_spotted;
 insert into reintroduction values('an-1', '2018-12-12', 'location', null);
 insert into reintroduction values('an-1', '2019-11-05', 'location', null);
 insert into spotted values('an-1', '2018-10-11');
-rollback
+rollback;
 
 --update
 begin transaction;
@@ -1190,15 +1190,15 @@ rollback;
 /* Tests should pass upon inserting or updating a value higher than 0 */
 --Insert
 begin transaction;
-ALTER TABLE stock DROP IF EXISTS fk_animal_foodstock;
-ALTER TABLE stock DROP IF EXISTS fk_food_in_stock;
+alter table stock drop if exists fk_animal_foodstock;
+alter table stock drop if exists fk_food_in_stock;
 insert into stock values ('apen', 'bananen', 5);
 rollback;
 
 --Update
 begin transaction;
-ALTER TABLE stock DROP IF EXISTS fk_animal_foodstock;
-ALTER TABLE stock DROP IF EXISTS fk_food_in_stock;
+alter table stock drop if exists fk_animal_foodstock;
+alter table stock drop if exists fk_food_in_stock;
 insert into stock values ('apen', 'bananen', 5);
 update stock set amount = 6;
 rollback;
@@ -1206,15 +1206,15 @@ rollback;
 /* Tests should pass upon inserting or updating a value equal to 0 */
 --Insert
 begin transaction;
-ALTER TABLE stock DROP IF EXISTS fk_animal_foodstock;
-ALTER TABLE stock DROP IF EXISTS fk_food_in_stock;
+alter table stock drop if exists fk_animal_foodstock;
+alter table stock drop if exists fk_food_in_stock;
 insert into stock values ('apen', 'bananen', 0);
 rollback;
 
 --Update
 begin transaction;
-ALTER TABLE stock DROP IF EXISTS fk_animal_foodstock;
-ALTER TABLE stock DROP IF EXISTS fk_food_in_stock;
+alter table stock drop if exists fk_animal_foodstock;
+alter table stock drop if exists fk_food_in_stock;
 insert into stock values ('apen', 'bananen', 5);
 update stock set amount = 0;
 rollback;
@@ -1222,15 +1222,15 @@ rollback;
 /* Tests should fail upon inserting or updating a value lower than 0 */
 --Insert
 begin transaction;
-ALTER TABLE stock DROP IF EXISTS fk_animal_foodstock;
-ALTER TABLE stock DROP IF EXISTS fk_food_in_stock;
+alter table stock drop if exists fk_animal_foodstock;
+alter table stock drop if exists fk_food_in_stock;
 insert into stock values ('apen', 'bananen', -5);
 rollback;
 
 --Update
 begin transaction;
-IALTER TABLE stock DROP IF EXISTS fk_animal_foodstock;
-ALTER TABLE stock DROP IF EXISTS fk_food_in_stock;
+alter table stock drop if exists fk_animal_foodstock;
+alter table stock drop if exists fk_food_in_stock;
 insert into stock values ('apen', 'bananen', 5);
 update stock set amount = -5;
 rollback;
@@ -1350,26 +1350,26 @@ rollback;
 /* Tests should pass upon inserting or updating a age higher than 0*/
 --Insert
 begin transaction;
-ALTER TABLE species_gender DROP IF EXISTS fk_species_with_gender;
+alter table species_gender drop if exists fk_species_with_gender;
 insert into species_gender values ('aap', '', 5, 5);
 rollback;
 
 --Update
 begin transaction;
-ALTER TABLE species_gender DROP IF EXISTS fk_species_with_gender;
+alter table species_gender drop if exists fk_species_with_gender;
 insert into species_gender values ('aap', 'male', 5, 5);
 update species_gender set maturity_age = 6;
 
 /* Tests should pass upon inserting or updating a age equal to 0*/
 --Insert
 begin transaction;
-ALTER TABLE species_gender DROP IF EXISTS fk_species_with_gender;
+alter table species_gender drop if exists fk_species_with_gender;
 insert into species_gender values ('aap', '', 5, 0);
 rollback;
 
 --Update
 begin transaction;
-ALTER TABLE species_gender DROP IF EXISTS fk_species_with_gender;
+alter table species_gender drop if exists fk_species_with_gender;
 insert into species_gender values ('aap', 'male', 5, 5);
 update species_gender set maturity_age = 0;
 rollback;
@@ -1377,13 +1377,13 @@ rollback;
 /* Tests should fail upon inserting or updating a age lower than 0 */
 --Insert
 begin transaction;
-ALTER TABLE species_gender DROP IF EXISTS fk_species_with_gender;
+alter table species_gender drop if exists fk_species_with_gender;
 insert into species_gender values ('aap', '', 5, -2);
 rollback;
 
 --Update
 begin transaction;
-ALTER TABLE species_gender DROP IF EXISTS fk_species_with_gender;
+alter table species_gender drop if exists fk_species_with_gender;
 insert into species_gender values ('aap', 'male', 5, 5);
 update species_gender set maturity_age = -2;
 rollback;
