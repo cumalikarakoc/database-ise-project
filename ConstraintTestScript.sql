@@ -538,7 +538,7 @@ set gender_s = 'something';
 rollback;
 
 /*===== Constraint 6 AnimalHasOneEnclosure =====*/
-/* The following tests will succeed because none of the the date will overlap */
+/* The following tests will succeed because none of the the dates will overlap */
 
 --insert
 begin transaction;
@@ -550,9 +550,11 @@ drop constraint fk_enclosure_has_animal;
 
 insert into animal_enclosure values
 ('1', 'test', 1, '2019-05-23', '2019-05-24');
+
 insert into animal_enclosure values
 ('1', 'test', 2, '2019-05-25', '2019-05-26');
-rollback;
+
+rollback transaction;
 
 --update
 begin transaction;
@@ -563,11 +565,16 @@ alter table animal_enclosure
 drop constraint fk_enclosure_has_animal;
 
 insert into animal_enclosure values
+('1', 'test', 3, '2019-01-01', '2019-01-31');
+
+insert into animal_enclosure values
 ('1', 'test', 1, '2019-05-23', null);
+
 update animal_enclosure
 set End_date = '2019-05-24'
-where Animal_id = '1';
-rollback;
+where Animal_id = '1' and since = '2019-05-23';
+
+rollback transaction;
 
 /* The following test will fail because the new since date is in between an older since and end_date.*/
 --insert
@@ -580,6 +587,7 @@ drop constraint fk_enclosure_has_animal;
 
 insert into animal_enclosure values
 ('1', 'test', 1, '2019-05-23', '2019-05-25');
+
 insert into animal_enclosure values
 ('1', 'test', 2, '2019-05-24', '2019-05-26');
 rollback;
@@ -596,6 +604,7 @@ insert into animal_enclosure values
 ('1', 'test', 1, '2019-05-23', '2019-05-25'),
 ('1', 'test', 2, '2019-05-25', '2019-05-31'),
 ('1', 'test', 3, '2019-06-01', '2019-06-02');
+
 update animal_enclosure
 set Since = '2019-05-24'
 where animal_id = '1' and Since = '2019-05-25';
@@ -612,6 +621,7 @@ drop constraint fk_enclosure_has_animal;
 
 insert into animal_enclosure values
 ('1', 'test', 1, '2019-05-23', '2019-05-25');
+
 insert into animal_enclosure values
 ('1', 'test', 2, '2019-05-10', '2019-05-24');
 rollback;
@@ -627,6 +637,7 @@ drop constraint fk_enclosure_has_animal;
 insert into animal_enclosure values
 ('1', 'test', 1, '2019-05-23', '2019-05-25'),
 ('1', 'test', 2, '2019-05-25', '2019-05-31');
+
 update animal_enclosure
 set since = '2019-05-10',
     End_date = '2019-05-26'
@@ -644,8 +655,9 @@ drop constraint fk_enclosure_has_animal;
 
 insert into animal_enclosure values
 ('1', 'test', 1, '2019-05-23', '2019-05-30');
+
 insert into animal_enclosure values
-('1', 'test', 1, '2019-05-24', '2019-05-26');
+('1', 'test', 1,  '2019-05-24','2019-05-26');
 rollback;
 
 --update
@@ -659,13 +671,14 @@ drop constraint fk_enclosure_has_animal;
 insert into animal_enclosure values
 ('1', 'test', 1, '2019-05-23', '2019-05-25'),
 ('1', 'test', 2, '2019-05-25', '2019-05-31');
+
 update animal_enclosure
 set since = '2019-05-26',
     End_date = '2019-05-29'
 where animal_id = '1' and Since = '2019-05-23';
 rollback;
 
-/* The following test will fail because the new since date is before the old since date and the new end_date is before the old end_date */
+/* The following test will fail because the new since date is before the old since date and the new end_date is after the old end_date */
 --insert
 begin transaction;
 select USP_DROP_CONSTRAINTS(6);
@@ -676,6 +689,7 @@ drop constraint fk_enclosure_has_animal;
 
 insert into animal_enclosure values
 ('1', 'test', 1, '2019-05-23', '2019-05-25');
+
 insert into animal_enclosure values
 ('1', 'test', 1, '2019-05-20', '2019-05-26');
 rollback;
@@ -691,6 +705,7 @@ drop constraint fk_enclosure_has_animal;
 insert into animal_enclosure values
 ('1', 'test', 1, '2019-05-23', '2019-05-25'),
 ('1', 'test', 2, '2019-05-25', '2019-05-31');
+
 update animal_enclosure
 set since = '2019-05-24',
     End_date = '2019-06-01'

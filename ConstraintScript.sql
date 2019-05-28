@@ -166,18 +166,19 @@ begin
   if exists (select End_date from animal_enclosure where animal_id = new.animal_id and End_date is null and not (animal_id = new.animal_id and since = new.since)) then
    raise exception 'An animal % can stay at one enclosure at a time', new.animal_id;
   end if;
-   if exists
+
+  if exists
    (select since, end_date 
    from animal_enclosure
    where animal_id = new.animal_id and ((new.since >= since
    and new.since < end_date)
    or
    (new.end_date > since
-   and new.end_date <= end_date)
+   and new.end_date < end_date)
    or
-   (new.since <= since
-    and new.end_date >= end_date
-   ))) then
+   (new.since < since
+    and new.end_date > end_date)
+   )) then
    raise exception 'The enclosure dates for animal % overlap', new.animal_id;
   end if;
  return null;
@@ -291,7 +292,7 @@ check(animal_id <> mate_id);
 /*===== CONSTRAINT 14 DiscrepancyDate =====*/
 /* column DISCREPANCY(Place_date) cannot be before ORDER(Order_date)*/
 
-create or replace function TR_DISCREPANCY_DATE_FUNC()
+create or replace function TRP_DISCREPANCY_DATE_FUNC()
   returns trigger AS
 $$
 begin
@@ -308,7 +309,7 @@ create trigger TR_DISCREPANCY_DATE
   after insert or update
   on discrepancy
   for each row
-  execute procedure TR_DISCREPANCY_DATE_FUNC();
+  execute procedure TRP_DISCREPANCY_DATE_FUNC();
 
 /*===== CONSTRAINT 15 LineItemWeight =====*/
 /* column LINE_ITEM(price) must be higher than 0*/
