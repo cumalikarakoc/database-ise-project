@@ -11,96 +11,76 @@
 \*-------------------------------------------------------------*/
 
 /* This stored procedure is going te be run before every tests.
-It drops all constraints except for the one it is testing so they dont interfere with each other.*/
+It drops all constraints except for the one it is testing so they dont interfere with each other.
+1 parameter is given it is connected to the constraint that is going to be tested.*/
 create or replace function USP_DROP_CONSTRAINTS(int) returns void
 language plpgsql
 as $$
 begin
---constraint 1
     if ($1 != 1) then
         alter table "ORDER" drop constraint if exists CHK_ORDER_STATE;
     end if;
---constraint 2
     if ($1 != 2) then
         drop trigger if exists TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER on "ORDER";
         drop trigger if exists TR_OTHER_THAN_PLACED_HAS_DELIVERY_DELIVERY on delivery;
     end if;
---constraint 3
     if ($1 != 3) then
         alter table "ORDER" drop constraint if exists CHK_PAID_HAS_INVOICE;
     end if;
---constraint 4
     if ($1 != 4) then
         drop trigger if exists TR_NOT_COMPLETE_HAS_DISCREPANCY on "ORDER";
         drop trigger if exists TR_DISCREPANCY_NOTE_HAS_ORDER on discrepancy;
     end if;
---constraint 5
     if ($1 != 5) then
         alter table animal drop constraint if exists CHK_ANIMAL_GENDER;
     end if;
---constraint 6
     if ($1 != 6) then
         drop trigger if exists TR_ANIMAL_HAS_ONE_ENCLOSURE on animal_enclosure;
     end if;
---constraint 7
     if ($1 != 7) then
         alter table exchange drop constraint if exists CHK_LOAN_TYPE;
     end if;
---constraint 8
     if ($1 != 8) then
         alter table animal_visits_vet drop constraint if exists CHK_NEXT_VISIT_VET;
     end if;
---constraint 9
     if ($1 != 9) then
         alter table animal_enclosure drop constraint if exists CHK_ENCLOSURE_DATE;
     end if;
---constraint 10
     if ($1 != 10) then
         drop trigger if exists TR_SPOTTED_AFTER_RELEASE on spotted;
         drop trigger if exists TR_REINTRODUCTION_BEFORE_SPOTTED on reintroduction;
     end if;
---constraint 11
     if ($1 != 11) then
         alter table exchange drop constraint if exists CHK_ANIMAL_RETURNED;
     end if;
---constraint 12
     if ($1 != 12) then
         drop trigger if exists TR_OFFSPRING_PARENTS on mating;
         drop trigger if exists TR_OFFSPRING_ID on offspring;
     end if;
---constraint 13
     if ($1 != 13) then
         alter table mating drop constraint if exists CHK_MATE_AND_ANIMAL_ID;
     end if;
---constraint 14
     if ($1 != 14) then
         drop trigger if exists TR_DISCREPANCY_DATE on discrepancy;
     end if;
---constraint 15
     if ($1 != 15) then
         alter table line_item drop constraint if exists CHK_LINE_ITEM_WEIGHT;
     end if;
---constraint 16
     if ($1 != 16) then
         alter table line_item drop constraint if exists CHK_LINE_ITEM_PRICE;
     end if;
---constraint 17
     if ($1 != 17) then
         alter table stock drop constraint if exists CHK_STOCK_AMOUNT;
     end if;
---constraint 18
     if ($1 != 18) then
         alter table feeding drop constraint if exists CHK_FEEDING_AMOUNT;
     end if;
---constraint 19
     if ($1 != 19) then
         drop trigger if exists TR_ANIMAL_VISITS_VET on animal_visits_vet;
     end if;
---constraint 20
     if ($1 != 20) then
         alter table species_gender drop constraint if exists CHK_MATURITY_AGE;
     end if;
---constraint 21
     if ($1 != 21) then
         alter table species_gender drop constraint if exists CHK_AVERAGE_WEIGHT;
     end if;
