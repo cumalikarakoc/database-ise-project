@@ -104,6 +104,10 @@ begin
     if ($1 != 21) then
         alter table species_gender drop constraint if exists CHK_AVERAGE_WEIGHT;
     end if;
+    if ($1 != 22) then
+        drop trigger if exists TR_ENCLOSURE_SINCE_AFTER_BIRTH_DATE on animal_enclosure;
+        drop trigger if exists TR_ANIMAL_BIRTH_DATE_BEFORE_ENCLOSURE_SINCE on animal;
+    end if;
 end;
 $$;
 
@@ -997,6 +1001,7 @@ rollback;
 /* Tests should pass when return_date is on the same date as exchange_date or later.*/
 -- insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(11);
 alter table exchange drop constraint if exists fk_animal_exchange;
 
 insert into exchange values('an-1', '2019-01-01', '2019-02-02', 'comments', 'to', 'place');
@@ -1004,6 +1009,7 @@ rollback;
 
 -- update
 begin transaction;
+select USP_DROP_CONSTRAINTS(11);
 alter table exchange drop constraint if exists fk_animal_exchange;
 
 insert into exchange values('an-1', '2019-01-01', '2019-02-02', 'comments', 'to', 'place');
@@ -1014,6 +1020,7 @@ rollback;
 /* Tests should fail if return_date is earlier than the exchange_date.*/
 -- insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(11);
 alter table exchange drop constraint if exists fk_animal_exchange;
 
 insert into exchange values('an-1', '2019-01-01', '2018-11-25', 'comments', 'to', 'place');
@@ -1021,6 +1028,7 @@ rollback;
 
 --update
 begin transaction;
+select USP_DROP_CONSTRAINTS(11);
 alter table exchange drop constraint if exists fk_animal_exchange;
 
 insert into exchange values('an-1', '2019-01-01', '2018-11-25', 'comments', 'to', 'place');
@@ -1031,6 +1039,7 @@ rollback;
 /*===== CONSTRAINT 12 OffspringId =====*/
 /* Test should pass if the updated mating_id is not the same as the offspring_id in table offspring. */
 begin transaction;
+select USP_DROP_CONSTRAINTS(12);
 alter table mating drop constraint if exists fk_breeding_mate; -- MATING(animal_id) -> ANIMAL(animal_id)
 alter table mating drop constraint if exists fk_mating_breeding__animal; -- MATING(mate_id) -> ANIMAL(animal_id)
 alter table offspring drop constraint if exists fk_offsprin_animal_of_animal; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
@@ -1043,6 +1052,7 @@ rollback;
 
 /* Test should fail if the updated mate_id is the same as the offspring_id of the concerning mating. */
 begin transaction;
+select USP_DROP_CONSTRAINTS(12);
 alter table mating drop constraint if exists fk_breeding_mate; -- MATING(animal_id) -> ANIMAL(animal_id)
 alter table mating drop constraint if exists fk_mating_breeding__animal; -- MATING(mate_id) -> ANIMAL(animal_id)
 alter table offspring drop constraint if exists fk_offsprin_animal_of_animal; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
@@ -1056,6 +1066,7 @@ rollback;
 /* Test should pass if an offspring is inserted or updated with a different id than the animal_id or the mate_id. */
 -- insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(12);
 alter table mating drop constraint if exists fk_breeding_mate; -- MATING(animal_id) -> ANIMAL(animal_id)
 alter table mating drop constraint if exists fk_mating_breeding__animal; -- MATING(mate_id) -> ANIMAL(animal_id)
 alter table offspring drop constraint if exists fk_offsprin_animal_of_animal; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
@@ -1066,6 +1077,7 @@ rollback;
 
 -- update
 begin transaction;
+select USP_DROP_CONSTRAINTS(12);
 alter table mating drop constraint if exists fk_breeding_mate; -- MATING(animal_id) -> ANIMAL(animal_id)
 alter table mating drop constraint if exists fk_mating_breeding__animal; -- MATING(mate_id) -> ANIMAL(animal_id)
 alter table offspring drop constraint if exists fk_offsprin_animal_of_animal; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
@@ -1079,6 +1091,7 @@ rollback;
 /*Test should fail if an inserted or updated offspring has the same id as the animal_id or the mate_id*/
 -- insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(12);
 alter table mating drop constraint if exists fk_breeding_mate; -- MATING(animal_id) -> ANIMAL(animal_id)
 alter table mating drop constraint if exists fk_mating_breeding__animal; -- MATING(mate_id) -> ANIMAL(animal_id)
 alter table offspring drop constraint if exists fk_offsprin_animal_of_animal; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
@@ -1089,6 +1102,7 @@ rollback;
 
 --update
 begin transaction;
+select USP_DROP_CONSTRAINTS(12);
 alter table mating drop constraint if exists fk_breeding_mate; -- MATING(animal_id) -> ANIMAL(animal_id)
 alter table mating drop constraint if exists fk_mating_breeding__animal; -- MATING(mate_id) -> ANIMAL(animal_id)
 alter table offspring drop constraint if exists fk_offsprin_animal_of_animal; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
@@ -1103,6 +1117,7 @@ rollback;
 /* Tests should pass because mate id and animal id are not the same */
 -- insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(13);
 alter table mating drop constraint fk_breeding_mate;
 alter table mating drop constraint fk_mating_breeding__animal;
 
@@ -1113,6 +1128,7 @@ rollback;
 
 -- update
 begin transaction;
+select USP_DROP_CONSTRAINTS(13);
 alter table mating drop constraint fk_breeding_mate;
 alter table mating drop constraint fk_mating_breeding__animal;
 
@@ -1127,6 +1143,7 @@ rollback;
 /* Tests should fail because mate id and animal id are the same */
 -- insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(13);
 alter table mating drop constraint fk_breeding_mate;
 alter table mating drop constraint fk_mating_breeding__animal;
 
@@ -1137,6 +1154,7 @@ rollback;
 
 -- update
 begin transaction;
+select USP_DROP_CONSTRAINTS(13);
 alter table mating drop constraint fk_breeding_mate;
 alter table mating drop constraint fk_mating_breeding__animal;
 
@@ -1152,6 +1170,7 @@ rollback;
 /* Tests should pass upon insert a discrapency date or updating it */
 --Insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(14);
 alter table "ORDER" drop constraint fk_order_invoice_of_invoice;
 alter table "ORDER" drop constraint fk_order_supplier;
 
@@ -1161,6 +1180,7 @@ rollback;
 
 --Update
 begin transaction;
+select USP_DROP_CONSTRAINTS(14);
 alter table "ORDER" drop constraint fk_order_invoice_of_invoice;
 alter table "ORDER" drop constraint fk_order_supplier;
 
@@ -1172,6 +1192,7 @@ rollback;
 /* Tests should fail after inserting and updating a earlier date */
 --Insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(14);
 alter table "ORDER" drop constraint fk_order_invoice_of_invoice;
 alter table "ORDER" drop constraint fk_order_supplier;
 
@@ -1181,6 +1202,7 @@ rollback;
 
 --Update
 begin transaction;
+select USP_DROP_CONSTRAINTS(14);
 alter table "ORDER" drop constraint fk_order_invoice_of_invoice;
 alter table "ORDER" drop constraint fk_order_supplier;
 
@@ -1195,6 +1217,7 @@ rollback;
 /* Test should pass as the weight is higher than 0*/
 -- insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(15);
 drop trigger if exists TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER on "ORDER";
 insert into invoice values('p1');
 insert into supplier values('jumbo', '123123', 'ijssellaan');
@@ -1205,6 +1228,7 @@ rollback;
 
 -- update
 begin transaction;
+select USP_DROP_CONSTRAINTS(15);
 drop trigger if exists TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER on "ORDER";
 insert into invoice values('p1');
 insert into supplier values('jumbo', '123123', 'ijssellaan');
@@ -1218,6 +1242,7 @@ rollback;
 /* Test should fail as the weight is equal to 0*/
 -- insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(15);
 drop trigger if exists TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER on "ORDER";
 insert into invoice values('p1');
 insert into supplier values('jumbo', '123123', 'ijssellaan');
@@ -1228,6 +1253,7 @@ rollback;
 
 -- update
 begin transaction;
+select USP_DROP_CONSTRAINTS(15);
 drop trigger if exists TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER on "ORDER";
 insert into invoice values('p1');
 insert into supplier values('jumbo', '123123', 'ijssellaan');
@@ -1241,6 +1267,7 @@ rollback;
 /*Test should fail as the weight is lower than 0*/
 -- insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(15);
 drop trigger if exists TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER on "ORDER";
 insert into invoice values('p1');
 insert into supplier values('jumbo', '123123', 'ijssellaan');
@@ -1251,6 +1278,7 @@ rollback;
 
 -- update
 begin transaction;
+select USP_DROP_CONSTRAINTS(15);
 drop trigger if exists TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER on "ORDER";
 insert into invoice values('p1');
 insert into supplier values('jumbo', '123123', 'ijssellaan');
@@ -1267,6 +1295,7 @@ rollback;
 /* Test should pass as the price is higher than 0*/
 -- insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(16);
 drop trigger if exists TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER on "ORDER";
 insert into invoice values('p1');
 insert into supplier values('jumbo', '123123', 'ijssellaan');
@@ -1277,6 +1306,7 @@ rollback;
 
 -- update
 begin transaction;
+select USP_DROP_CONSTRAINTS(16);
 drop trigger if exists TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER on "ORDER";
 insert into invoice values('p1');
 insert into supplier values('jumbo', '123123', 'ijssellaan');
@@ -1290,6 +1320,7 @@ rollback;
 /* Test should pass as the price is equal to 0*/
 -- insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(16);
 drop trigger if exists TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER on "ORDER";
 insert into invoice values('p1');
 insert into supplier values('jumbo', '123123', 'ijssellaan');
@@ -1300,6 +1331,7 @@ rollback;
 
 -- update
 begin transaction;
+select USP_DROP_CONSTRAINTS(16);
 drop trigger if exists TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER on "ORDER";
 insert into invoice values('p1');
 insert into supplier values('jumbo', '123123', 'ijssellaan');
@@ -1313,6 +1345,7 @@ rollback;
  /*Test should fail as the price is lower than 0*/
 -- insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(16);
 drop trigger if exists TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER on "ORDER";
 insert into invoice values('p1');
 insert into supplier values('jumbo', '123123', 'ijssellaan');
@@ -1323,6 +1356,7 @@ rollback;
 
 -- update
 begin transaction;
+select USP_DROP_CONSTRAINTS(16);
 drop trigger if exists TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER on "ORDER";
 insert into invoice values('p1');
 insert into supplier values('jumbo', '123123', 'ijssellaan');
@@ -1336,15 +1370,17 @@ rollback;
 /* Tests should pass upon inserting or updating a value higher than 0 */
 --Insert
 begin transaction;
-alter table stock drop if exists fk_animal_foodstock;
-alter table stock drop if exists fk_food_in_stock;
+select USP_DROP_CONSTRAINTS(17);
+alter table stock drop constraint if exists fk_animal_foodstock;
+alter table stock drop constraint if exists fk_food_in_stock;
 insert into stock values ('apen', 'bananen', 5);
 rollback;
 
 --Update
 begin transaction;
-alter table stock drop if exists fk_animal_foodstock;
-alter table stock drop if exists fk_food_in_stock;
+select USP_DROP_CONSTRAINTS(17);
+alter table stock drop constraint if exists fk_animal_foodstock;
+alter table stock drop constraint if exists fk_food_in_stock;
 insert into stock values ('apen', 'bananen', 5);
 update stock set amount = 6;
 rollback;
@@ -1352,15 +1388,17 @@ rollback;
 /* Tests should pass upon inserting or updating a value equal to 0 */
 --Insert
 begin transaction;
-alter table stock drop if exists fk_animal_foodstock;
-alter table stock drop if exists fk_food_in_stock;
+select USP_DROP_CONSTRAINTS(17);
+alter table stock drop constraint if exists fk_animal_foodstock;
+alter table stock drop constraint if exists fk_food_in_stock;
 insert into stock values ('apen', 'bananen', 0);
 rollback;
 
 --Update
 begin transaction;
-alter table stock drop if exists fk_animal_foodstock;
-alter table stock drop if exists fk_food_in_stock;
+select USP_DROP_CONSTRAINTS(17);
+alter table stock drop constraint if exists fk_animal_foodstock;
+alter table stock drop constraint if exists fk_food_in_stock;
 insert into stock values ('apen', 'bananen', 5);
 update stock set amount = 0;
 rollback;
@@ -1368,15 +1406,17 @@ rollback;
 /* Tests should fail upon inserting or updating a value lower than 0 */
 --Insert
 begin transaction;
-alter table stock drop if exists fk_animal_foodstock;
-alter table stock drop if exists fk_food_in_stock;
+select USP_DROP_CONSTRAINTS(17);
+alter table stock drop constraint if exists fk_animal_foodstock;
+alter table stock drop constraint if exists fk_food_in_stock;
 insert into stock values ('apen', 'bananen', -5);
 rollback;
 
 --Update
 begin transaction;
-alter table stock drop if exists fk_animal_foodstock;
-alter table stock drop if exists fk_food_in_stock;
+select USP_DROP_CONSTRAINTS(17);
+alter table stock drop constraint if exists fk_animal_foodstock;
+alter table stock drop constraint if exists fk_food_in_stock;
 insert into stock values ('apen', 'bananen', 5);
 update stock set amount = -5;
 rollback;
@@ -1385,15 +1425,17 @@ rollback;
 /*Test should pass upon inserting/updating a food amount higher than 0*/
 --insert
 begin transaction;
-alter table feeding drop constraint fk_feeding_for_animal;
-alter table feeding drop constraint fk_food_to_be_fed;
+select USP_DROP_CONSTRAINTS(18);
+alter table feeding drop constraint if exists fk_feeding_for_animal;
+alter table feeding drop constraint if exists fk_food_to_be_fed;
 insert into feeding values('1', 'Kapsalon', '11/11/12',1);
 rollback;
 
 --update
 begin transaction;
-alter table feeding drop constraint fk_feeding_for_animal;
-alter table feeding drop constraint fk_food_to_be_fed;
+select USP_DROP_CONSTRAINTS(18);
+alter table feeding drop constraint if exists fk_feeding_for_animal;
+alter table feeding drop constraint if exists fk_food_to_be_fed;
 insert into feeding values('1', 'Kapsalon', '11/11/12',1);
 update feeding set amount = 2;
 rollback;
@@ -1401,15 +1443,17 @@ rollback;
 /*test should fail upon inserting/updating a food amount equal to 0*/
 --insert
 begin transaction;
-alter table feeding drop constraint fk_feeding_for_animal;
-alter table feeding drop constraint fk_food_to_be_fed;
+select USP_DROP_CONSTRAINTS(18);
+alter table feeding drop constraint if exists fk_feeding_for_animal;
+alter table feeding drop constraint if exists fk_food_to_be_fed;
 insert into feeding values('1', 'Kapsalon', '11/11/12',0);
 rollback;
 
 --update
 begin transaction;
-alter table feeding drop constraint fk_feeding_for_animal;
-alter table feeding drop constraint fk_food_to_be_fed;
+select USP_DROP_CONSTRAINTS(18);
+alter table feeding drop constraint if exists fk_feeding_for_animal;
+alter table feeding drop constraint if exists fk_food_to_be_fed;
 insert into feeding values('1', 'Kapsalon', '11/11/12',1);
 update feeding set amount = 0;
 rollback;
@@ -1418,15 +1462,17 @@ rollback;
 /*test should fail upon inserting/updating a food amount less than 0*/
 --insert
 begin transaction;
-alter table feeding drop constraint fk_feeding_for_animal;
-alter table feeding drop constraint fk_food_to_be_fed;
+select USP_DROP_CONSTRAINTS(18);
+alter table feeding drop constraint if exists fk_feeding_for_animal;
+alter table feeding drop constraint if exists fk_food_to_be_fed;
 insert into feeding values('1', 'Kapsalon', '11/11/12',-1);
 rollback;
 
 --update
 begin transaction;
-alter table feeding drop constraint fk_feeding_for_animal;
-alter table feeding drop constraint fk_food_to_be_fed;
+select USP_DROP_CONSTRAINTS(18);
+alter table feeding drop constraint if exists fk_feeding_for_animal;
+alter table feeding drop constraint if exists fk_food_to_be_fed;
 insert into feeding values('1', 'Kapsalon', '11/11/12',1);
 update feeding set amount = -1;
 rollback;
@@ -1435,18 +1481,20 @@ rollback;
 /* Test should pass upon a visit date after the animal`s birth date*/
 --Insert
 begin transaction;
-alter table animal drop constraint fk_animal_of_species;
-alter table animal_visits_vet drop constraint fk_prescription_of_vet_visit;
-alter table animal_visits_vet drop constraint fk_vet_visited_animal;
+select USP_DROP_CONSTRAINTS(19);
+alter table animal drop constraint if exists fk_animal_of_species;
+alter table animal_visits_vet drop constraint if exists fk_prescription_of_vet_visit;
+alter table animal_visits_vet drop constraint if exists fk_vet_visited_animal;
 insert into animal values('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
 insert into animal_visits_vet values('1', '12/12/13', 'Regular check', 'Doctor Pol', '12/12/14');
 rollback;
 
 --Update
 begin transaction;
-alter table animal drop constraint fk_animal_of_species;
-alter table animal_visits_vet drop constraint fk_prescription_of_vet_visit;
-alter table animal_visits_vet drop constraint fk_vet_visited_animal;
+select USP_DROP_CONSTRAINTS(19);
+alter table animal drop constraint if exists fk_animal_of_species;
+alter table animal_visits_vet drop constraint if exists fk_prescription_of_vet_visit;
+alter table animal_visits_vet drop constraint if exists fk_vet_visited_animal;
 insert into animal values('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
 insert into animal_visits_vet values('1', '12/12/13', 'Regular check', 'Doctor Pol', '12/12/20');
 update animal_visits_vet set visit_date = '1/1/14';
@@ -1455,18 +1503,20 @@ rollback;
 /* Test should pass upon a visit date on the animal`s birth date*/
 --Insert
 begin transaction;
-alter table animal drop constraint fk_animal_of_species;
-alter table animal_visits_vet drop constraint fk_prescription_of_vet_visit;
-alter table animal_visits_vet drop constraint fk_vet_visited_animal;
+select USP_DROP_CONSTRAINTS(19);
+alter table animal drop constraint if exists fk_animal_of_species;
+alter table animal_visits_vet drop constraint if exists fk_prescription_of_vet_visit;
+alter table animal_visits_vet drop constraint if exists fk_vet_visited_animal;
 insert into animal values('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
 insert into animal_visits_vet values('1', '1/1/11', 'Regular check', 'Doctor Pol', '12/12/14');
 rollback;
 
 --Update
 begin transaction;
-alter table animal drop constraint fk_animal_of_species;
-alter table animal_visits_vet drop constraint fk_prescription_of_vet_visit;
-alter table animal_visits_vet drop constraint fk_vet_visited_animal;
+select USP_DROP_CONSTRAINTS(19);
+alter table animal drop constraint if exists fk_animal_of_species;
+alter table animal_visits_vet drop constraint if exists fk_prescription_of_vet_visit;
+alter table animal_visits_vet drop constraint if exists fk_vet_visited_animal;
 insert into animal values('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
 insert into animal_visits_vet values('1', '12/12/13', 'Regular check', 'Doctor Pol', '12/12/20');
 update animal_visits_vet set visit_date = '1/1/11';
@@ -1475,18 +1525,20 @@ rollback;
 /* Test should fail upon a visit date is before the animal`s birth date*/
 --Insert
 begin transaction;
-alter table animal drop constraint fk_animal_of_species;
-alter table animal_visits_vet drop constraint fk_prescription_of_vet_visit;
-alter table animal_visits_vet drop constraint fk_vet_visited_animal;
+select USP_DROP_CONSTRAINTS(19);
+alter table animal drop constraint if exists fk_animal_of_species;
+alter table animal_visits_vet drop constraint if exists fk_prescription_of_vet_visit;
+alter table animal_visits_vet drop constraint if exists fk_vet_visited_animal;
 insert into animal values('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
 insert into animal_visits_vet values('1', '1/1/10', 'Regular check', 'Doctor Pol', '12/12/14');
 rollback;
 
 --Update
 begin transaction;
-alter table animal drop constraint fk_animal_of_species;
-alter table animal_visits_vet drop constraint fk_prescription_of_vet_visit;
-alter table animal_visits_vet drop constraint fk_vet_visited_animal;
+select USP_DROP_CONSTRAINTS(19);
+alter table animal drop constraint if exists fk_animal_of_species;
+alter table animal_visits_vet drop constraint if exists fk_prescription_of_vet_visit;
+alter table animal_visits_vet drop constraint if exists fk_vet_visited_animal;
 insert into animal values('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
 insert into animal_visits_vet values('1', '12/12/13', 'Regular check', 'Doctor Pol', '12/12/20');
 update animal_visits_vet set visit_date = '1/1/10';
@@ -1496,26 +1548,31 @@ rollback;
 /* Tests should pass upon inserting or updating a age higher than 0*/
 --Insert
 begin transaction;
-alter table species_gender drop if exists fk_species_with_gender;
+select USP_DROP_CONSTRAINTS(20);
+alter table species_gender drop constraint if exists fk_species_with_gender;
 insert into species_gender values ('aap', '', 5, 5);
 rollback;
 
 --Update
 begin transaction;
-alter table species_gender drop if exists fk_species_with_gender;
+select USP_DROP_CONSTRAINTS(20);
+alter table species_gender drop constraint if exists fk_species_with_gender;
 insert into species_gender values ('aap', 'male', 5, 5);
 update species_gender set maturity_age = 6;
+rollback;
 
 /* Tests should pass upon inserting or updating a age equal to 0*/
 --Insert
 begin transaction;
-alter table species_gender drop if exists fk_species_with_gender;
+select USP_DROP_CONSTRAINTS(20);
+alter table species_gender drop constraint if exists fk_species_with_gender;
 insert into species_gender values ('aap', '', 5, 0);
 rollback;
 
 --Update
 begin transaction;
-alter table species_gender drop if exists fk_species_with_gender;
+select USP_DROP_CONSTRAINTS(20);
+alter table species_gender drop constraint if exists fk_species_with_gender;
 insert into species_gender values ('aap', 'male', 5, 5);
 update species_gender set maturity_age = 0;
 rollback;
@@ -1523,13 +1580,15 @@ rollback;
 /* Tests should fail upon inserting or updating a age lower than 0 */
 --Insert
 begin transaction;
-alter table species_gender drop if exists fk_species_with_gender;
+select USP_DROP_CONSTRAINTS(20);
+alter table species_gender drop constraint if exists fk_species_with_gender;
 insert into species_gender values ('aap', '', 5, -2);
 rollback;
 
 --Update
 begin transaction;
-alter table species_gender drop if exists fk_species_with_gender;
+select USP_DROP_CONSTRAINTS(20);
+alter table species_gender drop constraint if exists fk_species_with_gender;
 insert into species_gender values ('aap', 'male', 5, 5);
 update species_gender set maturity_age = -2;
 rollback;
@@ -1538,12 +1597,14 @@ rollback;
 /* Tests should pass upon insert a species gender or updating it */
 --Insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(21);
 insert into species values('Apes', 'Are apes', 'Apes', 'Apes', '');
 insert into species_gender values('Apes', 'male', 9.5, 009.5);
 rollback;
 
 --Update
 begin transaction;
+select USP_DROP_CONSTRAINTS(21);
 insert into species values('Apes', 'Are apes', 'Apes', 'Apes', '');
 insert into species_gender values('Apes', 'male', 9.5, 009.5);
 update species_gender set average_weight = 10.1 where english_name = 'Apes';
@@ -1552,12 +1613,14 @@ rollback;
 /* Tests should raise a check constraint error upon insert a species gender or updating it when the weight is 0 */
 --Insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(21);
 insert into species values('Apes', 'Are apes', 'Apes', 'Apes', '');
 insert into species_gender values('Apes', 'male', 0, 009.5);
 rollback;
 
 --Update
 begin transaction;
+select USP_DROP_CONSTRAINTS(21);
 insert into species values('Apes', 'Are apes', 'Apes', 'Apes', '');
 insert into species_gender values('Apes', 'male', 9.5, 009.5);
 update species_gender set average_weight = 0 where english_name = 'Apes';
@@ -1566,12 +1629,14 @@ rollback;
 /* Tests should raise a check constraint error upon insert a species gender or updating it when the weight is lower then 0 */
 --Insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(21);
 insert into species values('Apes', 'Are apes', 'Apes', 'Apes', '');
 insert into species_gender values('Apes', 'male', -5, 009.5);
 rollback;
 
 --Update
 begin transaction;
+select USP_DROP_CONSTRAINTS(21);
 insert into species values('Apes', 'Are apes', 'Apes', 'Apes', '');
 insert into species_gender values('Apes', 'male', 9.5, 009.5);
 update species_gender set average_weight = -5 where english_name = 'Apes';
@@ -1581,16 +1646,18 @@ rollback;
 /* Test should pass because the birth_date is after the since enclosure date */
 --Insert
 begin transaction;
-alter table animal drop constraint fk_animal_of_species;
-alter table animal_enclosure drop constraint fk_enclosure_has_animal;
+select USP_DROP_CONSTRAINTS(22);
+alter table animal drop constraint if exists fk_animal_of_species;
+alter table animal_enclosure drop constraint if exists fk_enclosure_has_animal;
 insert into animal values('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
 insert into animal_enclosure values('1', 'Mensen', '1', '12/12/12');
 rollback;
 
 --Update
 begin transaction;
-alter table animal drop constraint fk_animal_of_species;
-alter table animal_enclosure drop constraint fk_enclosure_has_animal;
+select USP_DROP_CONSTRAINTS(22);
+alter table animal drop constraint if exists fk_animal_of_species;
+alter table animal_enclosure drop constraint if exists fk_enclosure_has_animal;
 insert into animal values('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
 insert into animal_enclosure values('1', 'Mensen', '1', '12/12/12');
 update animal_enclosure set since = '12/12/13';
@@ -1598,8 +1665,9 @@ rollback;
 
 --Update birth_date
 begin transaction;
-alter table animal drop constraint fk_animal_of_species;
-alter table animal_enclosure drop constraint fk_enclosure_has_animal;
+select USP_DROP_CONSTRAINTS(22);
+alter table animal drop constraint if exists fk_animal_of_species;
+alter table animal_enclosure drop constraint if exists fk_enclosure_has_animal;
 insert into animal values('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
 insert into animal_enclosure values('1', 'Mensen', '1', '12/12/12');
 update animal set birth_date = '12/12/10';
@@ -1608,16 +1676,18 @@ rollback;
 /* Test should pass because the birth_date is on the same date as the since enclosure date */
 --Insert
 begin transaction;
-alter table animal drop constraint fk_animal_of_species;
-alter table animal_enclosure drop constraint fk_enclosure_has_animal;
+select USP_DROP_CONSTRAINTS(22);
+alter table animal drop constraint if exists fk_animal_of_species;
+alter table animal_enclosure drop constraint if exists fk_enclosure_has_animal;
 insert into animal values('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
 insert into animal_enclosure values('1', 'Mensen', '1', '1/1/11');
 rollback;
 
 --Update since date
 begin transaction;
-alter table animal drop constraint fk_animal_of_species;
-alter table animal_enclosure drop constraint fk_enclosure_has_animal;
+select USP_DROP_CONSTRAINTS(22);
+alter table animal drop constraint if exists fk_animal_of_species;
+alter table animal_enclosure drop constraint if exists fk_enclosure_has_animal;
 insert into animal values('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
 insert into animal_enclosure values('1', 'Mensen', '1', '12/12/12');
 update animal_enclosure set since = '1/1/11';
@@ -1625,8 +1695,9 @@ rollback;
 
 --Update birth_date
 begin transaction;
-alter table animal drop constraint fk_animal_of_species;
-alter table animal_enclosure drop constraint fk_enclosure_has_animal;
+select USP_DROP_CONSTRAINTS(22);
+alter table animal drop constraint if exists fk_animal_of_species;
+alter table animal_enclosure drop constraint if exists fk_enclosure_has_animal;
 insert into animal values('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
 insert into animal_enclosure values('1', 'Mensen', '1', '12/12/12');
 update animal set birth_date = '12/12/12';
@@ -1635,16 +1706,18 @@ rollback;
 /* Test should fail because the birth_date is before the since enclosure date */
 --Insert
 begin transaction;
-alter table animal drop constraint fk_animal_of_species;
-alter table animal_enclosure drop constraint fk_enclosure_has_animal;
+select USP_DROP_CONSTRAINTS(22);
+alter table animal drop constraint if exists fk_animal_of_species;
+alter table animal_enclosure drop constraint if exists fk_enclosure_has_animal;
 insert into animal values('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
 insert into animal_enclosure values('1', 'Mensen', '1', '1/1/10');
 rollback;
 
 --Update since date
 begin transaction;
-alter table animal drop constraint fk_animal_of_species;
-alter table animal_enclosure drop constraint fk_enclosure_has_animal;
+select USP_DROP_CONSTRAINTS(22);
+alter table animal drop constraint if exists fk_animal_of_species;
+alter table animal_enclosure drop constraint if exists fk_enclosure_has_animal;
 insert into animal values('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
 insert into animal_enclosure values('1', 'Mensen', '1', '12/12/12');
 update animal_enclosure set since = '1/1/10';
@@ -1652,8 +1725,9 @@ rollback;
 
 --Update birth_date
 begin transaction;
-alter table animal drop constraint fk_animal_of_species;
-alter table animal_enclosure drop constraint fk_enclosure_has_animal;
+select USP_DROP_CONSTRAINTS(22);
+alter table animal drop constraint if exists fk_animal_of_species;
+alter table animal_enclosure drop constraint if exists fk_enclosure_has_animal;
 insert into animal values('1', 'male', 'Rico', 'Apeldoorn', '1/1/11', 'Duck');
 insert into animal_enclosure values('1', 'Mensen', '1', '12/12/12');
 update animal set birth_date = '1/1/13';
