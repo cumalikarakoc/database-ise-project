@@ -369,7 +369,7 @@ check (average_weight > 0);
 
 /*===== CONSTRAINT 22 AnimalEnclosureSince =====*/
 /* An animal cannot be in an enclosure before his birth_date*/
-create or replace function TRP_ANIMAL_ENCLOSURE_SINCE()
+create or replace function TRP_ENCLOSURE_SINCE_AFTER_BIRTH_DATE()
   returns trigger as
 $$
 begin
@@ -381,7 +381,7 @@ end;
 $$
 language 'plpgsql';
 
-create or replace function TRP_ANIMAL_SINCE()
+create or replace function TRP_ANIMAL_BIRTH_DATE_BEFORE_ENCLOSURE_SINCE()
   returns trigger as
 $$
 begin
@@ -395,11 +395,10 @@ language 'plpgsql';
 
 drop trigger if exists TR_ANIMAL_ENCLOSURE_SINCE on animal_enclosure;
 create trigger TR_ANIMAL_ENCLOSURE_SINCE before insert or update
-  on animal_enclosure for each row execute procedure TRP_ANIMAL_ENCLOSURE_SINCE();
+  on animal_enclosure for each row execute procedure TRP_ENCLOSURE_SINCE_AFTER_BIRTH_DATE();
 
-drop trigger if exists TR_ANIMAL_BIRTH_DATE_SINCE on animal;
-create trigger TR_ANIMAL_BIRTH_DATE_SINCE before update
-  on animal for each row execute procedure TRP_ANIMAL_SINCE();
-
+drop trigger if exists TR_ANIMAL_IN_ENCLOSURE_SINCE on animal;
+create trigger TR_ANIMAL_IN_ENCLOSURE_SINCE before update
+  on animal for each row execute procedure TRP_ANIMAL_BIRTH_DATE_BEFORE_ENCLOSURE_SINCE();
 /*=============*/
 
