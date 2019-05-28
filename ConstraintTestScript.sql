@@ -237,12 +237,24 @@ rollback;
  because there isn't a discrepancy note */
 --insert
 begin transaction;
+alter table "ORDER"
+drop constraint fk_order_ivoice_of_invoice;
+
+alter table "ORDER"
+drop constraint fk_order_supplier;
+
 insert into "ORDER" values
 ('Order3', 'Supplier2', 'Not complete', current_date, null);
 rollback;
 
 --update
 begin transaction;
+alter table "ORDER"
+drop constraint fk_order_ivoice_of_invoice;
+
+alter table "ORDER"
+drop constraint fk_order_supplier;
+
 insert into "ORDER" values
 ('Order2', 'Supplier2', 'Awaiting payment', current_date, null);
 update "ORDER"
@@ -253,6 +265,13 @@ rollback;
 there has to be an order. Thats why an order is created first.*/
 --insert
 begin transaction;
+
+alter table "ORDER"
+drop constraint fk_order_ivoice_of_invoice;
+
+alter table "ORDER"
+drop constraint fk_order_supplier;
+
 insert into "ORDER" values
 ('1', 'test', 'Placed', current_date, null);
 insert into DISCREPANCY (order_id, message, place_date) values
@@ -261,10 +280,17 @@ update "ORDER"
 set state = 'Not complete';
 rollback;
 
-/* Now the trigger on DISCREPANCY will be tested. This wil fail because the order it gets assigend to hasnt the state Not complete.
+/* Now the trigger on DISCREPANCY will be tested. This wil fail because the order it gets assigned to hasnt the state Not complete.
 When deleted it will also fail because the order is still not completed.*/
 --update
 begin transaction;
+
+alter table "ORDER"
+drop constraint fk_order_ivoice_of_invoice;
+
+alter table "ORDER"
+drop constraint fk_order_supplier;
+
 insert into "ORDER" values
 ('1', 'test', 'Placed', current_date, null),
 ('2', 'test', 'Paid', current_date, null);
@@ -278,6 +304,12 @@ rollback;
 
 --delete
 begin transaction;
+alter table "ORDER"
+drop constraint fk_order_ivoice_of_invoice;
+
+alter table "ORDER"
+drop constraint fk_order_supplier;
+
 insert into "ORDER" values
 ('1', 'test', 'Placed', current_date, null);
 insert into discrepancy (order_id, message, place_date) values
@@ -290,6 +322,12 @@ rollback;
 /* The following tests will succeed. Because the order has been completed, so its state changes. */
 --update
 begin transaction;
+alter table "ORDER"
+drop constraint fk_order_ivoice_of_invoice;
+
+alter table "ORDER"
+drop constraint fk_order_supplier;
+
 insert into "ORDER" values
 ('1', 'test', 'Placed', current_date, null),
 ('2', 'test', 'Paid', current_date, null);
@@ -306,6 +344,12 @@ rollback;
 
 --delete
 begin transaction;
+alter table "ORDER"
+drop constraint fk_order_ivoice_of_invoice;
+
+alter table "ORDER"
+drop constraint fk_order_supplier;
+
 insert into "ORDER" values
 ('1', 'test', 'Placed', current_date, null);
 insert into discrepancy (order_id, message, place_date) values
