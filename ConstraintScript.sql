@@ -291,7 +291,7 @@ check(animal_id <> mate_id);
 /*===== CONSTRAINT 14 DiscrepancyDate =====*/
 /* column DISCREPANCY(Place_date) cannot be before ORDER(Order_date)*/
 
-create or replace function TR_DISCREPANCY_DATE_FUNC()
+create or replace function TRP_DISCREPANCY_DATE_FUNC()
   returns trigger AS
 $$
 begin
@@ -308,7 +308,7 @@ create trigger TR_DISCREPANCY_DATE
   after insert or update
   on discrepancy
   for each row
-  execute procedure TR_DISCREPANCY_DATE_FUNC();
+  execute procedure TRP_DISCREPANCY_DATE_FUNC();
 
 /*===== CONSTRAINT 15 LineItemWeight =====*/
 /* column LINE_ITEM(price) must be higher than 0*/
