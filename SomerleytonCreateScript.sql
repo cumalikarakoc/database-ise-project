@@ -533,7 +533,7 @@ DIAGNOSIS_NAME
 create table DISCREPANCY (
    DISCREPANCY_ID       serial	             not null,
    ORDER_ID             ID                  not null,
-   MESSAGE_DI           TEXT_DOMAIN         not null,
+   MESSAGE              TEXT_DOMAIN         not null,
    PLACE_DATE           DATE                not null,
    constraint PK_DISCREPANCY primary key (DISCREPANCY_ID)
 );
@@ -1094,7 +1094,7 @@ alter table OFFSPRING
       references MATING (ANIMAL_ID, MATING_DATE);
 
 alter table "ORDER"
-   add constraint FK_ORDER_IVOICE_OF_INVOICE foreign key (INVOICE_ID)
+   add constraint FK_ORDER_INVOICE_OF_INVOICE foreign key (INVOICE_ID)
       references INVOICE (INVOICE_ID)
       on delete restrict on update restrict;
 
