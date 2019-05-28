@@ -411,10 +411,10 @@ alter table ANIMAL_ENCLOSURE
 drop constraint fk_enclosure_has_animal;
 
 insert into ANIMAL_ENCLOSURE values
-('1', '2019-05-23', 'test', 1, '2019-05-24');
+('1', 'test', 1, '2019-05-23', '2019-05-24');
 
 insert into ANIMAL_ENCLOSURE values
-('1', '2019-05-25', 'test', 2, '2019-05-26');
+('1', 'test', 2, '2019-05-25', '2019-05-26');
 
 rollback transaction;
 
@@ -427,10 +427,10 @@ alter table ANIMAL_ENCLOSURE
 drop constraint fk_enclosure_has_animal;
 
 insert into ANIMAL_ENCLOSURE values
-('1', '2019-01-01', 'test', 3, '2019-01-31');
+('1', 'test', 3, '2019-01-01', '2019-01-31');
 
 insert into ANIMAL_ENCLOSURE values
-('1', '2019-05-23', 'test', 1, null);
+('1', 'test', 1, '2019-05-23', null);
 
 update ANIMAL_ENCLOSURE
 set End_date = '2019-05-24'
@@ -448,10 +448,10 @@ alter table ANIMAL_ENCLOSURE
 drop constraint fk_enclosure_has_animal;
 
 insert into ANIMAL_ENCLOSURE values
-('1', '2019-05-23', 'test', 1, '2019-05-25');
+('1', 'test', 1, '2019-05-23', '2019-05-25');
 
 insert into ANIMAL_ENCLOSURE values
-('1', '2019-05-24', 'test', 2, '2019-05-26');
+('1', 'test', 2, '2019-05-24', '2019-05-26');
 rollback transaction;
 
 --update
@@ -463,9 +463,9 @@ alter table ANIMAL_ENCLOSURE
 drop constraint fk_enclosure_has_animal;
 
 insert into ANIMAL_ENCLOSURE values
-('1', '2019-05-23', 'test', 1, '2019-05-25'),
-('1', '2019-05-25', 'test', 2, '2019-05-31'),
-('1', '2019-06-01', 'test', 3, '2019-06-02');
+('1', 'test', 1, '2019-05-23', '2019-05-25'),
+('1', 'test', 2, '2019-05-25', '2019-05-31'),
+('1', 'test', 3, '2019-06-01', '2019-06-02');
 
 update ANIMAL_ENCLOSURE
 set Since = '2019-05-24'
@@ -483,10 +483,10 @@ alter table ANIMAL_ENCLOSURE
 drop constraint fk_enclosure_has_animal;
 
 insert into ANIMAL_ENCLOSURE values
-('1', '2019-05-23', 'test', 1, '2019-05-25');
+('1', 'test', 1, '2019-05-23', '2019-05-25');
 
 insert into ANIMAL_ENCLOSURE values
-('1', '2019-05-10', 'test', 2, '2019-05-24');
+('1', 'test', 2, '2019-05-10', '2019-05-24');
 rollback transaction;
 
 --update
@@ -498,8 +498,8 @@ alter table ANIMAL_ENCLOSURE
 drop constraint fk_enclosure_has_animal;
 
 insert into ANIMAL_ENCLOSURE values
-('1', '2019-05-23', 'test', 1, '2019-05-25'),
-('1', '2019-05-25', 'test', 2, '2019-05-31');
+('1', 'test', 1, '2019-05-23', '2019-05-25'),
+('1', 'test', 2, '2019-05-25', '2019-05-31');
 
 update ANIMAL_ENCLOSURE
 set since = '2019-05-10',
@@ -517,10 +517,10 @@ alter table ANIMAL_ENCLOSURE
 drop constraint fk_enclosure_has_animal;
 
 insert into ANIMAL_ENCLOSURE values
-('1', '2019-05-23', 'test', 1, '2019-05-30');
+('1', 'test', 1, '2019-05-23', '2019-05-30');
 
 insert into ANIMAL_ENCLOSURE values
-('1', '2019-05-24', 'test', 1, '2019-05-26');
+('1', 'test', 1,  '2019-05-24','2019-05-26');
 
 rollback transaction;
 
@@ -533,8 +533,8 @@ alter table ANIMAL_ENCLOSURE
 drop constraint fk_enclosure_has_animal;
 
 insert into ANIMAL_ENCLOSURE values
-('1', '2019-05-23', 'test', 1, '2019-05-25'),
-('1', '2019-05-25', 'test', 2, '2019-05-31');
+('1', 'test', 1, '2019-05-23', '2019-05-25'),
+('1', 'test', 2, '2019-05-25', '2019-05-31');
 
 update ANIMAL_ENCLOSURE
 set since = '2019-05-26',
@@ -552,10 +552,10 @@ alter table ANIMAL_ENCLOSURE
 drop constraint fk_enclosure_has_animal;
 
 insert into ANIMAL_ENCLOSURE values
-('1', '2019-05-23', 'test', 1, '2019-05-25');
+('1', 'test', 1, '2019-05-23', '2019-05-25');
 
 insert into ANIMAL_ENCLOSURE values
-('1', '2019-05-20', 'test', 1, '2019-05-26');
+('1', 'test', 1, '2019-05-20', '2019-05-26');
 rollback transaction;
 
 --update
@@ -567,8 +567,8 @@ alter table ANIMAL_ENCLOSURE
 drop constraint fk_enclosure_has_animal;
 
 insert into ANIMAL_ENCLOSURE values
-('1', '2019-05-23', 'test', 1, '2019-05-25'),
-('1', '2019-05-25', 'test', 2, '2019-05-31');
+('1', 'test', 1, '2019-05-23', '2019-05-25'),
+('1', 'test', 2, '2019-05-25', '2019-05-31');
 
 update ANIMAL_ENCLOSURE
 set since = '2019-05-24',
