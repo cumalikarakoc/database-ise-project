@@ -173,9 +173,9 @@ begin
    and new.since < end_date)
    or
    (new.end_date > since
-   and new.end_date =< end_date)
+   and new.end_date <= end_date)
    or
-   (new.since =< since
+   (new.since <= since
     and new.end_date >= end_date
    ))) then
    raise exception 'The enclosure dates for animal % overlap', new.animal_id;

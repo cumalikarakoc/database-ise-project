@@ -12,7 +12,7 @@
 
 /* This stored procedure is going te be run before every tests.
 It drops all constraints except for the one it is testing so they dont interfere with each other.*/
-create procedure USP_DROP_CONSTRAINTS(int)
+create or replace function USP_DROP_CONSTRAINTS(int) returns void
 language plpgsql
 as $$
 begin
@@ -104,7 +104,6 @@ begin
     if ($1 != 21) then
         alter table species_gender drop constraint if exists CHK_AVERAGE_WEIGHT;
     end if;
-    commit;
 end;
 $$;
 
@@ -114,8 +113,7 @@ $$;
 begin transaction;
 alter table "ORDER"
 drop constraint fk_order_supplier;
-call USP_DROP_CONSTRAINTS(1);
-
+select USP_DROP_CONSTRAINTS(1);
 insert into "ORDER" values ('Order1', 'supplier', 'Paid', current_date, null),
 ('Order2', 'Supplier2', 'Awaiting payment', current_date, null),
 ('Order3', 'Supplier2', 'Not complete', current_date, null),
@@ -126,10 +124,9 @@ rollback;
 begin transaction;
 alter table "ORDER"
 drop constraint fk_order_supplier;
-call USP_DROP_CONSTRAINTS(1);
+select USP_DROP_CONSTRAINTS(1);
 
 insert into "ORDER" values ('Order1', 'supplier', 'Awaiting payment', current_date, null);
-
 update "ORDER"
 set state = 'Paid';
 rollback;
@@ -140,7 +137,7 @@ rollback;
 begin transaction;
 alter table "ORDER"
 drop constraint fk_order_supplier;
-call USP_DROP_CONSTRAINTS(1);
+select USP_DROP_CONSTRAINTS(1);
 
 insert into "ORDER" values ('Order1', 'Supplier', 'Placed', current_date, null),
 ('Order2', 'Supplier2', 'Canceled', current_date, null);
@@ -150,10 +147,9 @@ rollback;
 begin transaction;
 alter table "ORDER"
 drop constraint fk_order_supplier;
-call USP_DROP_CONSTRAINTS(1);
+select USP_DROP_CONSTRAINTS(1);
 
 insert into "ORDER" values ('Order1', 'Supplier', 'Placed', current_date, null);
-
 update "ORDER"
 set State = 'Removed';
 rollback;
@@ -163,6 +159,7 @@ rollback;
 because there is a delivery note*/
 -- insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(2);
 insert into supplier values
 ('Jumbo','123456789','Ruitenberglaan 27 Arnhem');
 insert into "ORDER" values
@@ -173,6 +170,7 @@ rollback;
 
 --update
 begin transaction;
+select USP_DROP_CONSTRAINTS(2);
 insert into supplier values
 ('Jumbo','123456789','Ruitenberglaan 27 Arnhem');
 insert into "ORDER" values
@@ -191,6 +189,7 @@ because there is a delivery note*/
 
 --update
 begin transaction;
+select USP_DROP_CONSTRAINTS(2);
 insert into supplier values
 ('Jumbo','123456789','Ruitenberglaan 27 Arnhem');
 insert into "ORDER" values
@@ -205,6 +204,7 @@ rollback;
 Because the is no delivery note*/
 -- insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(2);
 insert into supplier values
 ('Jumbo','123456789','Ruitenberglaan 27 Arnhem');
 insert into "ORDER" values
@@ -213,6 +213,7 @@ rollback;
 
 --update
 begin transaction;
+select USP_DROP_CONSTRAINTS(2);
 insert into supplier values
 ('Jumbo','123456789','Ruitenberglaan 27 Arnhem');
 insert into "ORDER" values
@@ -225,6 +226,7 @@ rollback;
 because the order it corresponds to is placed*/
 -- delete
 begin transaction;
+select USP_DROP_CONSTRAINTS(2);
 insert into supplier values
 ('Jumbo','123456789','Ruitenberglaan 27 Arnhem');
 insert into "ORDER" values
@@ -236,6 +238,7 @@ rollback;
 
 --update
 begin transaction;
+select USP_DROP_CONSTRAINTS(2);
 insert into supplier values
 ('Jumbo','123456789','Ruitenberglaan 27 Arnhem');
 insert into "ORDER" values
@@ -251,6 +254,7 @@ rollback;
 because the order it correpsonds to is something other than Placed*/
 -- delete
 begin transaction;
+select USP_DROP_CONSTRAINTS(2);
 insert into supplier values
 ('Jumbo','123456789','Ruitenberglaan 27 Arnhem');
 insert into "ORDER" values
@@ -264,6 +268,7 @@ rollback;
 
 --update
 begin transaction;
+select USP_DROP_CONSTRAINTS(2);
 insert into supplier values
 ('Jumbo','123456789','Ruitenberglaan 27 Arnhem');
 insert into "ORDER" values
@@ -283,6 +288,7 @@ rollback;
 -- insert
 begin transaction;
 drop trigger if exists TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER on "ORDER";
+select USP_DROP_CONSTRAINTS(3);
 insert into invoice values('1');
 insert into supplier values('jumbo', '123213', 'ijssellaan');
 insert into "ORDER" values(1, 'jumbo', 'Paid', '2019-12-12', '1');
@@ -290,6 +296,7 @@ rollback;
 
 -- update 
 begin transaction;
+select USP_DROP_CONSTRAINTS(3);
 drop trigger if exists TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER on "ORDER";
 insert into invoice values('1');
 insert into supplier values('jumbo', '123213', 'ijssellaan');
@@ -301,6 +308,7 @@ rollback;
 /* Tests should raise a check constraint error if order is paid and no invoice is associated*/
 --insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(3);
 drop trigger if exists TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER on "ORDER";
 insert into invoice values('1');
 insert into supplier values('jumbo', '123213', 'ijssellaan');
@@ -309,6 +317,7 @@ rollback;
 
 --update 
 begin transaction;
+select USP_DROP_CONSTRAINTS(3);
 drop trigger if exists TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER on "ORDER";
 insert into invoice values('1');
 insert into supplier values('jumbo', '123213', 'ijssellaan');
@@ -319,6 +328,7 @@ rollback;
 /* Tests should not pass if state is not paid and an invoice is attached to the order. */
 --insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(3);
 drop trigger if exists TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER on "ORDER";
 insert into invoice values('1');
 insert into supplier values('jumbo', '123213', 'ijssellaan');
@@ -327,6 +337,7 @@ rollback;
 
 --update 
 begin transaction;
+select USP_DROP_CONSTRAINTS(3);
 drop trigger if exists TR_OTHER_THAN_PLACED_HAS_DELIVERY_ORDER on "ORDER";
 insert into invoice values('1');
 insert into supplier values('jumbo', '123213', 'ijssellaan');
@@ -339,12 +350,16 @@ rollback;
  because there isn't a discrepancy note */
 --insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(4);
+alter table "ORDER" drop constraint if exists fk_order_supplier;
 insert into "ORDER" values
 ('Order3', 'Supplier2', 'Not complete', current_date, null);
 rollback;
 
 --update
 begin transaction;
+select USP_DROP_CONSTRAINTS(4);
+alter table "ORDER" drop constraint if exists fk_order_supplier;
 insert into "ORDER" values
 ('Order2', 'Supplier2', 'Awaiting payment', current_date, null);
 update "ORDER"
@@ -355,6 +370,8 @@ rollback;
 there has to be an order. Thats why an order is created first.*/
 --insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(4);
+alter table "ORDER" drop constraint if exists fk_order_supplier;
 insert into "ORDER" values
 ('1', 'test', 'Placed', current_date, null);
 insert into DISCREPANCY (order_id, message, place_date) values
@@ -363,10 +380,12 @@ update "ORDER"
 set state = 'Not complete';
 rollback;
 
-/* Now the trigger on DISCREPANCY will be tested. This wil fail because the order it gets assigend to hasnt the state Not complete.
+/* Now the trigger on DISCREPANCY will be tested. This wil fail because the order it gets assigend to does not have the state Not complete.
 When deleted it will also fail because the order is still not completed.*/
 --update
 begin transaction;
+select USP_DROP_CONSTRAINTS(4);
+alter table "ORDER" drop constraint if exists fk_order_supplier;
 insert into "ORDER" values
 ('1', 'test', 'Placed', current_date, null),
 ('2', 'test', 'Paid', current_date, null);
@@ -380,6 +399,8 @@ rollback;
 
 --delete
 begin transaction;
+select USP_DROP_CONSTRAINTS(4);
+alter table "ORDER" drop constraint if exists fk_order_supplier;
 insert into "ORDER" values
 ('1', 'test', 'Placed', current_date, null);
 insert into discrepancy (order_id, message, place_date) values
@@ -392,6 +413,8 @@ rollback;
 /* The following tests will succeed. Because the order has been completed, so its state changes. */
 --update
 begin transaction;
+select USP_DROP_CONSTRAINTS(4);
+alter table "ORDER" drop constraint if exists fk_order_supplier;
 insert into "ORDER" values
 ('1', 'test', 'Placed', current_date, null),
 ('2', 'test', 'Paid', current_date, null);
@@ -408,6 +431,8 @@ rollback;
 
 --delete
 begin transaction;
+select USP_DROP_CONSTRAINTS(4);
+alter table "ORDER" drop constraint if exists fk_order_supplier;
 insert into "ORDER" values
 ('1', 'test', 'Placed', current_date, null);
 insert into discrepancy (order_id, message, place_date) values
@@ -419,6 +444,7 @@ rollback;
 /* Test should pass when inserting or updating animal gender to 'male' */
 -- insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(5);
 insert into species values
 ('Monkey','Things with long arms',null,null,null);
 insert into animal values
@@ -428,6 +454,7 @@ rollback;
 
 -- update
 begin transaction;
+select USP_DROP_CONSTRAINTS(5);
 insert into species values
 ('Monkey','Things with long arms',null,null,null);
 insert into animal values
@@ -439,8 +466,8 @@ rollback;
 
 /* Test should pass when inserting or updating animal gender to 'female' */
 -- insert
--- insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(5);
 insert into species values
 ('Monkey','Things with long arms',null,null,null);
 insert into animal values
@@ -450,6 +477,7 @@ rollback;
 
 -- update
 begin transaction;
+select USP_DROP_CONSTRAINTS(5);
 insert into species values
 ('Monkey','Things with long arms',null,null,null);
 insert into animal values
@@ -462,6 +490,7 @@ rollback;
 /* Test should pass when inserting or updating animal gender to 'other' */
 -- insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(5);
 insert into species values
 ('Monkey','Things with long arms',null,null,null);
 insert into animal values
@@ -471,6 +500,7 @@ rollback;
 
 -- update
 begin transaction;
+select USP_DROP_CONSTRAINTS(5);
 insert into species values
 ('Monkey','Things with long arms',null,null,null);
 insert into animal values
@@ -483,6 +513,7 @@ rollback;
 /* Test should fail when inserting or updating animal gender to something other than 'male', 'female', 'other' */
 -- insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(5);
 insert into species values
 ('Monkey','Things with long arms',null,null,null);
 insert into animal values
@@ -492,6 +523,7 @@ rollback;
 
 -- update
 begin transaction;
+select USP_DROP_CONSTRAINTS(5);
 insert into species values
 ('Monkey','Things with long arms',null,null,null);
 insert into animal values
@@ -506,30 +538,28 @@ rollback;
 
 --insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(6);
 alter table animal_enclosure
 drop constraint fk_animal_in_enclosure;
-
 alter table animal_enclosure
 drop constraint fk_enclosure_has_animal;
 
 insert into animal_enclosure values
-('1', '2019-05-23', 'test', 1, '2019-05-24');
-
+('1', 'test', 1, '2019-05-23', '2019-05-24');
 insert into animal_enclosure values
-('1', '2019-05-25', 'test', 2, '2019-05-26');
+('1', 'test', 2, '2019-05-25', '2019-05-26');
 rollback;
 
 --update
 begin transaction;
+select USP_DROP_CONSTRAINTS(6);
 alter table animal_enclosure
 drop constraint fk_animal_in_enclosure;
-
 alter table animal_enclosure
 drop constraint fk_enclosure_has_animal;
 
 insert into animal_enclosure values
-('1', '2019-05-23', 'test', 1, null);
-
+('1', 'test', 1, '2019-05-23', null);
 update animal_enclosure
 set End_date = '2019-05-24'
 where Animal_id = '1';
@@ -538,66 +568,61 @@ rollback;
 /* The following test will fail because the new since date is in between an older since and end_date.*/
 --insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(6);
 alter table animal_enclosure
 drop constraint fk_animal_in_enclosure;
-
 alter table animal_enclosure
 drop constraint fk_enclosure_has_animal;
 
 insert into animal_enclosure values
-('1', '2019-05-23', 'test', 1, '2019-05-25');
-
+('1', 'test', 1, '2019-05-23', '2019-05-25');
 insert into animal_enclosure values
-('1', '2019-05-24', 'test', 2, '2019-05-26');
+('1', 'test', 2, '2019-05-24', '2019-05-26');
 rollback;
 
 --update
 begin transaction;
+select USP_DROP_CONSTRAINTS(6);
 alter table animal_enclosure
 drop constraint fk_animal_in_enclosure;
-
 alter table animal_enclosure
 drop constraint fk_enclosure_has_animal;
 
 insert into animal_enclosure values
-('1', '2019-05-23', 'test', 1, '2019-05-25'),
-('1', '2019-05-25', 'test', 2, '2019-05-31'),
-('1', '2019-06-01', 'test', 3, '2019-06-02');
-
+('1', 'test', 1, '2019-05-23', '2019-05-25'),
+('1', 'test', 2, '2019-05-25', '2019-05-31'),
+('1', 'test', 3, '2019-06-01', '2019-06-02');
 update animal_enclosure
 set Since = '2019-05-24'
 where animal_id = '1' and Since = '2019-05-25';
-
 rollback;
 
 /* The next test will fail because the end_date is in between an older since date and end_date*/
 --insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(6);
 alter table animal_enclosure
 drop constraint fk_animal_in_enclosure;
-
 alter table animal_enclosure
 drop constraint fk_enclosure_has_animal;
 
 insert into animal_enclosure values
-('1', '2019-05-23', 'test', 1, '2019-05-25');
-
+('1', 'test', 1, '2019-05-23', '2019-05-25');
 insert into animal_enclosure values
-('1', '2019-05-10', 'test', 2, '2019-05-24');
+('1', 'test', 2, '2019-05-10', '2019-05-24');
 rollback;
 
 --update
 begin transaction;
+select USP_DROP_CONSTRAINTS(6);
 alter table animal_enclosure
 drop constraint fk_animal_in_enclosure;
-
 alter table animal_enclosure
 drop constraint fk_enclosure_has_animal;
 
 insert into animal_enclosure values
-('1', '2019-05-23', 'test', 1, '2019-05-25'),
-('1', '2019-05-25', 'test', 2, '2019-05-31');
-
+('1', 'test', 1, '2019-05-23', '2019-05-25'),
+('1', 'test', 2, '2019-05-25', '2019-05-31');
 update animal_enclosure
 set since = '2019-05-10',
     End_date = '2019-05-26'
@@ -607,32 +632,29 @@ rollback;
 /* This test will fail because the the new since date and end_date are in between a older since date and end_date. */
 --insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(6);
 alter table animal_enclosure
 drop constraint fk_animal_in_enclosure;
-
 alter table animal_enclosure
 drop constraint fk_enclosure_has_animal;
 
 insert into animal_enclosure values
-('1', '2019-05-23', 'test', 1, '2019-05-30');
-
+('1', 'test', 1, '2019-05-23', '2019-05-30');
 insert into animal_enclosure values
-('1', '2019-05-24', 'test', 1, '2019-05-26');
-
+('1', 'test', 1, '2019-05-24', '2019-05-26');
 rollback;
 
 --update
 begin transaction;
+select USP_DROP_CONSTRAINTS(6);
 alter table animal_enclosure
 drop constraint fk_animal_in_enclosure;
-
 alter table animal_enclosure
 drop constraint fk_enclosure_has_animal;
 
 insert into animal_enclosure values
-('1', '2019-05-23', 'test', 1, '2019-05-25'),
-('1', '2019-05-25', 'test', 2, '2019-05-31');
-
+('1', 'test', 1, '2019-05-23', '2019-05-25'),
+('1', 'test', 2, '2019-05-25', '2019-05-31');
 update animal_enclosure
 set since = '2019-05-26',
     End_date = '2019-05-29'
@@ -642,31 +664,29 @@ rollback;
 /* The following test will fail because the new since date is before the old since date and the new end_date is before the old end_date */
 --insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(6);
 alter table animal_enclosure
 drop constraint fk_animal_in_enclosure;
-
 alter table animal_enclosure
 drop constraint fk_enclosure_has_animal;
 
 insert into animal_enclosure values
-('1', '2019-05-23', 'test', 1, '2019-05-25');
-
+('1', 'test', 1, '2019-05-23', '2019-05-25');
 insert into animal_enclosure values
-('1', '2019-05-20', 'test', 1, '2019-05-26');
+('1', 'test', 1, '2019-05-20', '2019-05-26');
 rollback;
 
 --update
 begin transaction;
+select USP_DROP_CONSTRAINTS(6);
 alter table animal_enclosure
 drop constraint fk_animal_in_enclosure;
-
 alter table animal_enclosure
 drop constraint fk_enclosure_has_animal;
 
 insert into animal_enclosure values
-('1', '2019-05-23', 'test', 1, '2019-05-25'),
-('1', '2019-05-25', 'test', 2, '2019-05-31');
-
+('1', 'test', 1, '2019-05-23', '2019-05-25'),
+('1', 'test', 2, '2019-05-25', '2019-05-31');
 update animal_enclosure
 set since = '2019-05-24',
     End_date = '2019-06-01'
@@ -677,6 +697,7 @@ rollback;
 /* Tests should pass when loan type 'to' is inserted or updated */
 -- insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(7);
 -- drop fk constraints
 alter table exchange drop constraint fk_animal_exchange;
 -- insert
@@ -686,6 +707,7 @@ rollback;
 
 -- update
 begin transaction;
+select USP_DROP_CONSTRAINTS(7);
 -- drop fk constraints
 alter table exchange drop constraint fk_animal_exchange;
 -- insert
@@ -698,6 +720,7 @@ rollback;
 /* Tests should pass when loan type 'from' is inserted or updated */
 -- insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(7);
 -- drop fk constraints
 alter table exchange drop constraint fk_animal_exchange;
 -- insert
@@ -707,6 +730,7 @@ rollback;
 
 -- update
 begin transaction;
+select USP_DROP_CONSTRAINTS(7);
 -- drop fk constraints
 alter table exchange drop constraint fk_animal_exchange;
 -- insert
@@ -719,6 +743,7 @@ rollback;
 /* Tests should fail when loan type is not 'to' or 'from' inserted or updated */
 -- insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(7);
 -- drop fk constraints
 alter table exchange drop constraint fk_animal_exchange;
 -- insert
@@ -728,6 +753,7 @@ rollback;
 
 -- update
 begin transaction;
+select USP_DROP_CONSTRAINTS(7);
 -- drop fk constraints
 alter table exchange drop constraint fk_animal_exchange;
 -- insert
@@ -741,6 +767,7 @@ rollback;
 /*Tests should pass when a next_visit that is later than visit_date is inserted or updated*/
 -- insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(8);
 alter table animal_visits_vet drop constraint if exists fk_animal_check_up;
 alter table animal_visits_vet drop constraint if exists fk_prescription_of_vet_visit;
 alter table animal_visits_vet drop constraint if exists fk_vet_visited_animal;
@@ -751,6 +778,7 @@ insert into animal_visits_vet values
 rollback;
 -- update
 begin transaction;
+select USP_DROP_CONSTRAINTS(8);
 alter table animal_visits_vet drop constraint if exists fk_animal_check_up;
 alter table animal_visits_vet drop constraint if exists fk_prescription_of_vet_visit;
 alter table animal_visits_vet drop constraint if exists fk_vet_visited_animal;
@@ -766,6 +794,7 @@ rollback;
 /* tests should fail because next_visit that is before visit_date is inserted or updated*/
 -- insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(8);
 alter table animal_visits_vet drop constraint if exists fk_animal_check_up;
 alter table animal_visits_vet drop constraint if exists fk_prescription_of_vet_visit;
 alter table animal_visits_vet drop constraint if exists fk_vet_visited_animal;
@@ -776,6 +805,7 @@ insert into animal_visits_vet values
 rollback;
 -- update
 begin transaction;
+select USP_DROP_CONSTRAINTS(8);
 alter table animal_visits_vet drop constraint if exists fk_animal_check_up;
 alter table animal_visits_vet drop constraint if exists fk_prescription_of_vet_visit;
 alter table animal_visits_vet drop constraint if exists fk_vet_visited_animal;
@@ -791,6 +821,7 @@ rollback;
 /* tests should fail because next_visit that is before visit_date is inserted or updated*/
 -- insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(8);
 alter table animal_visits_vet drop constraint if exists fk_animal_check_up;
 alter table animal_visits_vet drop constraint if exists fk_prescription_of_vet_visit;
 alter table animal_visits_vet drop constraint if exists fk_vet_visited_animal;
@@ -801,6 +832,7 @@ insert into animal_visits_vet values
 rollback;
 -- update
 begin transaction;
+select USP_DROP_CONSTRAINTS(8);
 alter table animal_visits_vet drop constraint if exists fk_animal_check_up;
 alter table animal_visits_vet drop constraint if exists fk_prescription_of_vet_visit;
 alter table animal_visits_vet drop constraint if exists fk_vet_visited_animal;
@@ -817,18 +849,20 @@ rollback;
 /* Tests should pass when end_date is on the same date as the date of stay of the animal or later.*/
 -- insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(9);
 alter table animal_enclosure drop constraint if exists fk_animal_in_enclosure;
 alter table animal_enclosure drop constraint if exists fk_enclosure_has_animal;
 
-insert into animal_enclosure values('an-1', '2019-01-01', 'area', 1, '2019-02-02');
+insert into animal_enclosure values('an-1', 'area', 1, '2019-01-01', '2019-02-02');
 rollback;
 
 --update
 begin transaction;
+select USP_DROP_CONSTRAINTS(9);
 alter table animal_enclosure drop constraint if exists fk_animal_in_enclosure;
 alter table animal_enclosure drop constraint if exists fk_enclosure_has_animal;
 
-insert into animal_enclosure values('an-1', '2019-01-01', 'area', 1, '2019-02-02');
+insert into animal_enclosure values('an-1', 'area', 1, '2019-01-01', '2019-02-02');
 
 update animal_enclosure set since = '2019-01-20';
 rollback;
@@ -836,18 +870,20 @@ rollback;
 /* Tests should fail when end_date is earlier than the date of stay of the animal.*/
 -- insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(9);
 alter table animal_enclosure drop constraint if exists fk_animal_in_enclosure;
 alter table animal_enclosure drop constraint if exists fk_enclosure_has_animal;
 
-insert into animal_enclosure values('an-1', '2019-01-01', 'area', 1, '2018-02-02');
+insert into animal_enclosure values('an-1', 'area', 1, '2019-01-01', '2018-02-02');
 rollback;
 
 -- update
 begin transaction;
+select USP_DROP_CONSTRAINTS(9);
 alter table animal_enclosure drop constraint if exists fk_animal_in_enclosure;
 alter table animal_enclosure drop constraint if exists fk_enclosure_has_animal;
 
-insert into animal_enclosure values('an-1', '2019-01-01', 'area', 1, '2019-02-02');
+insert into animal_enclosure values('an-1', 'area', 1, '2019-01-01', '2019-02-02');
 
 update animal_enclosure set since = '2019-03-05';
 rollback;
@@ -856,6 +892,7 @@ rollback;
 /*Test should pass if the spot_date  is same as the the reintroduction_date or later than the reintroduction_date.*/
 -- insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(10);
 alter table reintroduction drop constraint if exists fk_animal_reintroduction;
 alter table spotted drop constraint if exists fk_animal_spotted;
 
@@ -866,6 +903,7 @@ rollback;
 
 -- update
 begin transaction;
+select USP_DROP_CONSTRAINTS(10);
 alter table reintroduction drop constraint if exists fk_animal_reintroduction;
 alter table spotted drop constraint if exists fk_animal_spotted;
 
@@ -879,6 +917,7 @@ rollback;
 /*Test should raise an error if spot_date is before the date when the animal is reintroduced in wild.*/
 --insert
 begin transaction;
+select USP_DROP_CONSTRAINTS(10);
 alter table reintroduction drop constraint if exists fk_animal_reintroduction;
 alter table spotted drop constraint if exists fk_animal_spotted;
 
@@ -889,6 +928,7 @@ rollback;
 
 --update
 begin transaction;
+select USP_DROP_CONSTRAINTS(10);
 alter table reintroduction drop constraint if exists fk_animal_reintroduction;
 alter table spotted drop constraint if exists fk_animal_spotted;
 
@@ -902,6 +942,7 @@ rollback;
 /*Test should pass if the there is still a reintroduction_date before the oldest spot_date after deleting or updating.*/
 -- update
 begin transaction;
+select USP_DROP_CONSTRAINTS(10);
 alter table reintroduction drop constraint if exists fk_animal_reintroduction;
 alter table spotted drop constraint if exists fk_animal_spotted;
 
@@ -914,6 +955,7 @@ rollback;
 
 -- delete
 begin transaction;
+select USP_DROP_CONSTRAINTS(10);
 alter table reintroduction drop constraint if exists fk_animal_reintroduction;
 alter table spotted drop constraint if exists fk_animal_spotted;
 
@@ -927,6 +969,7 @@ rollback;
 /*Test should raise an error if there is no reintroduction_date before the oldest spot_date*/
 -- update
 begin transaction;
+select USP_DROP_CONSTRAINTS(10);
 alter table reintroduction drop constraint if exists fk_animal_reintroduction;
 alter table spotted drop constraint if exists fk_animal_spotted;
 
@@ -939,6 +982,7 @@ rollback;
 
 -- delete
 begin transaction;
+select USP_DROP_CONSTRAINTS(10);
 alter table reintroduction drop constraint if exists fk_animal_reintroduction;
 alter table spotted drop constraint if exists fk_animal_spotted;
 
