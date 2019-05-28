@@ -10,6 +10,70 @@
 |	Gemaakt op:	17-5-2019 10:48:23			|
 \*-------------------------------------------------------------*/
 
+/* Event trigger for creating a history table for each tables created*/
+CREATE OR REPLACE FUNCTION trg_create_table_func()
+   RETURNS event_trigger
+LANGUAGE plpgsql
+AS $$
+DECLARE obj record;
+   DECLARE name_of varchar;
+BEGIN
+   FOR obj IN select * FROM pg_event_trigger_ddl_commands() WHERE command_tag in ('CREATE TABLE')
+   LOOP
+      select obj.object_identity into name_of from pg_event_trigger_ddl_commands();
+      if name_of !~ 'hist_'
+      THEN
+         if (name_of like '%"%')
+         then
+            name_of = replace(name_of, '"', '');
+         end if;
+         name_of = replace(name_of, 'public.', '');
+         execute 'create table if not exists hist_' || name_of || '();';
+      end if;
+   END LOOP;
+   return;
+END;
+$$;
+
+/* Creating a event trigger for deleting history tables when deleting tables*/
+DROP EVENT TRIGGER IF EXISTS trg_create_table;
+CREATE EVENT TRIGGER trg_create_table
+ON ddl_command_end
+WHEN TAG IN ('CREATE TABLE')
+EXECUTE PROCEDURE trg_create_table_func();
+
+CREATE OR REPLACE FUNCTION trg_drop_table_func()
+   RETURNS event_trigger
+LANGUAGE plpgsql
+AS $$
+DECLARE   obj     record;
+   DECLARE name_of varchar;
+BEGIN
+   FOR obj IN select * FROM pg_event_trigger_ddl_commands() WHERE command_tag in ('CREATE TABLE')
+   LOOP
+      select obj.object_identity into name_of from pg_event_trigger_ddl_commands();
+      if name_of !~ 'hist_'
+      THEN
+        -- removing " from tables like "ORDER"
+         if (name_of like '%"%')
+         then
+            name_of = replace(name_of, '"', '');
+         end if;
+         --remove 'public.' what is always appearing
+         name_of = substring(name_of, 8);
+         execute 'drop table if exists hist_' || name_of || ';';
+      end if;
+   END LOOP;
+   return;
+END;
+$$;
+
+DROP EVENT TRIGGER IF EXISTS trg_drop_table;
+CREATE EVENT TRIGGER trg_drop_table
+ON ddl_command_end
+WHEN TAG IN ('DROP TABLE')
+EXECUTE PROCEDURE trg_drop_table_func();
+
 drop index if exists ANIMAL_OF_SPECIES_FK;
 
 drop index if exists ANIMAL_PK;
