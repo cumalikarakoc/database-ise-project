@@ -553,8 +553,7 @@ insert into animal_enclosure values
 
 insert into animal_enclosure values
 ('1', 'test', 2, '2019-05-25', '2019-05-26');
-
-rollback transaction;
+rollback;
 
 --update
 begin transaction;
@@ -573,8 +572,7 @@ insert into animal_enclosure values
 update animal_enclosure
 set End_date = '2019-05-24'
 where Animal_id = '1' and since = '2019-05-23';
-
-rollback transaction;
+rollback;
 
 /* The following test will fail because the new since date is in between an older since and end_date.*/
 --insert
