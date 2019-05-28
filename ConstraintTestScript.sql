@@ -1,4 +1,4 @@
-/*-------------------------------------------------------------*\
+﻿/*-------------------------------------------------------------*\
 |			Constraint Test Script			|
 |---------------------------------------------------------------|
 |	Gemaakt door: 	Cumali karakoç,				|
@@ -400,7 +400,7 @@ set gender_s = 'something';
 rollback;
 
 /*===== Constraint 6 AnimalHasOneEnclosure =====*/
-/* The following tests will succeed because none of the the date will overlap */
+/* The following tests will succeed because none of the the dates will overlap */
 
 --insert
 begin transaction;
@@ -415,6 +415,7 @@ insert into ANIMAL_ENCLOSURE values
 
 insert into ANIMAL_ENCLOSURE values
 ('1', '2019-05-25', 'test', 2, '2019-05-26');
+
 rollback transaction;
 
 --update
@@ -426,11 +427,15 @@ alter table ANIMAL_ENCLOSURE
 drop constraint fk_enclosure_has_animal;
 
 insert into ANIMAL_ENCLOSURE values
+('1', '2019-01-01', 'test', 3, '2019-01-31');
+
+insert into ANIMAL_ENCLOSURE values
 ('1', '2019-05-23', 'test', 1, null);
 
 update ANIMAL_ENCLOSURE
 set End_date = '2019-05-24'
-where Animal_id = '1';
+where Animal_id = '1' and since = '2019-05-23';
+
 rollback transaction;
 
 /* The following test will fail because the new since date is in between an older since and end_date.*/
@@ -537,7 +542,7 @@ set since = '2019-05-26',
 where animal_id = '1' and Since = '2019-05-23';
 rollback transaction;
 
-/* The following test will fail because the new since date is before the old since date and the new end_date is before the old end_date */
+/* The following test will fail because the new since date is before the old since date and the new end_date is after the old end_date */
 --insert
 begin transaction;
 alter table ANIMAL_ENCLOSURE
