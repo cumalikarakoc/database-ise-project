@@ -1,4 +1,4 @@
-﻿﻿/*-------------------------------------------------------------*\
+﻿/*-------------------------------------------------------------*\
 |			Constraints Script			|
 |---------------------------------------------------------------|
 |	Gemaakt door: 	Cumali karakoç,				|
@@ -9,6 +9,7 @@
 |	Versie:		1.0					|
 |	Gemaakt op:	5/7/2019 13:42				|
 \*-------------------------------------------------------------*/
+
 /* Constraint 1 OrderStates
 Column ORDER(State) An order must have one of the following states: Paid, Not complete, Awaiting payment, placed.
 
@@ -79,10 +80,61 @@ execute procedure TRP_OTHER_THAN_PLACED_HAS_DELIVERY_DELIVERY();
 
 /*===== Constraint 3 PaidHasInvoice =====*/
 /*A paid order should have an invoice otherwise not.*/
-ALTER TABLE "ORDER" DROP CONSTRAINT IF EXISTS CHK_PAID_HAS_INVOICE;
+alter table "ORDER" drop constraint if exists CHK_PAID_HAS_INVOICE;
 
-ALTER TABLE "ORDER" ADD CONSTRAINT CHCK_PAID_HAS_INVOICE
-CHECK((state = 'Paid' AND invoice_id IS NOT NULL) OR (state != 'Paid' AND invoice_id IS NULL));
+alter table "ORDER" add constraint CHK_PAID_HAS_INVOICE
+check((state = 'Paid' and invoice_id is not null) or (state != 'Paid' and invoice_id is null));
+                                                      
+/* Constraint 4 NotCompleteHasDiscrepancy
+Column ORDER(State) An order with the state not complete has a discrepancy note.
+
+=================================================================
+= State			= Action		= Allowed	=
+=================================================================
+= Not Complete		= delete discrepancy	= no		=
+= Paid			= delete discerepancy	= yes		=
+=================================================================
+
+To apply this constraint, a triggger is created on table order. It will check the state after every update or insert.
+There is another trigger created on discrepany in case when a discrepancy gets deleted or a note is assigned to another order
+that hasnt the state not complete.
+*/
+
+--Order trigger
+create or replace function TRP_NOT_COMPLETE_HAS_DISCREPANCY() returns trigger as $$
+
+begin
+ if new.state = 'Not complete' then
+  if old.order_id not in (select order_id from DISCREPANCY where order_id = old.order_id) then
+   raise exception 'Order % requires a discrepancy note.', NEW.order_id;
+  end if;
+ end if;
+ return new;
+end;
+$$ language 'plpgsql';
+
+create trigger TR_NOT_COMPLETE_HAS_DISCREPANCY after insert or update on "ORDER"
+ for each row execute procedure TRP_NOT_COMPLETE_HAS_DISCREPANCY();
+
+--discrepancy trigger
+create or replace function TRP_DISCREPANCY_NOTE_HAS_ORDER() returns trigger as $$
+
+begin
+ if (TG_OP = 'UPDATE') then
+  if (select state from "ORDER" where order_id = new.order_id) <> 'Not complete' then
+   raise exception 'Order % doesnt have the state Not complete', new.order_id;
+  end if;  
+ elsif (TG_OP = 'DELETE') then
+  if (select state from "ORDER" where order_id = old.order_id) = 'Not complete' then
+   raise exception 'Order % has state Not complete', old.order_id;
+  end if;
+ end if;
+ return old;
+end;
+$$ language 'plpgsql';
+
+create trigger TR_DISCREPANCY_NOTE_HAS_ORDER after update or delete on DISCREPANCY
+ for each row execute procedure TRP_DISCREPANCY_NOTE_HAS_ORDER();
 
 /*===== Constraint 5 AnimalGender =====*/
 /* column ANIMAL(Gender)can be male, female or other.*/
@@ -90,6 +142,50 @@ alter table animal drop constraint if exists CHK_ANIMAL_GENDER;
 
 alter table animal add constraint CHK_ANIMAL_GENDER
 check(gender_s in ('male','female','other'));
+                   
+/*===== Constraint 6 AnimalHasOneEnclosure =====*/
+/* Columns ANIMAL_ENCLOSURE(Animal_id, Since, End_date) an animal cant stay in two enclosures at a time
+
+The table represents inserts. So if the since or end_date overlaps with previous dates it isnt allowed.
+===========================================================================
+= Animal_id		= Since		= End_date		= Allowed =
+===========================================================================
+= 2			= 2019-05-23	= 2019-05-25		= Yes	  =
+= 2			= 2019-05-27	= 2019-05-28		= Yes	  = 
+= 2			= 2019-05-27	= 2019-05-29		= No	  = This inst allowed because the since date is before the previous end date
+= 2			= 2019-05-29	= null			= Yes	  = 
+= 2			= 2019-05-30	= null			= No	  = This isnt allowed because the previous end date is null. That means the animal is
+=========================================================================== still assigend to a enclosure
+
+A trigger will be created wich checks if dates don't overlap
+*/
+
+create or replace function TRP_ANIMAL_HAS_ONE_ENCLOSURE() returns trigger as $$
+
+begin
+  if exists (select End_date from animal_enclosure where animal_id = new.animal_id and End_date is null and not (animal_id = new.animal_id and since = new.since)) then
+   raise exception 'An animal % can stay at one enclosure at a time', new.animal_id;
+  end if;
+   if exists
+   (select since, end_date 
+   from animal_enclosure
+   where animal_id = new.animal_id and ((new.since >= since
+   and new.since < end_date)
+   or
+   (new.end_date > since
+   and new.end_date =< end_date)
+   or
+   (new.since =< since
+    and new.end_date >= end_date
+   ))) then
+   raise exception 'The enclosure dates for animal % overlap', new.animal_id;
+  end if;
+ return null;
+end;
+$$ language 'plpgsql';
+
+create trigger TR_ANIMAL_HAS_ONE_ENCLOSURE after insert or update on animal_enclosure
+ for each row execute procedure TRP_ANIMAL_HAS_ONE_ENCLOSURE();
 
 /*===== Constraint 7 LoanType =====*/
 /* Column EXCHANGE(Loan_type) loan type can only be ‘to’ or ‘from’.*/
@@ -107,9 +203,9 @@ check(next_visit > visit_date);
 
 /*===== Constraint 9 EnclosureEndDate =====*/
 /* Columns ANIMAL_ENCLOSURE(Since, End_date)  The end date may not be before the date when the animal is moved to the enclosure.*/
-alter table ANIMAL_ENCLOSURE drop constraint if exists CHK_ENCLOSURE_DATE;
+alter table animal_enclosure drop constraint if exists CHK_ENCLOSURE_DATE;
 
-alter table ANIMAL_ENCLOSURE add constraint CHK_ENCLOSURE_DATE
+alter table animal_enclosure add constraint CHK_ENCLOSURE_DATE
 check(end_date >= since);
 
 /*===== Constraint 10 SpottedAfterRelease ===== */
@@ -150,9 +246,9 @@ execute procedure TRP_REINTRODUCTION_BEFORE_SPOTTED();
 
 /*===== Constraint 11 AnimalReturned =====*/
 /* Column EXCHANGE(Return_date) An animal can only be returned after it has been exchanged.*/
-alter table EXCHANGE drop constraint if exists CHK_ANIMAL_RETURNED ;
+alter table exchange drop constraint if exists CHK_ANIMAL_RETURNED ;
 
-alter table EXCHANGE add constraint CHK_ANIMAL_RETURNED
+alter table exchange add constraint CHK_ANIMAL_RETURNED
 check(return_date >= exchange_date);
 
 /*===== Constraint 12 OffspringId =====*/
@@ -174,14 +270,14 @@ execute procedure TRP_OFFSPRING_PARENTS();
 -- OFFSPRING
 create or replace function TRP_OFFSPRING_ID() returns trigger as $$
    begin
-   if(new.offspring_id = new.animal_id or new.offspring_id = (select mate_id from MATING where animal_id = new.animal_id and mating_date = new.mating_date)) then
+   if(new.offspring_id = new.animal_id or new.offspring_id = (select mate_id from mating where animal_id = new.animal_id and mating_date = new.mating_date)) then
       raise exception 'An animal may not be its own child.';
 	  end if;
       return new;
    end;
 $$ language plpgsql;
 
-create trigger TR_OFFSPRING_ID after insert or update on OFFSPRING
+create trigger TR_OFFSPRING_ID after insert or update on offspring
 for each row 
 execute procedure TRP_OFFSPRING_ID();
 
@@ -192,17 +288,53 @@ alter table mating drop constraint if exists CHK_MATE_AND_ANIMAL_ID;
 alter table mating add constraint CHK_MATE_AND_ANIMAL_ID
 check(animal_id <> mate_id);
 
+/*===== CONSTRAINT 14 DiscrepancyDate =====*/
+/* column DISCREPANCY(Place_date) cannot be before ORDER(Order_date)*/
+
+create or replace function TR_DISCREPANCY_DATE_FUNC()
+  returns trigger AS
+$$
+begin
+	
+	if(new.place_date < (select order_date from "ORDER" where order_id = new.order_id)) then
+		raise exception 'place date is before orderdate. please adjust the date'; 
+	end if;
+    return new;
+end;
+$$
+language 'plpgsql';
+
+create trigger TR_DISCREPANCY_DATE 
+  after insert or update
+  on discrepancy
+  for each row
+  execute procedure TR_DISCREPANCY_DATE_FUNC();
+
 /*===== CONSTRAINT 15 LineItemWeight =====*/
 /* column LINE_ITEM(price) must be higher than 0*/
-ALTER TABLE line_item DROP CONSTRAINT IF EXISTS CHK_LINE_ITEM_WEIGHT;
-ALTER TABLE line_item ADD CONSTRAINT CHK_LINE_ITEM_WEIGHT
-CHECK(weight > 0);
+alter table line_item drop constraint if exists CHK_LINE_ITEM_WEIGHT;
+alter table line_item add constraint CHK_LINE_ITEM_WEIGHT
+check(weight > 0);
 
 /*===== CONSTRAINT 16 LineItemPrice =====*/
 /* column LINE_ITEM(price) must be equal to 0 or higher*/
-ALTER TABLE line_item DROP CONSTRAINT IF EXISTS CHK_LINE_ITEM_PRICE;
-ALTER TABLE line_item ADD CONSTRAINT CHK_LINE_ITEM_PRICE
-CHECK(price >= '0.00');
+alter table line_item drop constraint if exists CHK_LINE_ITEM_PRICE;
+alter table line_item add constraint CHK_LINE_ITEM_PRICE
+check(price >= '0.00');
+
+
+/*====== CONSTRAINT 17 ======*/
+/* column STOCK(Amount) must be higher than or equal to 0. */
+alter table "stock" drop constraint if exists CHK_STOCK_AMOUNT;
+
+alter table "stock" add constraint CHK_STOCK_AMOUNT  
+check (amount >= 0);
+
+/*===== CONSTRAINT 18 FeedingAmount =====*/
+/* The weight of the food fed to an animal has to be 0 or higher*/
+alter table feeding drop constraint if exists CHK_FEEDING_AMOUNT;
+alter table feeding add constraint CHK_FEEDING_AMOUNT
+check(amount > 0);
 
 /*===== CONSTRAINT 19 AnimalVisitsVet =====*/
 /* An animal cannot visit a vet before his birth date*/
@@ -221,35 +353,52 @@ create or replace function TRP_ANIMAL_VISITS_VET()
 create trigger TR_ANIMAL_VISITS_VET before insert or update
   on animal_visits_vet for each row execute procedure TRP_ANIMAL_VISITS_VET();
 
+/*===== Constraint 20 MaturityAge ======*/
+/* column SPECIES_GENDER(Maturity_age) Age must be higher or equal to 0. */
+alter table "species_gender" drop constraint if exists CHK_MATURITY_AGE ;
 
-
-/*===== CONSTRAINT 14 DiscrepancyDate =====*/
-/* column DISCREPANCY(Place_date) cannot be before ORDER(Order_date)*/
-
-CREATE OR REPLACE FUNCTION TR_DISCREPANCY_DATE_FUNC()
-  RETURNS trigger AS
-$$
-BEGIN
-	
-	IF(NEW.place_date < (Select order_date from "ORDER" where order_id = NEW.order_id)) then
-		RAISE EXCEPTION 'place date is before orderdate. please adjust the date'; 
-	end if;
-    RETURN NEW;
-END;
-$$
-LANGUAGE 'plpgsql';
-
-CREATE TRIGGER TR_DISCREPANCY_DATE 
-  AFTER INSERT OR UPDATE
-  ON discrepancy
-  FOR EACH ROW
-  EXECUTE PROCEDURE TR_DISCREPANCY_DATE_FUNC();
+alter table "species_gender" add constraint CHK_MATURITY_AGE   
+check (maturity_age >= 0);
 
 /*===== CONSTRAINT 21 SpeciesWeight =====*/
 /* column SPECIES_GENDER(Weight) must be higher than 0 */
-ALTER TABLE "species_gender" DROP CONSTRAINT IF EXISTS CHK_AVERAGE_WEIGHT;
+alter table "species_gender" drop constraint if exists CHK_AVERAGE_WEIGHT;
 
-ALTER TABLE "species_gender" ADD CONSTRAINT CHK_AVERAGE_WEIGHT
-CHECK (average_weight > 0);
+alter table "species_gender" add constraint CHK_AVERAGE_WEIGHT
+check (average_weight > 0);
+
+/*===== CONSTRAINT 22 AnimalEnclosureSince =====*/
+/* An animal cannot be in an enclosure before his birth_date*/
+create or replace function TRP_ENCLOSURE_SINCE_AFTER_BIRTH_DATE()
+  returns trigger as
+$$
+begin
+  if (new.since < (select birth_date from animal where animal_id = new.animal_id ))
+  then raise exception 'An animal cannot be in an enclosure before its birth_date';
+  end if;
+  return new;
+end;
+$$
+language 'plpgsql';
+
+create or replace function TRP_ANIMAL_BIRTH_DATE_BEFORE_ENCLOSURE_SINCE()
+  returns trigger as
+$$
+begin
+  if (new.birth_date > (select since from animal_enclosure where animal_id = new.animal_id ))
+  then raise exception 'An animal cannot be in an enclosure before its birth_date';
+  end if;
+  return new;
+end;
+$$
+language 'plpgsql';
+
+drop trigger if exists TR_ENCLOSURE_SINCE_AFTER_BIRTH_DATE on animal_enclosure;
+create trigger TR_ENCLOSURE_SINCE_AFTER_BIRTH_DATE before insert or update
+  on animal_enclosure for each row execute procedure TRP_ENCLOSURE_SINCE_AFTER_BIRTH_DATE();
+
+drop trigger if exists TR_ANIMAL_BIRTH_DATE_BEFORE_ENCLOSURE_SINCE on animal;
+create trigger TR_ANIMAL_BIRTH_DATE_BEFORE_ENCLOSURE_SINCE before update
+  on animal for each row execute procedure TRP_ANIMAL_BIRTH_DATE_BEFORE_ENCLOSURE_SINCE();
 /*=============*/
 
