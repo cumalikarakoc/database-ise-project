@@ -170,7 +170,7 @@ begin
   if exists
    (select since, end_date 
    from animal_enclosure
-   where animal_id = new.animal_id and ((new.since >= since
+   where animal_id = new.animal_id and ((new.since > since
    and new.since < end_date)
    or
    (new.end_date > since
