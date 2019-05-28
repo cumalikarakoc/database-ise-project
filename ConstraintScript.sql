@@ -393,12 +393,12 @@ end;
 $$
 language 'plpgsql';
 
-drop trigger if exists TR_ANIMAL_ENCLOSURE_SINCE on animal_enclosure;
-create trigger TR_ANIMAL_ENCLOSURE_SINCE before insert or update
+drop trigger if exists TR_ENCLOSURE_SINCE_AFTER_BIRTH_DATE on animal_enclosure;
+create trigger TR_ENCLOSURE_SINCE_AFTER_BIRTH_DATE before insert or update
   on animal_enclosure for each row execute procedure TRP_ENCLOSURE_SINCE_AFTER_BIRTH_DATE();
 
-drop trigger if exists TR_ANIMAL_IN_ENCLOSURE_SINCE on animal;
-create trigger TR_ANIMAL_IN_ENCLOSURE_SINCE before update
+drop trigger if exists TR_ANIMAL_BIRTH_DATE_BEFORE_ENCLOSURE_SINCE on animal;
+create trigger TR_ANIMAL_BIRTH_DATE_BEFORE_ENCLOSURE_SINCE before update
   on animal for each row execute procedure TRP_ANIMAL_BIRTH_DATE_BEFORE_ENCLOSURE_SINCE();
 /*=============*/
 
