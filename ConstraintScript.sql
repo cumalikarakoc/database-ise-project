@@ -92,12 +92,12 @@ Column ORDER(State) An order with the state not complete has a discrepancy note.
 = State			= Action		= Allowed	=
 =================================================================
 = Not Complete		= delete discrepancy	= no		=
-= Paid			= delete discerepancy	= yes		=
+= Paid			= delete discrepancy	= yes		=
 =================================================================
 
-To apply this constraint, a triggger is created on table order. It will check the state after every update or insert.
-There is another trigger created on discrepany in case when a discrepancy gets deleted or a note is assigned to another order
-that hasnt the state not complete.
+To apply this constraint, a trigger is created on table order. It will check the state after every update or insert.
+There is another trigger created on discrepancy in case when a discrepancy gets deleted or a note is assigned to another order
+that does not have the state not complete.
 */
 
 --Order trigger
@@ -105,7 +105,7 @@ create or replace function TRP_NOT_COMPLETE_HAS_DISCREPANCY() returns trigger as
 
 begin
  if new.state = 'Not complete' then
-  if old.order_id not in (select order_id from DISCREPANCY where order_id = old.order_id) then
+  if new.order_id not in (select order_id from DISCREPANCY where order_id = new.order_id) then
    raise exception 'Order % requires a discrepancy note.', NEW.order_id;
   end if;
  end if;
