@@ -106,7 +106,9 @@ insert into "ORDER" values ('Order1', 'supplier', 'Paid', current_date, null),
 ('Order3', 'Supplier2', 'Not complete', current_date, null),
 ('Order4', 'Supplier4', 'Placed', current_date, null);
 exception when others then
-    raise notice 'test 1 passed';
+    raise notice 'C1. Test 1 passed';
+  end;
+$$;
 rollback;
 
 --2. update
@@ -123,16 +125,16 @@ rollback;
 /*The following inserts and updates will fail because the state is not allowed*/
 --3. insert
 begin transaction;
-select USP_DROP_CONSTRAINTS(1);
 do
 $$
 begin
+select USP_DROP_CONSTRAINTS(1);
 alter table "ORDER"
 drop constraint fk_order_supplier;
 insert into "ORDER" values ('Order1', 'Supplier', 'Placed', current_date, null),
 ('Order2', 'Supplier2', 'Canceled', current_date, null);
 exception when others then
-raise notice 'C1 INSERT SUCCESS (%)', SQLERRM;
+raise notice 'Test 3 passed (%)', SQLERRM;
 end;
 $$;
 rollback;
@@ -345,7 +347,7 @@ insert into invoice values('1');
 insert into supplier values('jumbo', '123213', 'ijssellaan');
 insert into "ORDER" values(1, 'jumbo', 'Paid', '2019-12-12', null);
     exception when others then
-    raise notice 'Geslaagd -> Foutmelding (Constraint 3 insert)', ;
+    raise notice 'C3. Test 3 passed (%)', SQLERRM;
 end;
 $$;
 rollback;
@@ -954,7 +956,7 @@ alter table animal_visits_vet drop constraint if exists fk_vet_visited_animal;
 
 insert into animal_visits_vet values
 ('sai-1','10-10-2018','pil','Bob','12-12-2018'),
-('sai-2','10-10-2018','pil','BOB','12-12-2018'); 
+('sai-2','10-10-2018','pil','BOB','12-12-2018');
 
 update animal_visits_vet values
 set next_visit = '11-11-2018';
@@ -992,7 +994,7 @@ alter table animal_visits_vet drop constraint if exists fk_vet_visited_animal;
 
 insert into animal_visits_vet values
 ('sai-1','11-11-2018','pil','Bob','12-12-2018'),
-('sai-2','11-11-2018','pil','BOB','12-12-2018'); 
+('sai-2','11-11-2018','pil','BOB','12-12-2018');
 
 update animal_visits_vet values
 set next_visit = '10-10-2018';
@@ -1034,7 +1036,7 @@ alter table animal_visits_vet drop constraint if exists fk_vet_visited_animal;
 
 insert into animal_visits_vet values
 ('sai-1','10-10-2018','pil','Bob','11-11-2018'),
-('sai-2','11-11-2018','pil','BOB','12-12-2018'); 
+('sai-2','11-11-2018','pil','BOB','12-12-2018');
 
 update animal_visits_vet values
 set next_visit = '11-11-2018';
