@@ -33,7 +33,7 @@ begin
       execute 'create table if not exists ' || name_of || '( Id serial not null, Tstamp timestamp default now(),
                  Operation    text not null,
                  Who          text not null,
-                 new_val      json, test int,
+                 new_val      json,
                  old_val      json);';
       raise notice 'tabel % aangemaakt', name_of;
     end if;
