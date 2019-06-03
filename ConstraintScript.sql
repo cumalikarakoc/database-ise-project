@@ -92,12 +92,12 @@ Column ORDER(State) An order with the state not complete has a discrepancy note.
 = State			= Action		= Allowed	=
 =================================================================
 = Not Complete		= delete discrepancy	= no		=
-= Paid			= delete discerepancy	= yes		=
+= Paid			= delete discrepancy	= yes		=
 =================================================================
 
-To apply this constraint, a triggger is created on table order. It will check the state after every update or insert.
-There is another trigger created on discrepany in case when a discrepancy gets deleted or a note is assigned to another order
-that hasnt the state not complete.
+To apply this constraint, a trigger is created on table order. It will check the state after every update or insert.
+There is another trigger created on discrepancy in case when a discrepancy gets deleted or a note is assigned to another order
+that does not have the state not complete.
 */
 
 --Order trigger
@@ -105,7 +105,7 @@ create or replace function TRP_NOT_COMPLETE_HAS_DISCREPANCY() returns trigger as
 
 begin
  if new.state = 'Not complete' then
-  if old.order_id not in (select order_id from DISCREPANCY where order_id = old.order_id) then
+  if new.order_id not in (select order_id from DISCREPANCY where order_id = new.order_id) then
    raise exception 'Order % requires a discrepancy note.', NEW.order_id;
   end if;
  end if;
@@ -166,18 +166,19 @@ begin
   if exists (select End_date from animal_enclosure where animal_id = new.animal_id and End_date is null and not (animal_id = new.animal_id and since = new.since)) then
    raise exception 'An animal % can stay at one enclosure at a time', new.animal_id;
   end if;
-   if exists
+
+  if exists
    (select since, end_date 
    from animal_enclosure
-   where animal_id = new.animal_id and ((new.since >= since
+   where animal_id = new.animal_id and ((new.since > since
    and new.since < end_date)
    or
    (new.end_date > since
-   and new.end_date =< end_date)
+   and new.end_date < end_date)
    or
-   (new.since =< since
-    and new.end_date >= end_date
-   ))) then
+   (new.since < since
+    and new.end_date > end_date)
+   )) then
    raise exception 'The enclosure dates for animal % overlap', new.animal_id;
   end if;
  return null;
@@ -189,7 +190,7 @@ create trigger TR_ANIMAL_HAS_ONE_ENCLOSURE after insert or update on animal_encl
 
 /*===== Constraint 7 LoanType =====*/
 /* Column EXCHANGE(Loan_type) loan type can only be ‘to’ or ‘from’.*/
-Alter table exchange drop constraint if exists CHK_LOAN_TYPE;
+alter table exchange drop constraint if exists CHK_LOAN_TYPE;
 
 alter table exchange add constraint CHK_LOAN_TYPE
 CHECK(loan_type in ('to','from'));
@@ -263,7 +264,7 @@ create or replace function TRP_OFFSPRING_PARENTS() returns trigger as $$
    end;
 $$ language plpgsql;
 
-create trigger TR_OFFSPRING_PARENTS after update on MATING
+create trigger TR_OFFSPRING_PARENTS after update on mating
 for each row 
 execute procedure TRP_OFFSPRING_PARENTS();
 
@@ -291,7 +292,7 @@ check(animal_id <> mate_id);
 /*===== CONSTRAINT 14 DiscrepancyDate =====*/
 /* column DISCREPANCY(Place_date) cannot be before ORDER(Order_date)*/
 
-create or replace function TR_DISCREPANCY_DATE_FUNC()
+create or replace function TRP_DISCREPANCY_DATE_FUNC()
   returns trigger AS
 $$
 begin
@@ -308,7 +309,7 @@ create trigger TR_DISCREPANCY_DATE
   after insert or update
   on discrepancy
   for each row
-  execute procedure TR_DISCREPANCY_DATE_FUNC();
+  execute procedure TRP_DISCREPANCY_DATE_FUNC();
 
 /*===== CONSTRAINT 15 LineItemWeight =====*/
 /* column LINE_ITEM(price) must be higher than 0*/
@@ -325,9 +326,9 @@ check(price >= '0.00');
 
 /*====== CONSTRAINT 17 ======*/
 /* column STOCK(Amount) must be higher than or equal to 0. */
-alter table "stock" drop constraint if exists CHK_STOCK_AMOUNT;
+alter table stock drop constraint if exists CHK_STOCK_AMOUNT;
 
-alter table "stock" add constraint CHK_STOCK_AMOUNT  
+alter table stock add constraint CHK_STOCK_AMOUNT  
 check (amount >= 0);
 
 /*===== CONSTRAINT 18 FeedingAmount =====*/
