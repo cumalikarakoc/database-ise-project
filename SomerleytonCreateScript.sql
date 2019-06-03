@@ -43,10 +43,10 @@ end;
 $$;
 
 drop event trigger if exists trg_create_table;
-create EVENT TRIGGER trg_create_table
-ON ddl_command_end
-WHEN TAG IN ('CREATE TABLE')
-EXECUTE PROCEDURE trg_create_table_func();
+create event trigger trg_create_table
+on ddl_command_end
+when tag in ('CREATE TABLE')
+execute procedure trg_create_table_func();
 
 /* Creating a event trigger for deleting history tables when deleting tables*/
 create or replace function trg_drop_table_func()
@@ -85,7 +85,7 @@ drop index if exists ANIMAL_OF_SPECIES_FK;
 
 drop index if exists ANIMAL_PK;
 
-drop table if exists ANIMAL CASCADE;
+drop table if exists ANIMAL cascade;
 
 drop index if exists ENCLOSURE_HAS_ANIMAL_FK;
 
@@ -119,7 +119,7 @@ drop index if exists HEADKEEPER_OF_AREA2_FK;
 
 drop index if exists AREA_PK;
 
-drop table if exists AREA CASCADE ;
+drop table if exists AREA cascade ;
 
 drop index if exists AREA_HAS_KEEPER_FK;
 
