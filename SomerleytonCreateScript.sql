@@ -50,7 +50,7 @@ execute procedure trg_create_table_func();
 
 /* Creating a event trigger for deleting history tables when deleting tables*/
 create or replace function trg_drop_table_func()
-return event_trigger
+returns event_trigger
 language plpgsql
 as $$
 declare   obj     record;
