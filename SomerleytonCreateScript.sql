@@ -9,6 +9,77 @@
 |	Versie:		1.0					|
 |	Gemaakt op:	17-5-2019 10:48:23			|
 \*-------------------------------------------------------------*/
+/* Event trigger for creating a history table for each tables created*/
+create or replace function trg_create_table_func()
+  returns event_trigger
+language plpgsql
+as $$
+declare   obj     record;
+declare name_of varchar;
+begin
+  for obj in select * from pg_event_trigger_ddl_commands() where command_tag in ('CREATE TABLE')
+  loop
+    select obj.object_identity into name_of from pg_event_trigger_ddl_commands();
+    if name_of !~ 'hist_'
+    then
+      if (name_of like '%"%')
+      then
+        -- remove " in tables like "ORDER"
+        name_of = replace(name_of, '"', '');
+      end if;
+      -- remove public. (schema name) from table identification to get table name
+      name_of = replace(name_of, 'public.', '');
+      name_of = 'hist_' || name_of;
+      execute 'create table if not exists ' || name_of || '( Id serial not null, Tstamp timestamp default now(),
+                 Operation    text not null,
+                 Who          text not null,
+                 new_val      json, test int,
+                 old_val      json);';
+      raise notice 'tabel % aangemaakt', name_of;
+    end if;
+  end loop;
+  return;
+end;
+$$;
+
+drop event trigger if exists trg_create_table;
+create EVENT TRIGGER trg_create_table
+ON ddl_command_end
+WHEN TAG IN ('CREATE TABLE')
+EXECUTE PROCEDURE trg_create_table_func();
+
+/* Creating a event trigger for deleting history tables when deleting tables*/
+create or replace function trg_drop_table_func()
+return event_trigger
+language plpgsql
+as $$
+declare   obj     record;
+  declare tablename varchar;
+  declare objtype varchar;
+begin
+  for obj in select * from pg_event_trigger_dropped_objects()
+  loop
+    select obj.object_type into objtype;
+    select obj.object_name into tablename;
+    if(objtype like 'table')
+    then
+      -- removing public. (schema name) from object identity to get table name
+
+      if (tablename !~ 'hist_')
+      then
+        tablename = 'hist_' || tablename;
+        execute 'drop table if exists ' || tablename || ' cascade;';
+      end if;
+    end if;
+  end loop;
+  return;
+end;
+$$;
+
+drop event trigger if exists trg_drop_table;
+create event trigger trg_drop_table
+on sql_drop
+execute procedure trg_drop_table_func();
 
 drop index if exists ANIMAL_OF_SPECIES_FK;
 
