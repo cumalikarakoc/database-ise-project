@@ -394,7 +394,7 @@ create table ANIMAL (
    ANIMAL_NAME          VARCHAR(1024)        null,
    BIRTH_PLACE          PLACE_DOMAIN         null,
    BIRTH_DATE           DATE                 null,
-   ENGLISH_NAME         NAME_DOMAIN          not null,
+   SPECIES_NAME         NAME_DOMAIN          not null,
    constraint PK_ANIMAL primary key (ANIMAL_ID)
 );
 
@@ -409,7 +409,7 @@ ANIMAL_ID
 /* Index: ANIMAL_OF_SPECIES_FK                                  */
 /*==============================================================*/
 create  index ANIMAL_OF_SPECIES_FK on ANIMAL (
-ENGLISH_NAME
+SPECIES_NAME
 );
 
 /*==============================================================*/
@@ -932,37 +932,37 @@ ANIMAL_ID
 /* Table: SPECIES                                               */
 /*==============================================================*/
 create table SPECIES (
-   ENGLISH_NAME         NAME_DOMAIN                 not null,
+   SPECIES_NAME         NAME_DOMAIN                 not null,
    DESCRIPTION          TEXT_DOMAIN                 not null,
    FAMILY               NAME_DOMAIN                 null,
    SPECIES              NAME_DOMAIN                 null,
    SUBSPECIES           NAME_DOMAIN                 null,
-   constraint PK_SPECIES primary key (ENGLISH_NAME)
+   constraint PK_SPECIES primary key (SPECIES_NAME)
 );
 
 /*==============================================================*/
 /* Index: SPECIES_PK                                            */
 /*==============================================================*/
 create unique index SPECIES_PK on SPECIES (
-ENGLISH_NAME
+SPECIES_NAME
 );
 
 /*==============================================================*/
 /* Table: SPECIES_GENDER                                        */
 /*==============================================================*/
 create table SPECIES_GENDER (
-   ENGLISH_NAME         NAME_DOMAIN          not null,
+   SPECIES_NAME         NAME_DOMAIN          not null,
    GENDER               GENDER               not null,
    AVERAGE_WEIGHT       WEIGHT               not null,
    MATURITY_AGE         AGE                  not null,
-   constraint PK_SPECIES_GENDER primary key (ENGLISH_NAME, GENDER)
+   constraint PK_SPECIES_GENDER primary key (SPECIES_NAME, GENDER)
 );
 
 /*==============================================================*/
 /* Index: SPECIES_GENDER_PK                                     */
 /*==============================================================*/
 create unique index SPECIES_GENDER_PK on SPECIES_GENDER (
-ENGLISH_NAME,
+SPECIES_NAME,
 GENDER
 );
 
@@ -970,7 +970,7 @@ GENDER
 /* Index: SPECIES_WITH_GENDER_FK                                */
 /*==============================================================*/
 create  index SPECIES_WITH_GENDER_FK on SPECIES_GENDER (
-ENGLISH_NAME
+SPECIES_NAME
 );
 
 /*==============================================================*/
@@ -1034,7 +1034,7 @@ FOOD_TYPE_FT
 /*==============================================================*/
 create table SUPPLIER (
    SUPPLIER_NAME        NAME_DOMAIN          not null,
-   PHONE_NUMER          PHONE                not null,
+   PHONE_NUMBER          PHONE                not null,
    ADDRESS              ADDRESS              not null,
    constraint PK_SUPPLIER primary key (SUPPLIER_NAME)
 );
@@ -1093,8 +1093,8 @@ VET_NAME
 );
 
 alter table ANIMAL
-   add constraint FK_ANIMAL_OF_SPECIES foreign key (ENGLISH_NAME)
-      references SPECIES (ENGLISH_NAME);
+   add constraint FK_ANIMAL_OF_SPECIES foreign key (SPECIES_NAME)
+      references SPECIES (SPECIES_NAME);
 
 alter table ANIMAL_ENCLOSURE
    add constraint FK_ANIMAL_IN_ENCLOSURE foreign key (ANIMAL_ID)
@@ -1206,8 +1206,8 @@ alter table REINTRODUCTION
       references ANIMAL (ANIMAL_ID);
 
 alter table SPECIES_GENDER
-   add constraint FK_SPECIES_WITH_GENDER foreign key (ENGLISH_NAME)
-      references SPECIES (ENGLISH_NAME);
+   add constraint FK_SPECIES_WITH_GENDER foreign key (SPECIES_NAME)
+      references SPECIES (SPECIES_NAME) ;
 
 alter table SPOTTED
    add constraint FK_ANIMAL_SPOTTED foreign key (ANIMAL_ID)
