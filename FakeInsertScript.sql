@@ -9,6 +9,15 @@
 |	Versie:		1.0					|
 |	Gemaakt op:	5/7/2019 13:42				|
 \*-------------------------------------------------------------*/
+delete from animal_parent;
+delete from animal_is_diagnosed;
+delete from animal_visits_vet;
+delete from prescription;
+delete from diagnosis;
+delete from vet;
+delete from offspring;
+delete from mating;
+delete from spotted;
 delete from exchange;
 delete from reintroduction;
 delete from animal_enclosure;
@@ -1969,3 +1978,350 @@ insert into exchange (animal_id, exchange_date, return_date, comment, Loan_type,
 insert into exchange (animal_id, exchange_date, return_date, comment, Loan_type, place) values (114, '6/9/2017', '4/21/2018', null, 'from', 'Sezemice');
 insert into exchange (animal_id, exchange_date, return_date, comment, Loan_type, place) values (106, '6/11/2017', '8/8/2017', null, 'from', 'Xiangdong');
 insert into exchange (animal_id, exchange_date, return_date, comment, Loan_type, place) values (150, '6/10/2017', '7/3/2017', null, 'from', 'Leuwayang');
+
+insert into spotted (animal_id, spot_date) values (48, '8/4/2018');
+insert into spotted (animal_id, spot_date) values (103, '7/22/2018');
+insert into spotted (animal_id, spot_date) values (103, '6/18/2018');
+insert into spotted (animal_id, spot_date) values (191, '6/7/2018');
+insert into spotted (animal_id, spot_date) values (89, '7/26/2018');
+insert into spotted (animal_id, spot_date) values (177, '7/30/2018');
+insert into spotted (animal_id, spot_date) values (48, '8/27/2018');
+insert into spotted (animal_id, spot_date) values (136, '6/8/2018');
+insert into spotted (animal_id, spot_date) values (122, '7/12/2018');
+insert into spotted (animal_id, spot_date) values (170, '8/12/2018');
+insert into spotted (animal_id, spot_date) values (177, '7/9/2018');
+insert into spotted (animal_id, spot_date) values (105, '6/11/2018');
+insert into spotted (animal_id, spot_date) values (177, '7/7/2018');
+insert into spotted (animal_id, spot_date) values (136, '6/11/2018');
+insert into spotted (animal_id, spot_date) values (89, '6/22/2018');
+insert into spotted (animal_id, spot_date) values (10, '7/19/2018');
+insert into spotted (animal_id, spot_date) values (172, '8/8/2018');
+insert into spotted (animal_id, spot_date) values (170, '7/19/2018');
+insert into spotted (animal_id, spot_date) values (17, '6/18/2018');
+insert into spotted (animal_id, spot_date) values (191, '7/28/2018');
+insert into spotted (animal_id, spot_date) values (170, '7/7/2018');
+insert into spotted (animal_id, spot_date) values (191, '7/5/2018');
+insert into spotted (animal_id, spot_date) values (126, '6/9/2018');
+insert into spotted (animal_id, spot_date) values (17, '8/16/2018');
+insert into spotted (animal_id, spot_date) values (16, '8/3/2018');
+insert into spotted (animal_id, spot_date) values (19, '6/24/2018');
+insert into spotted (animal_id, spot_date) values (122, '8/5/2018');
+insert into spotted (animal_id, spot_date) values (103, '7/21/2018');
+insert into spotted (animal_id, spot_date) values (17, '8/24/2018');
+insert into spotted (animal_id, spot_date) values (170, '9/1/2018');
+insert into spotted (animal_id, spot_date) values (48, '9/3/2018');
+insert into spotted (animal_id, spot_date) values (199, '8/31/2018');
+insert into spotted (animal_id, spot_date) values (191, '7/13/2018');
+insert into spotted (animal_id, spot_date) values (16, '6/30/2018');
+insert into spotted (animal_id, spot_date) values (191, '6/29/2018');
+insert into spotted (animal_id, spot_date) values (191, '7/1/2018');
+insert into spotted (animal_id, spot_date) values (177, '8/13/2018');
+insert into spotted (animal_id, spot_date) values (170, '8/18/2018');
+insert into spotted (animal_id, spot_date) values (105, '6/9/2018');
+insert into spotted (animal_id, spot_date) values (199, '6/23/2018');
+insert into spotted (animal_id, spot_date) values (48, '8/29/2018');
+insert into spotted (animal_id, spot_date) values (19, '6/17/2018');
+insert into spotted (animal_id, spot_date) values (19, '6/8/2018');
+insert into spotted (animal_id, spot_date) values (136, '6/23/2018');
+insert into spotted (animal_id, spot_date) values (122, '8/28/2018');
+insert into spotted (animal_id, spot_date) values (122, '9/2/2018');
+insert into spotted (animal_id, spot_date) values (136, '7/22/2018');
+insert into spotted (animal_id, spot_date) values (191, '7/4/2018');
+insert into spotted (animal_id, spot_date) values (89, '8/12/2018');
+insert into spotted (animal_id, spot_date) values (19, '9/1/2018');
+
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (20, '1/21/2018', 'Leuwihalang', 55);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (15, '2/2/2018', 'Nuštar', 51);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (25, '1/13/2018', 'Gressier', 65);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (32, '2/27/2018', 'Yaguajay', 91);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (28, '2/12/2018', 'Changyuan', 83);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (12, '1/23/2018', 'Firenze', 75);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (7, '2/14/2018', 'Qingxi', 79);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (8, '2/16/2018', 'Butubut Norte', 73);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (4, '1/14/2018', 'Vodstroy', 60);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (27, '1/14/2018', 'Bayt Liqyā', 91);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (50, '1/18/2018', 'Byuravan', 82);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (18, '2/19/2018', 'Haoba', 97);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (32, '1/15/2018', 'Independence', 94);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (16, '1/8/2018', 'Bender', 55);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (45, '2/2/2018', 'Arapongas', 97);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (6, '2/24/2018', 'Cácota', 96);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (47, '2/23/2018', 'Purral', 66);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (2, '2/18/2018', 'Valdemārpils', 83);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (15, '1/26/2018', 'Bershet’', 52);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (33, '1/17/2018', 'San Gregorio', 66);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (29, '1/16/2018', 'Zwolle', 90);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (49, '2/26/2018', 'Nobres', 75);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (29, '1/31/2018', 'Taurage', 73);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (35, '2/7/2018', 'Huesca', 90);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (40, '2/19/2018', 'Angers', 98);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (49, '2/11/2018', 'Douentza', 78);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (40, '2/7/2018', 'Boticas', 98);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (36, '1/7/2018', 'Vishnyakovskiye Dachi', 90);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (43, '2/1/2018', 'Zhuangtou', 74);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (49, '1/18/2018', 'Songlong', 66);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (49, '2/13/2018', 'Tianta', 72);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (48, '2/19/2018', 'Santa Cruz del Sur', 69);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (8, '2/2/2018', 'Gävle', 92);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (7, '1/20/2018', 'Laoqiao', 80);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (50, '2/8/2018', 'Cerca la Source', 69);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (33, '1/13/2018', 'Banjarsari', 77);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (40, '2/14/2018', 'Iradan', 73);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (7, '2/21/2018', 'Panyuran', 85);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (9, '2/5/2018', 'Bilicenii Vechi', 83);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (13, '1/19/2018', 'Toulouse', 72);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (42, '1/9/2018', 'Brody', 67);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (25, '2/2/2018', 'Xi’an', 97);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (49, '1/15/2018', 'Wa’erma', 93);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (27, '1/23/2018', 'Zhanggongmiao', 66);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (20, '2/17/2018', 'Paltashaco', 79);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (42, '3/1/2018', 'São Torcato', 51);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (2, '2/8/2018', 'Lallayug', 64);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (31, '1/7/2018', 'Andrijaševci', 88);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (14, '2/12/2018', 'Lucaya', 96);
+insert into mating (animal_id, mating_date, mating_place, mate_id) values (28, '2/4/2018', 'Ganting', 68);
+
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('1/21/2018', 'Katinka',20 , 101);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('2/2/2018', 'Cris', 15, 102);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('1/13/2018', 'Ainslie', 25, 103);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('2/27/2018', 'Gusti', 32, 104);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('2/12/2018', 'Zola', 28, 105);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('1/23/2018', 'Firenze', 12, null);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('2/14/2018', 'Lezlie', 7, 106);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('2/16/2018', 'Kimberlyn', 8, 107);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('1/14/2018', 'Vodstroy', 4, null);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('1/14/2018', 'Bayt Liqyā', 27, null);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('1/18/2018', 'Byuravan', 50, null);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('2/19/2018', 'Andromache', 18, 108);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('1/15/2018', 'Maynord', 32, 109);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('1/8/2018', 'Elysha', 16, 110);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('2/2/2018', 'Norry', 45, 111);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('2/24/2018', 'Brigida', 6, 112);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('2/23/2018', 'Purral', 47, null);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('2/18/2018', 'Valdemārpils', 2, null);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('1/26/2018', 'Clarinda', 15, 113);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('1/17/2018', 'Jerald', 33, 114);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('1/16/2018', 'Zwolle', 29, null);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('2/26/2018', 'Nobres', 49, null);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('1/31/2018', 'Nahum', 29, 115);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('2/7/2018', 'Reba', 35, 116);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('2/19/2018', 'Antin', 40, 117);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('2/11/2018', 'Washington', 49, 118);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('2/7/2018', 'Tony', 40, 119);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('1/7/2018', 'Jackquelin', 36, 120);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('2/1/2018', 'Zhuangtou', 43, null);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('1/18/2018', 'Songlong', 49, null);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('2/13/2018', 'Tianta', 49, null);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('2/19/2018', 'Jessamyn', 48, 121);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('2/2/2018', 'Gävle', 8, null);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('1/20/2018', 'Britteny', 7, 122);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('2/8/2018', 'Byrann', 50, 123);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('1/13/2018', 'Meier', 33, 124);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('2/14/2018', 'Timotheus', 40, 125);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('2/21/2018', 'Tobie', 7, 126);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('2/5/2018', 'Bilicenii Vechi', 9, null);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('1/19/2018', 'Toulouse', 13, null);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('1/9/2018', 'Marlo', 42, 127);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('2/2/2018', 'Shayne', 25, 128);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('1/15/2018', 'Gardener', 49, 129);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('1/23/2018', 'Pauly', 27, 130);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('2/17/2018', 'Paltashaco', 20, null);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('3/1/2018', 'São Torcato', 42, null);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('2/8/2018', 'Lallayug', 2, null);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('1/7/2018', 'Gordy', 31, 131);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('2/12/2018', 'Josefa', 14, 132);
+insert into offspring (mating_date, offspring_name, animal_id, offspring_id) values ('2/4/2018', 'Sigismondo', 28, 133);
+
+insert into vet (vet_name) values ('Zondra Tother');
+insert into vet (vet_name) values ('Oliviero Dun');
+insert into vet (vet_name) values ('Mickie Freddi');
+insert into vet (vet_name) values ('Erich Castell');
+insert into vet (vet_name) values ('Helene Faulkner');
+
+insert into prescription (prescription) values ('SODIUM MONOFLUOROPHOSPHATE');
+insert into prescription (prescription) values ('Famotidine');
+insert into prescription (prescription) values ('AVOBENZONE OXYBENZONE OCTYL METHOXYCINNAMATE');
+insert into prescription (prescription) values ('Ibuprofen');
+insert into prescription (prescription) values ('Nortriptyline Hydrochloride');
+insert into prescription (prescription) values ('ETHYL ALCOHOL');
+insert into prescription (prescription) values ('Primidone');
+insert into prescription (prescription) values ('Acetaminophen Doxylamine succinate and Phenylephrine Hydrochloride');
+insert into prescription (prescription) values ('Chloroxylenol');
+insert into prescription (prescription) values ('CARBAMAZEPINE');
+
+insert into diagnosis (diagnosis_name) values ('Pregnant'),
+                                              ('Broken leg'),
+                                              ('Ill'),
+                                              ('Diabetes'),
+                                              ('Broken arm'),
+                                              ('Malaria');
+
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (56, '10/17/2017', 'Famotidine', 'Erich Castell', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (22, '1/21/2018', 'AVOBENZONE OXYBENZONE OCTYL METHOXYCINNAMATE', 'Oliviero Dun', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (157, '10/26/2017', 'Nortriptyline Hydrochloride', 'Oliviero Dun', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (3, '10/20/2017', 'Acetaminophen Doxylamine succinate and Phenylephrine Hydrochloride', 'Mickie Freddi', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (150, '12/16/2017', 'Chloroxylenol', 'Oliviero Dun', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (139, '1/31/2018', 'Chloroxylenol', 'Mickie Freddi', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (6, '10/11/2017', 'Acetaminophen Doxylamine succinate and Phenylephrine Hydrochloride', 'Oliviero Dun', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (144, '9/27/2017', 'Chloroxylenol', 'Mickie Freddi', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (164, '9/12/2017', 'Famotidine', 'Oliviero Dun', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (41, '3/7/2018', 'ETHYL ALCOHOL', 'Helene Faulkner', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (66, '3/18/2018', 'SODIUM MONOFLUOROPHOSPHATE', 'Zondra Tother', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (150, '11/7/2017', 'Primidone', 'Helene Faulkner', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (25, '10/27/2017', 'AVOBENZONE OXYBENZONE OCTYL METHOXYCINNAMATE', 'Zondra Tother', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (179, '3/18/2018', 'CARBAMAZEPINE', 'Mickie Freddi', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (172, '8/21/2017', 'AVOBENZONE OXYBENZONE OCTYL METHOXYCINNAMATE', 'Helene Faulkner', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (195, '12/9/2017', 'Ibuprofen', 'Mickie Freddi', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (68, '9/9/2017', 'CARBAMAZEPINE', 'Oliviero Dun', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (68, '4/3/2018', 'SODIUM MONOFLUOROPHOSPHATE', 'Erich Castell', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (97, '4/25/2018', 'Nortriptyline Hydrochloride', 'Erich Castell', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (30, '6/6/2017', 'SODIUM MONOFLUOROPHOSPHATE', 'Mickie Freddi', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (192, '9/13/2017', 'Ibuprofen', 'Mickie Freddi', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (102, '11/13/2017', 'AVOBENZONE OXYBENZONE OCTYL METHOXYCINNAMATE', 'Zondra Tother', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (161, '1/12/2018', 'CARBAMAZEPINE', 'Helene Faulkner', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (171, '2/17/2018', 'ETHYL ALCOHOL', 'Oliviero Dun', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (98, '10/7/2017', 'Acetaminophen Doxylamine succinate and Phenylephrine Hydrochloride', 'Zondra Tother', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (108, '12/27/2017', 'Primidone', 'Zondra Tother', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (71, '9/18/2017', 'CARBAMAZEPINE', 'Helene Faulkner', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (29, '8/21/2017', 'AVOBENZONE OXYBENZONE OCTYL METHOXYCINNAMATE', 'Helene Faulkner', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (170, '5/30/2018', 'Chloroxylenol', 'Mickie Freddi', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (111, '10/14/2017', 'SODIUM MONOFLUOROPHOSPHATE', 'Erich Castell', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (19, '2/21/2018', 'Nortriptyline Hydrochloride', 'Erich Castell', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (116, '6/28/2017', 'Famotidine', 'Mickie Freddi', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (86, '2/21/2018', 'Acetaminophen Doxylamine succinate and Phenylephrine Hydrochloride', 'Oliviero Dun', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (34, '2/1/2018', 'Famotidine', 'Mickie Freddi', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (75, '9/7/2017', 'SODIUM MONOFLUOROPHOSPHATE', 'Zondra Tother', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (60, '4/23/2018', 'Chloroxylenol', 'Oliviero Dun', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (76, '5/1/2018', 'Famotidine', 'Mickie Freddi', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (23, '11/25/2017', 'SODIUM MONOFLUOROPHOSPHATE', 'Erich Castell', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (36, '5/18/2018', 'Famotidine', 'Helene Faulkner', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (126, '9/8/2017', 'AVOBENZONE OXYBENZONE OCTYL METHOXYCINNAMATE', 'Mickie Freddi', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (143, '6/11/2017', 'Famotidine', 'Oliviero Dun', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (188, '3/1/2018', 'Chloroxylenol', 'Erich Castell', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (148, '7/2/2017', 'CARBAMAZEPINE', 'Zondra Tother', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (127, '6/9/2017', 'Chloroxylenol', 'Helene Faulkner', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (160, '6/20/2017', 'Famotidine', 'Mickie Freddi', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (145, '8/23/2017', 'CARBAMAZEPINE', 'Mickie Freddi', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (11, '12/28/2017', 'Primidone', 'Erich Castell', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (67, '7/6/2017', 'SODIUM MONOFLUOROPHOSPHATE', 'Oliviero Dun', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (10, '12/23/2017', 'Famotidine', 'Erich Castell', null);
+insert into animal_visits_vet (animal_id, visit_date, Prescription, vet_name, next_visit) values (148, '6/16/2017', 'Ibuprofen', 'Helene Faulkner', null);
+
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Pregnant', 56, '10/17/2017');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Broken leg', 22, '1/21/2018');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Ill', 157, '10/26/2017');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Ill', 3, '10/20/2017');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Malaria', 150, '12/16/2017');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Diabetes', 139, '1/31/2018');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Broken leg', 6, '10/11/2017');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Malaria', 144, '9/27/2017');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Broken arm', 164, '9/12/2017');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Diabetes', 41, '3/7/2018');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Broken arm', 66, '3/18/2018');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Broken arm', 150, '11/7/2017');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Malaria', 25, '10/27/2017');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Broken arm', 179, '3/18/2018');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Ill', 172, '8/21/2017');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Diabetes', 195, '12/9/2017');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Broken arm', 68, '9/9/2017');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Broken leg', 68, '4/3/2018');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Malaria', 97, '4/25/2018');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Pregnant', 30, '6/6/2017');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Diabetes', 192, '9/13/2017');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Broken leg', 102, '11/13/2017');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Broken leg', 161, '1/12/2018');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Pregnant', 171, '2/17/2018');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Pregnant', 98, '10/7/2017');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Pregnant', 108, '12/27/2017');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Ill', 71, '9/18/2017');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Ill', 29, '8/21/2017');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Ill', 170, '5/30/2018');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Ill', 111, '10/14/2017');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Malaria', 19, '2/21/2018');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Broken arm', 116, '6/28/2017');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Broken leg', 86, '2/21/2018');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Broken leg', 34, '2/1/2018');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Broken arm', 75, '9/7/2017');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Malaria', 60, '4/23/2018');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Ill', 76, '5/1/2018');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Diabetes', 23, '11/25/2017');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Broken leg', 36, '5/18/2018');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Ill', 126, '9/8/2017');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Malaria', 143, '6/11/2017');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Broken arm', 188, '3/1/2018');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Malaria', 148, '7/2/2017');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Ill', 127, '6/9/2017');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Broken leg', 160, '6/20/2017');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Ill', 145, '8/23/2017');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Diabetes', 11, '12/28/2017');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Malaria', 67, '7/6/2017');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Diabetes', 10, '12/23/2017');
+insert into animal_is_diagnosed (diagnosis_name, animal_id, visit_date) values ('Ill', 148, '6/16/2017');
+
+insert into animal_parent values (101, 20),
+                                 (101, 55),
+                                 (102, 15),
+                                 (102, 51),
+                                 (103, 25),
+                                 (103, 65),
+                                 (104, 32),
+                                 (104, 91),
+                                 (105, 28),
+                                 (105, 83),
+                                 (106, 7),
+                                 (106, 79),
+                                 (107, 8),
+                                 (107, 73),
+                                 (108, 18),
+                                 (108, 97),
+                                 (109, 32),
+                                 (109, 94),
+                                 (110, 16),
+                                 (110, 55),
+                                 (111, 45),
+                                 (111, 97),
+                                 (112, 6),
+                                 (112, 96),
+                                 (113, 15),
+                                 (113, 52),
+                                 (114, 33),
+                                 (114, 66),
+                                 (115, 29),
+                                 (115, 73),
+                                 (116, 35),
+                                 (116, 90),
+                                 (117, 40),
+                                 (117, 98),
+                                 (118, 49),
+                                 (118, 78),
+                                 (119, 40),
+                                 (119, 98),
+                                 (120, 36),
+                                 (120, 90),
+                                 (121, 48),
+                                 (121, 69),
+                                 (122, 7),
+                                 (122, 80),
+                                 (123, 50),
+                                 (123, 69),
+                                 (124, 33),
+                                 (124, 77),
+                                 (125, 40),
+                                 (125, 73),
+                                 (126, 7),
+                                 (126, 85),
+                                 (127, 42),
+                                 (127, 67),
+                                 (128, 25),
+                                 (128, 97),
+                                 (129, 49),
+                                 (129, 93),
+                                 (130, 27),
+                                 (130, 66),
+                                 (131, 31),
+                                 (131, 88),
+                                 (132, 14),
+                                 (132, 96),
+                                 (133, 28),
+                                 (133, 68);
+
