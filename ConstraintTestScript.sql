@@ -1806,8 +1806,8 @@ rollback;
 begin transaction;
 select USP_DROP_CONSTRAINTS(14);
 do
-begin
 $$
+begin
 alter table "ORDER" drop constraint fk_invoice_of_an_order;
 alter table "ORDER" drop constraint fk_order_supplier;
 
