@@ -445,7 +445,7 @@ insert into animal values
 (1,'female','Abu' ,'Engeland', '12-12-18', 'Monkey'),
 (2,'female','Koko','Engeland', '10-10-18', 'Monkey');
 update animal
-set gender_s = 'male';
+set gender = 'male';
 rollback;
 
 /* Test should pass when inserting or updating animal gender to 'female' */
@@ -468,7 +468,7 @@ insert into animal values
 (1,'male','Abu' ,'Engeland', '12-12-18', 'Monkey'),
 (2,'male','Koko','Engeland', '10-10-18', 'Monkey');
 update animal
-set gender_s = 'female';
+set gender = 'female';
 rollback;
 
 /* Test should pass when inserting or updating animal gender to 'other' */
@@ -491,7 +491,7 @@ insert into animal values
 (1,'male','Abu' ,'Engeland', '12-12-18', 'Monkey'),
 (2,'male','Koko','Engeland', '10-10-18', 'Monkey');
 update animal
-set gender_s = 'other';
+set gender = 'other';
 rollback;
 
 /* Test should fail when inserting or updating animal gender to something other than 'male', 'female', 'other' */
@@ -514,7 +514,7 @@ insert into animal values
 (1,'male','Abu' ,'Engeland', '12-12-18', 'Monkey'),
 (2,'male','Koko','Engeland', '10-10-18', 'Monkey');
 update animal
-set gender_s = 'something';
+set gender = 'something';
 rollback;
 
 /*===== Constraint 6 AnimalHasOneEnclosure =====*/
@@ -1033,9 +1033,9 @@ rollback;
 /* Test should pass if the updated mating_id is not the same as the offspring_id in table offspring. */
 begin transaction;
 select USP_DROP_CONSTRAINTS(12);
-alter table mating drop constraint if exists fk_breeding_mate; -- MATING(animal_id) -> ANIMAL(animal_id)
-alter table mating drop constraint if exists fk_mating_breeding__animal; -- MATING(mate_id) -> ANIMAL(animal_id)
-alter table offspring drop constraint if exists fk_offsprin_animal_of_animal; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_breeding_animal; -- MATING(animal_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_breeding_mate; -- MATING(mate_id) -> ANIMAL(animal_id)
+alter table offspring drop constraint if exists fk_animal_offspring; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
 
 insert into mating values('an-1', '2019-04-04', 'ica', 'mate-1');
 insert into offspring values('2019-04-04', 'an offspring', 'an-1', 'off-1');
@@ -1046,9 +1046,9 @@ rollback;
 /* Test should fail if the updated mate_id is the same as the offspring_id of the concerning mating. */
 begin transaction;
 select USP_DROP_CONSTRAINTS(12);
-alter table mating drop constraint if exists fk_breeding_mate; -- MATING(animal_id) -> ANIMAL(animal_id)
-alter table mating drop constraint if exists fk_mating_breeding__animal; -- MATING(mate_id) -> ANIMAL(animal_id)
-alter table offspring drop constraint if exists fk_offsprin_animal_of_animal; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_breeding_animal; -- MATING(animal_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_breeding_mate; -- MATING(mate_id) -> ANIMAL(animal_id)
+alter table offspring drop constraint if exists fk_animal_offspring; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
 
 insert into mating values('an-1', '2019-04-04', 'ica', 'mate-1');
 insert into offspring values('2019-04-04', 'an offspring', 'an-1', 'off-1');
@@ -1060,9 +1060,9 @@ rollback;
 -- insert
 begin transaction;
 select USP_DROP_CONSTRAINTS(12);
-alter table mating drop constraint if exists fk_breeding_mate; -- MATING(animal_id) -> ANIMAL(animal_id)
-alter table mating drop constraint if exists fk_mating_breeding__animal; -- MATING(mate_id) -> ANIMAL(animal_id)
-alter table offspring drop constraint if exists fk_offsprin_animal_of_animal; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_breeding_animal; -- MATING(animal_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_breeding_mate; -- MATING(mate_id) -> ANIMAL(animal_id)
+alter table offspring drop constraint if exists fk_animal_offspring; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
 
 insert into mating values('an-1', '2019-04-04', 'ica', 'mate-1');
 insert into offspring values('2019-04-04', 'an offspring', 'an-1', 'off-1');
@@ -1071,9 +1071,9 @@ rollback;
 -- update
 begin transaction;
 select USP_DROP_CONSTRAINTS(12);
-alter table mating drop constraint if exists fk_breeding_mate; -- MATING(animal_id) -> ANIMAL(animal_id)
-alter table mating drop constraint if exists fk_mating_breeding__animal; -- MATING(mate_id) -> ANIMAL(animal_id)
-alter table offspring drop constraint if exists fk_offsprin_animal_of_animal; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_breeding_animal; -- MATING(animal_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_breeding_mate; -- MATING(mate_id) -> ANIMAL(animal_id)
+alter table offspring drop constraint if exists fk_animal_offspring; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
 
 insert into mating values('an-1', '2019-04-04', 'ica', 'mate-1');
 insert into offspring values('2019-04-04', 'an offspring', 'an-1', 'off-1');
@@ -1085,9 +1085,9 @@ rollback;
 -- insert
 begin transaction;
 select USP_DROP_CONSTRAINTS(12);
-alter table mating drop constraint if exists fk_breeding_mate; -- MATING(animal_id) -> ANIMAL(animal_id)
-alter table mating drop constraint if exists fk_mating_breeding__animal; -- MATING(mate_id) -> ANIMAL(animal_id)
-alter table offspring drop constraint if exists fk_offsprin_animal_of_animal; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_breeding_animal; -- MATING(animal_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_breeding_mate; -- MATING(mate_id) -> ANIMAL(animal_id)
+alter table offspring drop constraint if exists fk_animal_offspring; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
 
 insert into mating values('an-1', '2019-04-04', 'ica', 'mate-1');
 insert into offspring values('2019-04-04', 'an offspring', 'an-1', 'an-1');
@@ -1096,9 +1096,9 @@ rollback;
 --update
 begin transaction;
 select USP_DROP_CONSTRAINTS(12);
-alter table mating drop constraint if exists fk_breeding_mate; -- MATING(animal_id) -> ANIMAL(animal_id)
-alter table mating drop constraint if exists fk_mating_breeding__animal; -- MATING(mate_id) -> ANIMAL(animal_id)
-alter table offspring drop constraint if exists fk_offsprin_animal_of_animal; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_breeding_animal; -- MATING(animal_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_breeding_mate; -- MATING(mate_id) -> ANIMAL(animal_id)
+alter table offspring drop constraint if exists fk_animal_offspring; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
 
 insert into mating values('an-1', '2019-04-04', 'ica', 'mate-1');
 insert into offspring values('2019-04-04', 'an offspring', 'an-1', 'off-1');
@@ -1112,7 +1112,7 @@ rollback;
 begin transaction;
 select USP_DROP_CONSTRAINTS(13);
 alter table mating drop constraint fk_breeding_mate;
-alter table mating drop constraint fk_mating_breeding__animal;
+alter table mating drop constraint fk_breeding_animal;
 
 insert into mating values
 ('sai-1', '12-12-18', 'duiven', 'sai-2'),
@@ -1123,7 +1123,7 @@ rollback;
 begin transaction;
 select USP_DROP_CONSTRAINTS(13);
 alter table mating drop constraint fk_breeding_mate;
-alter table mating drop constraint fk_mating_breeding__animal;
+alter table mating drop constraint fk_breeding_animal;
 
 insert into mating values
 ('sai-1', '12-12-18', 'duiven', 'sai-2'),
@@ -1138,7 +1138,7 @@ rollback;
 begin transaction;
 select USP_DROP_CONSTRAINTS(13);
 alter table mating drop constraint fk_breeding_mate;
-alter table mating drop constraint fk_mating_breeding__animal;
+alter table mating drop constraint fk_breeding_animal;
 
 insert into mating values
 ('sai-1', '12-12-18', 'duiven', 'sai-2'),
@@ -1149,7 +1149,7 @@ rollback;
 begin transaction;
 select USP_DROP_CONSTRAINTS(13);
 alter table mating drop constraint fk_breeding_mate;
-alter table mating drop constraint fk_mating_breeding__animal;
+alter table mating drop constraint fk_breeding_animal;
 
 insert into mating values
 ('sai-1', '12-12-18', 'duiven', 'sai-2'),
@@ -1164,7 +1164,7 @@ rollback;
 --Insert
 begin transaction;
 select USP_DROP_CONSTRAINTS(14);
-alter table "ORDER" drop constraint fk_order_invoice_of_invoice;
+alter table "ORDER" drop constraint fk_invoice_of_an_order;
 alter table "ORDER" drop constraint fk_order_supplier;
 
 Insert into "ORDER" values ('1', 'berry', 'awaiting', '03-03-2019', '1');
@@ -1174,7 +1174,7 @@ rollback;
 --Update
 begin transaction;
 select USP_DROP_CONSTRAINTS(14);
-alter table "ORDER" drop constraint fk_order_invoice_of_invoice;
+alter table "ORDER" drop constraint fk_invoice_of_an_order;
 alter table "ORDER" drop constraint fk_order_supplier;
 
 Insert into "ORDER" values ('1', 'berry', 'awaiting', '03-03-2019', '1');
@@ -1186,7 +1186,7 @@ rollback;
 --Insert
 begin transaction;
 select USP_DROP_CONSTRAINTS(14);
-alter table "ORDER" drop constraint fk_order_invoice_of_invoice;
+alter table "ORDER" drop constraint fk_invoice_of_an_order;
 alter table "ORDER" drop constraint fk_order_supplier;
 
 Insert into "ORDER" values ('1', 'berry', 'awaiting', '03-03-2019', '1');
@@ -1196,7 +1196,7 @@ rollback;
 --Update
 begin transaction;
 select USP_DROP_CONSTRAINTS(14);
-alter table "ORDER" drop constraint fk_order_invoice_of_invoice;
+alter table "ORDER" drop constraint fk_invoice_of_an_order;
 alter table "ORDER" drop constraint fk_order_supplier;
 
 Insert into "ORDER" values ('1', 'berry', 'awaiting', '03-03-2019', '1');
@@ -1364,7 +1364,7 @@ rollback;
 --Insert
 begin transaction;
 select USP_DROP_CONSTRAINTS(17);
-alter table stock drop constraint if exists fk_animal_foodstock;
+alter table stock drop constraint if exists fk_area_foodstock;
 alter table stock drop constraint if exists fk_food_in_stock;
 insert into stock values ('apen', 'bananen', 5);
 rollback;
@@ -1372,7 +1372,7 @@ rollback;
 --Update
 begin transaction;
 select USP_DROP_CONSTRAINTS(17);
-alter table stock drop constraint if exists fk_animal_foodstock;
+alter table stock drop constraint if exists fk_area_foodstock;
 alter table stock drop constraint if exists fk_food_in_stock;
 insert into stock values ('apen', 'bananen', 5);
 update stock set amount = 6;
@@ -1382,7 +1382,7 @@ rollback;
 --Insert
 begin transaction;
 select USP_DROP_CONSTRAINTS(17);
-alter table stock drop constraint if exists fk_animal_foodstock;
+alter table stock drop constraint if exists fk_area_foodstock;
 alter table stock drop constraint if exists fk_food_in_stock;
 insert into stock values ('apen', 'bananen', 0);
 rollback;
@@ -1390,7 +1390,7 @@ rollback;
 --Update
 begin transaction;
 select USP_DROP_CONSTRAINTS(17);
-alter table stock drop constraint if exists fk_animal_foodstock;
+alter table stock drop constraint if exists fk_area_foodstock;
 alter table stock drop constraint if exists fk_food_in_stock;
 insert into stock values ('apen', 'bananen', 5);
 update stock set amount = 0;
@@ -1400,7 +1400,7 @@ rollback;
 --Insert
 begin transaction;
 select USP_DROP_CONSTRAINTS(17);
-alter table stock drop constraint if exists fk_animal_foodstock;
+alter table stock drop constraint if exists fk_area_foodstock;
 alter table stock drop constraint if exists fk_food_in_stock;
 insert into stock values ('apen', 'bananen', -5);
 rollback;
@@ -1408,7 +1408,7 @@ rollback;
 --Update
 begin transaction;
 select USP_DROP_CONSTRAINTS(17);
-alter table stock drop constraint if exists fk_animal_foodstock;
+alter table stock drop constraint if exists fk_area_foodstock;
 alter table stock drop constraint if exists fk_food_in_stock;
 insert into stock values ('apen', 'bananen', 5);
 update stock set amount = -5;
@@ -1600,7 +1600,7 @@ begin transaction;
 select USP_DROP_CONSTRAINTS(21);
 insert into species values('Apes', 'Are apes', 'Apes', 'Apes', '');
 insert into species_gender values('Apes', 'male', 9.5, 009.5);
-update species_gender set average_weight = 10.1 where english_name = 'Apes';
+update species_gender set average_weight = 10.1 where species_name = 'Apes';
 rollback;
 
 /* Tests should raise a check constraint error upon insert a species gender or updating it when the weight is 0 */
@@ -1616,7 +1616,7 @@ begin transaction;
 select USP_DROP_CONSTRAINTS(21);
 insert into species values('Apes', 'Are apes', 'Apes', 'Apes', '');
 insert into species_gender values('Apes', 'male', 9.5, 009.5);
-update species_gender set average_weight = 0 where english_name = 'Apes';
+update species_gender set average_weight = 0 where species_name = 'Apes';
 rollback;
 
 /* Tests should raise a check constraint error upon insert a species gender or updating it when the weight is lower then 0 */
@@ -1632,7 +1632,7 @@ begin transaction;
 select USP_DROP_CONSTRAINTS(21);
 insert into species values('Apes', 'Are apes', 'Apes', 'Apes', '');
 insert into species_gender values('Apes', 'male', 9.5, 009.5);
-update species_gender set average_weight = -5 where english_name = 'Apes';
+update species_gender set average_weight = -5 where species_name = 'Apes';
 rollback;
 
 /* ====== CONSTRAINT 22 AnimalEnclosureSince ======*/
