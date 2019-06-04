@@ -23,7 +23,7 @@ check (State in('Placed', 'Paid', 'Awaiting payment', 'Not complete'));
 
 
 /* Constraint 2 OtherThanPlacedHasDelivery
-Colom ORDER(State) An order with state that is not ‘placed’, must have a delivery note.
+Column ORDER(State) An order with state that is not ‘placed’, must have a delivery note.
 =================================================
 = State		= Delivery note	= Yes/No	=
 =================================================
