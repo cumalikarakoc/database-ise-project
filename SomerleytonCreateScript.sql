@@ -10,7 +10,7 @@
 |	Gemaakt op:	17-5-2019 10:48:23			|
 \*-------------------------------------------------------------*/
 /*trigger for adding records to history history*/
-create function tgr_change_history_trigger() returns trigger AS $$
+create function tgr_change_history_trigger() returns trigger as $$
 declare
     CurrentUser text = (select current_user);
 begin
