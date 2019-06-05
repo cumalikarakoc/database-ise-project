@@ -655,7 +655,7 @@ insert into animal values
 (1,'female','Abu' ,'Engeland', '12-12-18', 'Monkey'),
 (2,'female','Koko','Engeland', '10-10-18', 'Monkey');
 update animal
-set gender_s = 'male';
+set gender = 'male';
 raise notice 'C5. Test 2 passed';
     exception when others then
     raise notice 'C5. Test 2 failed (%)', SQLERRM;
@@ -694,7 +694,7 @@ insert into animal values
 (1,'male','Abu' ,'Engeland', '12-12-18', 'Monkey'),
 (2,'male','Koko','Engeland', '10-10-18', 'Monkey');
 update animal
-set gender_s = 'female';
+set gender = 'female';
 raise notice 'C5. Test 4 passed';
     exception when others then
     raise notice 'C5. Test 4 failed(%)', SQLERRM;
@@ -733,7 +733,7 @@ insert into animal values
 (1,'male','Abu' ,'Engeland', '12-12-18', 'Monkey'),
 (2,'male','Koko','Engeland', '10-10-18', 'Monkey');
 update animal
-set gender_s = 'other';
+set gender = 'other';
 raise notice 'C5. Test 6 passed';
     exception when others then
     raise notice 'C5. Test 6 failed(%)', SQLERRM;
@@ -772,7 +772,7 @@ insert into animal values
 (1,'male','Abu' ,'Engeland', '12-12-18', 'Monkey'),
 (2,'male','Koko','Engeland', '10-10-18', 'Monkey');
 update animal
-set gender_s = 'something';
+set gender = 'something';
   raise notice 'C5. Test 8 failed';
 exception when others then
 raise notice 'C5. Test 8 passed (%)', SQLERRM;
@@ -1596,9 +1596,9 @@ select USP_DROP_CONSTRAINTS(12);
 do
 $$
 begin
-alter table mating drop constraint if exists fk_breeding_mate; -- MATING(animal_id) -> ANIMAL(animal_id)
-alter table mating drop constraint if exists fk_mating_breeding__animal; -- MATING(mate_id) -> ANIMAL(animal_id)
-alter table offspring drop constraint if exists fk_offsprin_animal_of_animal; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_breeding_animal; -- MATING(animal_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_breeding_mate; -- MATING(mate_id) -> ANIMAL(animal_id)
+alter table offspring drop constraint if exists fk_animal_offspring; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
 
 insert into mating values('an-1', '2019-04-04', 'ica', 'mate-1');
 insert into offspring values('2019-04-04', 'an offspring', 'an-1', 'off-1');
@@ -1618,9 +1618,9 @@ select USP_DROP_CONSTRAINTS(12);
 do
 $$
 begin
-alter table mating drop constraint if exists fk_breeding_mate; -- MATING(animal_id) -> ANIMAL(animal_id)
-alter table mating drop constraint if exists fk_mating_breeding__animal; -- MATING(mate_id) -> ANIMAL(animal_id)
-alter table offspring drop constraint if exists fk_offsprin_animal_of_animal; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_breeding_animal; -- MATING(animal_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_breeding_mate; -- MATING(mate_id) -> ANIMAL(animal_id)
+alter table offspring drop constraint if exists fk_animal_offspring; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
 
 insert into mating values('an-1', '2019-04-04', 'ica', 'mate-1');
 insert into offspring values('2019-04-04', 'an offspring', 'an-1', 'off-1');
@@ -1640,9 +1640,9 @@ select USP_DROP_CONSTRAINTS(12);
 do
 $$
 begin
-alter table mating drop constraint if exists fk_breeding_mate; -- MATING(animal_id) -> ANIMAL(animal_id)
-alter table mating drop constraint if exists fk_mating_breeding__animal; -- MATING(mate_id) -> ANIMAL(animal_id)
-alter table offspring drop constraint if exists fk_offsprin_animal_of_animal; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_breeding_animal; -- MATING(animal_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_breeding_mate; -- MATING(mate_id) -> ANIMAL(animal_id)
+alter table offspring drop constraint if exists fk_animal_offspring; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
 
 insert into mating values('an-1', '2019-04-04', 'ica', 'mate-1');
 insert into offspring values('2019-04-04', 'an offspring', 'an-1', 'off-1');
@@ -1659,9 +1659,9 @@ select USP_DROP_CONSTRAINTS(12);
 do
 $$
 begin
-alter table mating drop constraint if exists fk_breeding_mate; -- MATING(animal_id) -> ANIMAL(animal_id)
-alter table mating drop constraint if exists fk_mating_breeding__animal; -- MATING(mate_id) -> ANIMAL(animal_id)
-alter table offspring drop constraint if exists fk_offsprin_animal_of_animal; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_breeding_animal; -- MATING(animal_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_breeding_mate; -- MATING(mate_id) -> ANIMAL(animal_id)
+alter table offspring drop constraint if exists fk_animal_offspring; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
 
 insert into mating values('an-1', '2019-04-04', 'ica', 'mate-1');
 insert into offspring values('2019-04-04', 'an offspring', 'an-1', 'off-1');
@@ -1681,9 +1681,9 @@ select USP_DROP_CONSTRAINTS(12);
 do
 $$
 begin
-alter table mating drop constraint if exists fk_breeding_mate; -- MATING(animal_id) -> ANIMAL(animal_id)
-alter table mating drop constraint if exists fk_mating_breeding__animal; -- MATING(mate_id) -> ANIMAL(animal_id)
-alter table offspring drop constraint if exists fk_offsprin_animal_of_animal; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_breeding_animal; -- MATING(animal_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_breeding_mate; -- MATING(mate_id) -> ANIMAL(animal_id)
+alter table offspring drop constraint if exists fk_animal_offspring; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
 
 insert into mating values('an-1', '2019-04-04', 'ica', 'mate-1');
 insert into offspring values('2019-04-04', 'an offspring', 'an-1', 'an-1');
@@ -1700,9 +1700,9 @@ select USP_DROP_CONSTRAINTS(12);
 do
 $$
 begin
-alter table mating drop constraint if exists fk_breeding_mate; -- MATING(animal_id) -> ANIMAL(animal_id)
-alter table mating drop constraint if exists fk_mating_breeding__animal; -- MATING(mate_id) -> ANIMAL(animal_id)
-alter table offspring drop constraint if exists fk_offsprin_animal_of_animal; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_breeding_animal; -- MATING(animal_id) -> ANIMAL(animal_id)
+alter table mating drop constraint if exists fk_breeding_mate; -- MATING(mate_id) -> ANIMAL(animal_id)
+alter table offspring drop constraint if exists fk_animal_offspring; -- OFFSPRING(offspring_id) -> ANIMAL(animal_id)
 
 insert into mating values('an-1', '2019-04-04', 'ica', 'mate-1');
 insert into offspring values('2019-04-04', 'an offspring', 'an-1', 'off-1');
@@ -1724,7 +1724,7 @@ do
 $$
 begin
 alter table mating drop constraint fk_breeding_mate;
-alter table mating drop constraint fk_mating_breeding__animal;
+alter table mating drop constraint fk_breeding_animal;
 
 insert into mating values
 ('sai-1', '12-12-18', 'duiven', 'sai-2'),
@@ -1743,7 +1743,7 @@ do
 $$
 begin
 alter table mating drop constraint fk_breeding_mate;
-alter table mating drop constraint fk_mating_breeding__animal;
+alter table mating drop constraint fk_breeding_animal;
 
 insert into mating values
 ('sai-1', '12-12-18', 'duiven', 'sai-2'),
@@ -1766,7 +1766,7 @@ do
 $$
 begin
 alter table mating drop constraint fk_breeding_mate;
-alter table mating drop constraint fk_mating_breeding__animal;
+alter table mating drop constraint fk_breeding_animal;
 
 insert into mating values
 ('sai-1', '12-12-18', 'duiven', 'sai-2'),
@@ -1785,7 +1785,7 @@ do
 $$
 begin
 alter table mating drop constraint fk_breeding_mate;
-alter table mating drop constraint fk_mating_breeding__animal;
+alter table mating drop constraint fk_breeding_animal;
 
 insert into mating values
 ('sai-1', '12-12-18', 'duiven', 'sai-2'),
@@ -1808,7 +1808,7 @@ select USP_DROP_CONSTRAINTS(14);
 do
 $$
 begin
-alter table "ORDER" drop constraint fk_order_invoice_of_invoice;
+alter table "ORDER" drop constraint fk_invoice_of_an_order;
 alter table "ORDER" drop constraint fk_order_supplier;
 
 Insert into "ORDER" values ('1', 'berry', 'awaiting', '03-03-2019', '1');
@@ -1826,7 +1826,7 @@ select USP_DROP_CONSTRAINTS(14);
 do
 $$
 begin
-alter table "ORDER" drop constraint fk_order_invoice_of_invoice;
+alter table "ORDER" drop constraint fk_invoice_of_an_order;
 alter table "ORDER" drop constraint fk_order_supplier;
 
 Insert into "ORDER" values ('1', 'berry', 'awaiting', '03-03-2019', '1');
@@ -1846,7 +1846,7 @@ select USP_DROP_CONSTRAINTS(14);
 do
 $$
 begin
-alter table "ORDER" drop constraint fk_order_invoice_of_invoice;
+alter table "ORDER" drop constraint fk_invoice_of_an_order;
 alter table "ORDER" drop constraint fk_order_supplier;
 
 Insert into "ORDER" values ('1', 'berry', 'awaiting', '03-03-2019', '1');
@@ -1864,7 +1864,7 @@ select USP_DROP_CONSTRAINTS(14);
 do
 $$
 begin
-alter table "ORDER" drop constraint fk_order_invoice_of_invoice;
+alter table "ORDER" drop constraint fk_invoice_of_an_order;
 alter table "ORDER" drop constraint fk_order_supplier;
 
 Insert into "ORDER" values ('1', 'berry', 'awaiting', '03-03-2019', '1');
@@ -2124,7 +2124,7 @@ select USP_DROP_CONSTRAINTS(17);
 do
 $$
 begin
-alter table stock drop constraint if exists fk_animal_foodstock;
+alter table stock drop constraint if exists fk_area_foodstock;
 alter table stock drop constraint if exists fk_food_in_stock;
 insert into stock values ('apen', 'bananen', 5);
     raise notice 'C17. Test 1 passed';
@@ -2140,7 +2140,7 @@ select USP_DROP_CONSTRAINTS(17);
 do
 $$
 begin
-alter table stock drop constraint if exists fk_animal_foodstock;
+alter table stock drop constraint if exists fk_area_foodstock;
 alter table stock drop constraint if exists fk_food_in_stock;
 insert into stock values ('apen', 'bananen', 5);
 update stock set amount = 6;
@@ -2158,7 +2158,7 @@ select USP_DROP_CONSTRAINTS(17);
 do
 $$
 begin
-alter table stock drop constraint if exists fk_animal_foodstock;
+alter table stock drop constraint if exists fk_area_foodstock;
 alter table stock drop constraint if exists fk_food_in_stock;
 insert into stock values ('apen', 'bananen', 0);
     update stock set amount = 6;
@@ -2175,7 +2175,7 @@ select USP_DROP_CONSTRAINTS(17);
 do
 $$
 begin
-alter table stock drop constraint if exists fk_animal_foodstock;
+alter table stock drop constraint if exists fk_area_foodstock;
 alter table stock drop constraint if exists fk_food_in_stock;
 insert into stock values ('apen', 'bananen', 5);
 update stock set amount = 0;
@@ -2193,7 +2193,7 @@ select USP_DROP_CONSTRAINTS(17);
 do
 $$
 begin
-alter table stock drop constraint if exists fk_animal_foodstock;
+alter table stock drop constraint if exists fk_area_foodstock;
 alter table stock drop constraint if exists fk_food_in_stock;
 insert into stock values ('apen', 'bananen', -5);
     raise notice 'C17. Test 5 failed';
@@ -2209,7 +2209,7 @@ select USP_DROP_CONSTRAINTS(17);
 do
 $$
 begin
-alter table stock drop constraint if exists fk_animal_foodstock;
+alter table stock drop constraint if exists fk_area_foodstock;
 alter table stock drop constraint if exists fk_food_in_stock;
 insert into stock values ('apen', 'bananen', 5);
 update stock set amount = -5;
@@ -2521,9 +2521,9 @@ select USP_DROP_CONSTRAINTS(21);
 do
 $$
 begin
-    insert into species values('Apes', 'Are apes', 'Apes', 'Apes', '');
-    insert into species_gender values('Apes', 'male', 9.5, 009.5);
-    update species_gender set average_weight = 10.1 where english_name = 'Apes';
+insert into species values('Apes', 'Are apes', 'Apes', 'Apes', '');
+insert into species_gender values('Apes', 'male', 9.5, 009.5);
+update species_gender set average_weight = 10.1 where species_name = 'Apes';
     raise notice 'C21. Test 2 passed';
     exception when others then
     raise notice 'C21. Test 2 failed (%)', SQLERRM;
@@ -2554,9 +2554,9 @@ select USP_DROP_CONSTRAINTS(21);
 do
 $$
 begin
-    insert into species values('Apes', 'Are apes', 'Apes', 'Apes', '');
-    insert into species_gender values('Apes', 'male', 9.5, 009.5);
-    update species_gender set average_weight = 0 where english_name = 'Apes';
+insert into species values('Apes', 'Are apes', 'Apes', 'Apes', '');
+insert into species_gender values('Apes', 'male', 9.5, 009.5);
+update species_gender set average_weight = 0 where species_name = 'Apes';
     raise notice 'C21. Test 4 failed';
     exception when others then
     raise notice 'C21. Test 4 passed (%)', SQLERRM;
@@ -2586,9 +2586,9 @@ select USP_DROP_CONSTRAINTS(21);
 do
 $$
 begin
-    insert into species values('Apes', 'Are apes', 'Apes', 'Apes', '');
-    insert into species_gender values('Apes', 'male', 9.5, 009.5);
-    update species_gender set average_weight = -5 where english_name = 'Apes';
+insert into species values('Apes', 'Are apes', 'Apes', 'Apes', '');
+insert into species_gender values('Apes', 'male', 9.5, 009.5);
+update species_gender set average_weight = -5 where species_name = 'Apes';
     raise notice 'C21. Test 6 failed';
     exception when others then
     raise notice 'C21. Test 6 passed (%)', SQLERRM;
