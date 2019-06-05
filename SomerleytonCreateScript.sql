@@ -10,7 +10,7 @@
 |	Gemaakt op:	17-5-2019 10:48:23			|
 \*-------------------------------------------------------------*/
 /*trigger for adding records to history history*/
-create function tgr_change_history_trigger() returns trigger as $$
+create or replace function tgr_change_history_trigger() returns trigger as $$
 declare
     CurrentUser text = (select current_user);
 begin
@@ -55,7 +55,7 @@ begin
       name_of = replace(name_of, 'public.', '');
 
       execute 'create trigger tgr_history_trigger before insert or update or delete on '|| quote_ident(name_of) ||'
-                       for each row execute tgr_change_history_trigger();' ;
+                       for each row execute procedure tgr_change_history_trigger();' ;
 
       name_of = 'hist_' || name_of;
       execute 'create table if not exists ' || name_of || '( Id serial not null, Tstamp timestamp default now(),
