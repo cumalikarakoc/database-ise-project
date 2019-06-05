@@ -11,6 +11,30 @@
 \*-------------------------------------------------------------*/
 
 /* Event trigger for creating a history table for each tables created*/
+create or replace function tgr_change_history_trigger() returns trigger as $$
+declare
+    CurrentUser text = (select current_user);
+begin
+    if      TG_OP = 'INSERT'
+    then
+        execute 'insert into hist_'|| TG_TABLE_NAME ||' (operation, Who, new_val)
+        values ('|| quote_literal(TG_OP) ||', ' || quote_literal(CurrentUser) ||', ' || quote_literal(row_to_json(NEW)) ||');';
+        return new;
+    elsif   TG_OP = 'UPDATE'
+    then
+        execute 'insert into hist_'|| TG_TABLE_NAME ||' (operation, Who, new_val, old_val)
+        values ('|| quote_literal(TG_OP) || ', '|| quote_literal(CurrentUser) ||', "'|| quote_literal(row_to_json(NEW)) || '", '|| quote_literal(row_to_json(OLD)) ||');';
+        return new;
+    elsif   TG_OP = 'DELETE'
+    then
+        execute 'insert into hist_'|| TG_TABLE_NAME ||'(TableName, operation, Who, old_val)
+        values ('|| quote_literal(TG_RELNAME) ||', '|| quote_literal(TG_OP) || ', '|| quote_literal(CurrentUser) ||', '|| quote_literal(row_to_json(OLD)) ||');';
+        return old;
+    end if;
+end;
+$$ language 'plpgsql';
+
+/* Event trigger for creating a history table for each tables created*/
 create or replace function trg_create_table_func()
   returns event_trigger
 language plpgsql
@@ -30,18 +54,24 @@ begin
       end if;
       -- remove public. (schema name) from table identification to get table name
       name_of = replace(name_of, 'public.', '');
+
+      execute 'create trigger tgr_history_trigger before insert or update or delete on '|| quote_ident(name_of) ||'
+                       for each row execute procedure tgr_change_history_trigger();' ;
+
       name_of = 'hist_' || name_of;
       execute 'create table if not exists ' || name_of || '( Id serial not null, Tstamp timestamp default now(),
                  Operation    text not null,
                  Who          text not null,
                  new_val      json,
                  old_val      json);';
+
       raise notice 'tabel % aangemaakt', name_of;
     end if;
   end loop;
   return;
 end;
 $$;
+
 
 drop event trigger if exists trg_create_table;
 create event trigger trg_create_table
