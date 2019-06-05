@@ -23,12 +23,12 @@ begin
     elsif   TG_OP = 'UPDATE'
     then
         execute 'insert into hist_'|| TG_TABLE_NAME ||' (operation, Who, new_val, old_val)
-        values ('|| quote_literal(TG_OP) || ', '|| quote_literal(CurrentUser) ||', "'|| quote_literal(row_to_json(NEW)) || '", '|| quote_literal(row_to_json(OLD)) ||');';
+        values ('|| quote_literal(TG_OP) || ', '|| quote_literal(CurrentUser) ||', '|| quote_literal(row_to_json(NEW)) || ', '|| quote_literal(row_to_json(OLD)) ||');';
         return new;
     elsif   TG_OP = 'DELETE'
     then
-        execute 'insert into hist_'|| TG_TABLE_NAME ||'(TableName, operation, Who, old_val)
-        values ('|| quote_literal(TG_RELNAME) ||', '|| quote_literal(TG_OP) || ', '|| quote_literal(CurrentUser) ||', '|| quote_literal(row_to_json(OLD)) ||');';
+        execute 'insert into hist_'|| TG_TABLE_NAME ||'(operation, Who, old_val)
+        values ('|| quote_literal(TG_OP) || ', '|| quote_literal(CurrentUser) ||', '|| quote_literal(row_to_json(OLD)) ||');';
         return old;
     end if;
 end;
