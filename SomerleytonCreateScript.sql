@@ -9,6 +9,7 @@
 |	Versie:		1.0					|
 |	Gemaakt op:	17-5-2019 10:48:23			|
 \*-------------------------------------------------------------*/
+
 /*trigger for adding records to history history*/
 create or replace function tgr_change_history_trigger() returns trigger as $$
 declare
