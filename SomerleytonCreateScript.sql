@@ -9,6 +9,7 @@
 |	Versie:		1.0					|
 |	Gemaakt op:	17-5-2019 10:48:23			|
 \*-------------------------------------------------------------*/
+
 /* Event trigger for creating a history table for each tables created*/
 create or replace function trg_create_table_func()
   returns event_trigger
