@@ -1,7 +1,7 @@
 ﻿/*-------------------------------------------------------------*\
 |			Constraints Script			|
 |---------------------------------------------------------------|
-|	Gemaakt door: 	Cumali karakoç,				|
+|	Gemaakt door: 	Cumali Karakoç,				|
 |			Simon van Noppen,			|
 |			Henkie van den Oord,			|
 |			Jeroen Rikken,				|
@@ -23,7 +23,7 @@ check (State in('Placed', 'Paid', 'Awaiting payment', 'Not complete'));
 
 
 /* Constraint 2 OtherThanPlacedHasDelivery
-Colom ORDER(State) An order with state that is not ‘placed’, must have a delivery note.
+Column ORDER(State) An order with state that is not ‘placed’, must have a delivery note.
 =================================================
 = State		= Delivery note	= Yes/No	=
 =================================================
@@ -141,7 +141,7 @@ create trigger TR_DISCREPANCY_NOTE_HAS_ORDER after update or delete on DISCREPAN
 alter table animal drop constraint if exists CHK_ANIMAL_GENDER;
 
 alter table animal add constraint CHK_ANIMAL_GENDER
-check(gender_s in ('male','female','other'));
+check(gender in ('male','female','other'));
                    
 /*===== Constraint 6 AnimalHasOneEnclosure =====*/
 /* Columns ANIMAL_ENCLOSURE(Animal_id, Since, End_date) an animal cant stay in two enclosures at a time

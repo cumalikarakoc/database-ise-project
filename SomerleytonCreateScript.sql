@@ -1,7 +1,7 @@
 ﻿/*-------------------------------------------------------------*\
 |			Constraints Script			|
 |---------------------------------------------------------------|
-|	Gemaakt door: 	Cumali karakoç,				|
+|	Gemaakt door: 	Cumali Karakoç,				|
 |			Simon van Noppen,			|
 |			Henkie van den Oord,			|
 |			Jeroen Rikken,				|
@@ -10,11 +10,113 @@
 |	Gemaakt op:	17-5-2019 10:48:23			|
 \*-------------------------------------------------------------*/
 
+/* Event trigger for creating a history table for each tables created*/
+create or replace function tgr_change_history_trigger() returns trigger as $$
+declare
+    CurrentUser text = (select current_user);
+begin
+    if      TG_OP = 'INSERT'
+    then
+        execute 'insert into hist_'|| TG_TABLE_NAME ||' (operation, Who, new_val)
+        values ('|| quote_literal(TG_OP) ||', ' || quote_literal(CurrentUser) ||', ' || quote_literal(row_to_json(NEW)) ||');';
+        return new;
+    elsif   TG_OP = 'UPDATE'
+    then
+        execute 'insert into hist_'|| TG_TABLE_NAME ||' (operation, Who, new_val, old_val)
+        values ('|| quote_literal(TG_OP) || ', '|| quote_literal(CurrentUser) ||', '|| quote_literal(row_to_json(NEW)) || ', '|| quote_literal(row_to_json(OLD)) ||');';
+        return new;
+    elsif   TG_OP = 'DELETE'
+    then
+        execute 'insert into hist_'|| TG_TABLE_NAME ||'(operation, Who, old_val)
+        values ('|| quote_literal(TG_OP) || ', '|| quote_literal(CurrentUser) ||', '|| quote_literal(row_to_json(OLD)) ||');';
+        return old;
+    end if;
+end;
+$$ language 'plpgsql';
+
+/* Event trigger for creating a history table for each tables created*/
+create or replace function trg_create_table_func()
+  returns event_trigger
+language plpgsql
+as $$
+declare   obj     record;
+declare name_of varchar;
+begin
+  for obj in select * from pg_event_trigger_ddl_commands() where command_tag in ('CREATE TABLE')
+  loop
+    select obj.object_identity into name_of from pg_event_trigger_ddl_commands();
+    if name_of !~ 'hist_'
+    then
+      if (name_of like '%"%')
+      then
+        -- remove " in tables like "ORDER"
+        name_of = replace(name_of, '"', '');
+      end if;
+      -- remove public. (schema name) from table identification to get table name
+      name_of = replace(name_of, 'public.', '');
+
+      execute 'create trigger tgr_history_trigger before insert or update or delete on '|| quote_ident(name_of) ||'
+                       for each row execute procedure tgr_change_history_trigger();' ;
+
+      name_of = 'hist_' || name_of;
+      execute 'create table if not exists ' || name_of || '( Id serial not null, Tstamp timestamp default now(),
+                 Operation    text not null,
+                 Who          text not null,
+                 new_val      json,
+                 old_val      json);';
+
+      raise notice 'tabel % aangemaakt', name_of;
+    end if;
+  end loop;
+  return;
+end;
+$$;
+
+
+drop event trigger if exists trg_create_table;
+create event trigger trg_create_table
+on ddl_command_end
+when tag in ('CREATE TABLE')
+execute procedure trg_create_table_func();
+
+/* Creating a event trigger for deleting history tables when deleting tables*/
+create or replace function trg_drop_table_func()
+returns event_trigger
+language plpgsql
+as $$
+declare   obj     record;
+  declare tablename varchar;
+  declare objtype varchar;
+begin
+  for obj in select * from pg_event_trigger_dropped_objects()
+  loop
+    select obj.object_type into objtype;
+    select obj.object_name into tablename;
+    if(objtype like 'table')
+    then
+      -- removing public. (schema name) from object identity to get table name
+
+      if (tablename !~ 'hist_')
+      then
+        tablename = 'hist_' || tablename;
+        execute 'drop table if exists ' || tablename || ' cascade;';
+      end if;
+    end if;
+  end loop;
+  return;
+end;
+$$;
+
+drop event trigger if exists trg_drop_table;
+create event trigger trg_drop_table
+on sql_drop
+execute procedure trg_drop_table_func();
+
 drop index if exists ANIMAL_OF_SPECIES_FK;
 
 drop index if exists ANIMAL_PK;
 
-drop table if exists ANIMAL CASCADE;
+drop table if exists ANIMAL cascade;
 
 drop index if exists ENCLOSURE_HAS_ANIMAL_FK;
 
@@ -48,7 +150,7 @@ drop index if exists HEADKEEPER_OF_AREA2_FK;
 
 drop index if exists AREA_PK;
 
-drop table if exists AREA CASCADE ;
+drop table if exists AREA cascade ;
 
 drop index if exists AREA_HAS_KEEPER_FK;
 
@@ -291,11 +393,11 @@ create domain WEIGHT as DECIMAL(5,3);
 /*==============================================================*/
 create table ANIMAL (
    ANIMAL_ID            ID                   not null,
-   GENDER_S             GENDER               not null,
+   GENDER               GENDER               not null,
    ANIMAL_NAME          VARCHAR(1024)        null,
    BIRTH_PLACE          PLACE_DOMAIN         null,
    BIRTH_DATE           DATE                 null,
-   ENGLISH_NAME         NAME_DOMAIN          not null,
+   SPECIES_NAME         NAME_DOMAIN          not null,
    constraint PK_ANIMAL primary key (ANIMAL_ID)
 );
 
@@ -310,7 +412,7 @@ ANIMAL_ID
 /* Index: ANIMAL_OF_SPECIES_FK                                  */
 /*==============================================================*/
 create  index ANIMAL_OF_SPECIES_FK on ANIMAL (
-ENGLISH_NAME
+SPECIES_NAME
 );
 
 /*==============================================================*/
@@ -609,10 +711,10 @@ ANIMAL_ID
 /*==============================================================*/
 create table FEEDING (
    ANIMAL_ID            ID                   not null,
-   FOOD_TYPE_FT         FOOD_TYPE_DOMAIN     not null,
-   SINCE_F              DATE                 not null,
+   FOOD_TYPE         FOOD_TYPE_DOMAIN     not null,
+   SINCE              DATE                 not null,
    AMOUNT               WEIGHT               not null,
-   constraint PK_FEEDING primary key (ANIMAL_ID, FOOD_TYPE_FT, SINCE_F)
+   constraint PK_FEEDING primary key (ANIMAL_ID, FOOD_TYPE, SINCE)
 );
 
 /*==============================================================*/
@@ -620,8 +722,8 @@ create table FEEDING (
 /*==============================================================*/
 create unique index FEEDING_PK on FEEDING (
 ANIMAL_ID,
-FOOD_TYPE_FT,
-SINCE_F
+FOOD_TYPE,
+SINCE
 );
 
 /*==============================================================*/
@@ -635,22 +737,22 @@ ANIMAL_ID
 /* Index: FOOD_TO_BE_FED_FK                                     */
 /*==============================================================*/
 create  index FOOD_TO_BE_FED_FK on FEEDING (
-FOOD_TYPE_FT
+FOOD_TYPE
 );
 
 /*==============================================================*/
 /* Table: FOOD_KIND                                             */
 /*==============================================================*/
 create table FOOD_KIND (
-   FOOD_TYPE_FT         FOOD_TYPE_DOMAIN     not null,
-   constraint PK_FOOD_KIND primary key (FOOD_TYPE_FT)
+   FOOD_TYPE         FOOD_TYPE_DOMAIN     not null,
+   constraint PK_FOOD_KIND primary key (FOOD_TYPE)
 );
 
 /*==============================================================*/
 /* Index: FOOD_TYPE_PK                                          */
 /*==============================================================*/
 create unique index FOOD_TYPE_PK on FOOD_KIND (
-FOOD_TYPE_FT
+FOOD_TYPE
 );
 
 /*==============================================================*/
@@ -688,10 +790,10 @@ KEEPER_NAME
 /*==============================================================*/
 create table LINE_ITEM (
    ORDER_ID             ID                   not null,
-   FOOD_TYPE_FT         FOOD_TYPE_DOMAIN     not null,
+   FOOD_TYPE         FOOD_TYPE_DOMAIN     not null,
    PRICE                MONEY                not null,
    WEIGHT               WEIGHT               not null,
-   constraint PK_LINE_ITEM primary key (ORDER_ID, FOOD_TYPE_FT)
+   constraint PK_LINE_ITEM primary key (ORDER_ID, FOOD_TYPE)
 );
 
 /*==============================================================*/
@@ -699,7 +801,7 @@ create table LINE_ITEM (
 /*==============================================================*/
 create unique index LINE_ITEM_PK on LINE_ITEM (
 ORDER_ID,
-FOOD_TYPE_FT
+FOOD_TYPE
 );
 
 /*==============================================================*/
@@ -713,7 +815,7 @@ ORDER_ID
 /* Index: FOOD_IN_LINE_ITEM_FK                                  */
 /*==============================================================*/
 create  index FOOD_IN_LINE_ITEM_FK on LINE_ITEM (
-FOOD_TYPE_FT
+FOOD_TYPE
 );
 
 /*==============================================================*/
@@ -833,37 +935,37 @@ ANIMAL_ID
 /* Table: SPECIES                                               */
 /*==============================================================*/
 create table SPECIES (
-   ENGLISH_NAME         NAME_DOMAIN                 not null,
+   SPECIES_NAME         NAME_DOMAIN                 not null,
    DESCRIPTION          TEXT_DOMAIN                 not null,
    FAMILY               NAME_DOMAIN                 null,
    SPECIES              NAME_DOMAIN                 null,
    SUBSPECIES           NAME_DOMAIN                 null,
-   constraint PK_SPECIES primary key (ENGLISH_NAME)
+   constraint PK_SPECIES primary key (SPECIES_NAME)
 );
 
 /*==============================================================*/
 /* Index: SPECIES_PK                                            */
 /*==============================================================*/
 create unique index SPECIES_PK on SPECIES (
-ENGLISH_NAME
+SPECIES_NAME
 );
 
 /*==============================================================*/
 /* Table: SPECIES_GENDER                                        */
 /*==============================================================*/
 create table SPECIES_GENDER (
-   ENGLISH_NAME         NAME_DOMAIN          not null,
+   SPECIES_NAME         NAME_DOMAIN          not null,
    GENDER               GENDER               not null,
    AVERAGE_WEIGHT       WEIGHT               not null,
    MATURITY_AGE         AGE                  not null,
-   constraint PK_SPECIES_GENDER primary key (ENGLISH_NAME, GENDER)
+   constraint PK_SPECIES_GENDER primary key (SPECIES_NAME, GENDER)
 );
 
 /*==============================================================*/
 /* Index: SPECIES_GENDER_PK                                     */
 /*==============================================================*/
 create unique index SPECIES_GENDER_PK on SPECIES_GENDER (
-ENGLISH_NAME,
+SPECIES_NAME,
 GENDER
 );
 
@@ -871,7 +973,7 @@ GENDER
 /* Index: SPECIES_WITH_GENDER_FK                                */
 /*==============================================================*/
 create  index SPECIES_WITH_GENDER_FK on SPECIES_GENDER (
-ENGLISH_NAME
+SPECIES_NAME
 );
 
 /*==============================================================*/
@@ -903,9 +1005,9 @@ ANIMAL_ID
 /*==============================================================*/
 create table STOCK (
    AREA_NAME            NAME_DOMAIN          not null,
-   FOOD_TYPE_FT         FOOD_TYPE_DOMAIN     not null,
+   FOOD_TYPE         FOOD_TYPE_DOMAIN     not null,
    AMOUNT               WEIGHT               not null,
-   constraint PK_STOCK primary key (AREA_NAME, FOOD_TYPE_FT)
+   constraint PK_STOCK primary key (AREA_NAME, FOOD_TYPE)
 );
 
 /*==============================================================*/
@@ -913,7 +1015,7 @@ create table STOCK (
 /*==============================================================*/
 create unique index STOCK_PK on STOCK (
 AREA_NAME,
-FOOD_TYPE_FT
+FOOD_TYPE
 );
 
 /*==============================================================*/
@@ -927,7 +1029,7 @@ AREA_NAME
 /* Index: FOOD_IN_STOCK_FK                                      */
 /*==============================================================*/
 create  index FOOD_IN_STOCK_FK on STOCK (
-FOOD_TYPE_FT
+FOOD_TYPE
 );
 
 /*==============================================================*/
@@ -935,7 +1037,7 @@ FOOD_TYPE_FT
 /*==============================================================*/
 create table SUPPLIER (
    SUPPLIER_NAME        NAME_DOMAIN          not null,
-   PHONE_NUMER          PHONE                not null,
+   PHONE_NUMBER          PHONE                not null,
    ADDRESS              ADDRESS              not null,
    constraint PK_SUPPLIER primary key (SUPPLIER_NAME)
 );
@@ -951,16 +1053,16 @@ SUPPLIER_NAME
 /* Table: SUPPLIES_FOOD_TYPE                                    */
 /*==============================================================*/
 create table SUPPLIES_FOOD_TYPE (
-   FOOD_TYPE_FT         FOOD_TYPE_DOMAIN     not null,
+   FOOD_TYPE         FOOD_TYPE_DOMAIN     not null,
    SUPPLIER_NAME        NAME_DOMAIN          not null,
-   constraint PK_SUPPLIES_FOOD_TYPE primary key (FOOD_TYPE_FT, SUPPLIER_NAME)
+   constraint PK_SUPPLIES_FOOD_TYPE primary key (FOOD_TYPE, SUPPLIER_NAME)
 );
 
 /*==============================================================*/
 /* Index: SUPPLIES_FOOD_TYPE_PK                                 */
 /*==============================================================*/
 create unique index SUPPLIES_FOOD_TYPE_PK on SUPPLIES_FOOD_TYPE (
-FOOD_TYPE_FT,
+FOOD_TYPE,
 SUPPLIER_NAME
 );
 
@@ -968,7 +1070,7 @@ SUPPLIER_NAME
 /* Index: SUPPLIES_FOOD_TYPE_FK                                 */
 /*==============================================================*/
 create  index SUPPLIES_FOOD_TYPE_FK on SUPPLIES_FOOD_TYPE (
-FOOD_TYPE_FT
+FOOD_TYPE
 );
 
 /*==============================================================*/
@@ -994,8 +1096,8 @@ VET_NAME
 );
 
 alter table ANIMAL
-   add constraint FK_ANIMAL_OF_SPECIES foreign key (ENGLISH_NAME)
-      references SPECIES (ENGLISH_NAME);
+   add constraint FK_ANIMAL_OF_SPECIES foreign key (SPECIES_NAME)
+      references SPECIES (SPECIES_NAME);
 
 alter table ANIMAL_ENCLOSURE
    add constraint FK_ANIMAL_IN_ENCLOSURE foreign key (ANIMAL_ID)
@@ -1006,7 +1108,7 @@ alter table ANIMAL_ENCLOSURE
       references ENCLOSURE (AREA_NAME, ENCLOSURE_NUM);
 
 alter table ANIMAL_IS_DIAGNOSED
-   add constraint FK_ANIMAL_DIAGNOSIS foreign key (DIAGNOSIS_NAME)
+   add constraint FK_ANIMAL_HAS_DIAGNOSIS foreign key (DIAGNOSIS_NAME)
       references DIAGNOSIS (DIAGNOSIS_NAME);
 
 alter table ANIMAL_IS_DIAGNOSED
@@ -1014,11 +1116,11 @@ alter table ANIMAL_IS_DIAGNOSED
       references ANIMAL_VISITS_VET (ANIMAL_ID, VISIT_DATE);
 
 alter table ANIMAL_PARENT
-   add constraint FK_ANIMAL_P_ANIMAL_HA_ANIMAL foreign key (CHILD_ID)
+   add constraint FK_ANIMAL_HAS_PARENT foreign key (CHILD_ID)
       references ANIMAL (ANIMAL_ID);
 
 alter table ANIMAL_PARENT
-   add constraint FK_ANIMAL_P_PARENT_OF_ANIMAL foreign key (PARENT_ID)
+   add constraint FK_PARENT_OF_ANIMAL foreign key (PARENT_ID)
       references ANIMAL (ANIMAL_ID);
 
 alter table ANIMAL_VISITS_VET
@@ -1046,7 +1148,7 @@ alter table AREA_KEEPER
       references KEEPER (KEEPER_NAME);
 
 alter table DELIVERY
-   add constraint FK_DELIVERY__ORDER foreign key (ORDER_ID)
+   add constraint FK_DELIVERY_ORDER foreign key (ORDER_ID)
       references "ORDER" (ORDER_ID);
 
 alter table DISCREPANCY
@@ -1066,35 +1168,35 @@ alter table FEEDING
       references ANIMAL (ANIMAL_ID);
 
 alter table FEEDING
-   add constraint FK_FOOD_TO_BE_FED foreign key (FOOD_TYPE_FT)
-      references FOOD_KIND (FOOD_TYPE_FT);
+   add constraint FK_FOOD_TO_BE_FED foreign key (FOOD_TYPE)
+      references FOOD_KIND (FOOD_TYPE);
 
 alter table LINE_ITEM
-   add constraint FK_FOOD_IN_LINE_TYPE foreign key (FOOD_TYPE_FT)
-      references FOOD_KIND (FOOD_TYPE_FT);
+   add constraint FK_FOOD_IN_LINE_TYPE foreign key (FOOD_TYPE)
+      references FOOD_KIND (FOOD_TYPE);
 
 alter table LINE_ITEM
    add constraint FK_ITEM_IN_ORDER foreign key (ORDER_ID)
       references "ORDER" (ORDER_ID);
 
 alter table MATING
-   add constraint FK_BREEDING_MATE foreign key (ANIMAL_ID)
+   add constraint FK_BREEDING_ANIMAL foreign key (ANIMAL_ID)
       references ANIMAL (ANIMAL_ID);
 
 alter table MATING
-   add constraint FK_MATING_BREEDING__ANIMAL foreign key (MATE_ID)
+   add constraint FK_BREEDING_MATE foreign key (MATE_ID)
       references ANIMAL (ANIMAL_ID);
 
 alter table OFFSPRING
-   add constraint FK_OFFSPRIN_ANIMAL_OF_ANIMAL foreign key (OFFSPRING_ID)
+   add constraint FK_ANIMAL_OFFSPRING foreign key (OFFSPRING_ID)
       references ANIMAL (ANIMAL_ID);
 
 alter table OFFSPRING
-   add constraint FK_OFFSPRIN_OFFSPRING_MATING foreign key (ANIMAL_ID, MATING_DATE)
+   add constraint FK_OFFSPRING_FROM_MATING foreign key (ANIMAL_ID, MATING_DATE)
       references MATING (ANIMAL_ID, MATING_DATE);
 
 alter table "ORDER"
-   add constraint FK_ORDER_INVOICE_OF_INVOICE foreign key (INVOICE_ID)
+   add constraint FK_INVOICE_OF_AN_ORDER foreign key (INVOICE_ID)
       references INVOICE (INVOICE_ID)
       on delete restrict on update restrict;
 
@@ -1107,24 +1209,24 @@ alter table REINTRODUCTION
       references ANIMAL (ANIMAL_ID);
 
 alter table SPECIES_GENDER
-   add constraint FK_SPECIES_WITH_GENDER foreign key (ENGLISH_NAME)
-      references SPECIES (ENGLISH_NAME);
+   add constraint FK_SPECIES_WITH_GENDER foreign key (SPECIES_NAME)
+      references SPECIES (SPECIES_NAME) ;
 
 alter table SPOTTED
    add constraint FK_ANIMAL_SPOTTED foreign key (ANIMAL_ID)
       references ANIMAL (ANIMAL_ID);
 
 alter table STOCK
-   add constraint FK_ANIMAL_FOODSTOCK foreign key (AREA_NAME)
+   add constraint FK_AREA_FOODSTOCK foreign key (AREA_NAME)
       references AREA (AREA_NAME);
 
 alter table STOCK
-   add constraint FK_FOOD_IN_STOCK foreign key (FOOD_TYPE_FT)
-      references FOOD_KIND (FOOD_TYPE_FT);
+   add constraint FK_FOOD_IN_STOCK foreign key (FOOD_TYPE)
+      references FOOD_KIND (FOOD_TYPE);
 
 alter table SUPPLIES_FOOD_TYPE
-   add constraint FK_SUPPLIER_HAS_FOOD_TYPE foreign key (FOOD_TYPE_FT)
-      references FOOD_KIND (FOOD_TYPE_FT);
+   add constraint FK_SUPPLIER_HAS_FOOD_TYPE foreign key (FOOD_TYPE)
+      references FOOD_KIND (FOOD_TYPE);
 
 alter table SUPPLIES_FOOD_TYPE
    add constraint FK_SUPPLIER_SUPPLIES_FOOD foreign key (SUPPLIER_NAME)
