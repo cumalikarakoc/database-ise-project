@@ -20,5 +20,6 @@ Dit zijn alle scripts die bij de database van somerleyton animalpark horen:
 1. Houd de muis links boven op 'File' en druk open
 1. Ga op zoek naar de 'SomerleytonCreateScrip.sql' bestand en op deze
 1. Voer dit uit door op F6 te drukken of door op de knop execute PgScript te drukken
+1. Voer stap 10 en 11 nog een keer uit voor het bestand 'ConstraintScript.sql'
 
-Om de database te installeren moet je als eerst PostgreSQL 9.5 of hoger downloaden. Voer daarna het SomerleytonCreateScript.sql script uit in de query tool gevolgd door het ConstraintScript.sql. Als je dit gedaan hebt, kun je de database vullen met data.
+Je database is nu geinstalleerd en kan gevuld worden met data.
