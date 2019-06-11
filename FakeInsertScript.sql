@@ -1,7 +1,7 @@
 ﻿/*-------------------------------------------------------------*\
 |			Fake data insert Script			|
 |---------------------------------------------------------------|
-|	Gemaakt door: 	Cumali karakoç,				|
+|	Gemaakt door: 	Cumali Karakoç,				|
 |			Simon van Noppen,			|
 |			Henkie van den Oord,			|
 |			Jeroen Rikken,				|
@@ -9,6 +9,8 @@
 |	Versie:		1.0					|
 |	Gemaakt op:	5/7/2019 13:42				|
 \*-------------------------------------------------------------*/
+
+/* This fake insert script only works if the date standard is set to month/day/year */
 delete from animal_parent;
 delete from animal_is_diagnosed;
 delete from animal_visits_vet;

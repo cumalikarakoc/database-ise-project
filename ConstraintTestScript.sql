@@ -1,7 +1,7 @@
 ﻿/*-------------------------------------------------------------*\
 |			Constraint Test Script			|
 |---------------------------------------------------------------|
-|	Gemaakt door: 	Cumali karakoç,				|
+|	Gemaakt door: 	Cumali Karakoç,				|
 |			Simon van Noppen,			|
 |			Henkie van den Oord,			|
 |			Jeroen Rikken,				|
