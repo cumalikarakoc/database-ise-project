@@ -65,6 +65,7 @@ begin
                  new_val      json,
                  old_val      json);';
 
+      raise notice 'tabel % aangemaakt', name_of;
     end if;
   end loop;
   return;
